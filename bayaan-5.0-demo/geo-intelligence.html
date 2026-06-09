@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geo Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#000;
+    --card:#ffffff;
+    --shell:#f4f5f7;
+    --navy:#173a8a;
+    --blue:#2f6bf6;
+    --blue-soft:#dbe6ff;
+    --cyan:#46c2d6;
+    --cyan-soft:#d6f1f5;
+    --track:#eef2f7;
+    --ink:#161b29;
+    --muted:#7b8494;
+    --faint:#aeb6c2;
+    --green:#16a34a;
+    --green-bg:#dcfce7;
+    --red:#e2574c;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased;}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    color:var(--ink);
+    display:flex;
+    justify-content:center; 
+  }
+  .phone{
+    max-width:100%;
+    width: 95%;
+    border-radius:34px;
+    position: relative;
+  }
+
+  /* ---------- header ---------- */
+  .topbar{
+    padding-bottom:14px;
+    position: sticky;
+    top: 0;
+    left: 0;
+    background-color: #f4f6f9;
+  }
+  .brand{display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;}
+  .brand .ic{color:#9aa2af;margin-top:2px;}
+  .brand h1{font-size:20px;font-weight:800;letter-spacing:-.3px;}
+  .brand p{font-size:12.5px;color:var(--muted);margin-top:1px;}
+  .tabs{
+    display:flex;background:#fff;border-radius:13px;padding:5px;gap:4px;
+  }
+  .tab{
+    flex:1;text-align:center;padding:11px 0;border-radius:9px;
+    font-size:13.5px;font-weight:600;color:#5a6373;cursor:pointer;
+    border:none;background:none;font-family:inherit;transition:.2s;
+  }
+  .tab.active{background:var(--navy);color:#fff;font-weight:700;}
+
+  /* ---------- cards ---------- */
+  .card{
+    background:var(--card);
+    border-radius:20px;
+    padding:20px 18px;
+    margin-bottom:14px;
+  }
+  .ctitle{display:flex;align-items:center;gap:9px;margin-bottom:16px;}
+  .ctitle .ic{color:#9aa2af;}
+  .ctitle h2{font-size:16px;font-weight:700;letter-spacing:-.2px;}
+
+  .panel{display:none; overflow: auto;}
+  .panel.active{display:block;}
+
+  /* big stat */
+  .bignum{font-size:28px;font-weight:800;letter-spacing:-1px;line-height:1;}
+  .stat-row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .pill{
+    display:inline-flex;align-items:center;gap:4px;background:var(--green-bg);
+    color:var(--green);font-size:13px;font-weight:700;padding:6px 11px;border-radius:20px;
+  }
+  .subtle{font-size:13px;color:var(--muted);margin-top:14px;}
+  .chart{margin-top:14px;}
+
+  /* legend */
+  .legend{flex:1;}
+  .leg-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;}
+  .leg-left{display:flex;align-items:center;gap:9px;font-size:14px;color:#3d4453;font-weight:500;}
+  .dot{width:9px;height:9px;border-radius:50%;flex:none;}
+  .leg-val{font-size:14px;font-weight:600;color:var(--ink);}
+
+  .donut-wrap{display:flex;align-items:center;gap:20px;}
+
+  /* ---------- bars : style A (inline) ---------- */
+  .barsA .rowA{display:flex;align-items:center;gap:14px;padding:9px 0;}
+  .barsA .lblA{font-size:13.5px;color:#5a6373;font-weight:500;width:128px;flex:none;}
+  .barsA .trkA{flex:1;height:9px;background:var(--track);border-radius:6px;overflow:hidden;}
+  .barsA .fillA{height:100%;border-radius:6px;}
+  .barsA .pctA{font-size:13.5px;font-weight:700;width:42px;text-align:right;flex:none;}
+
+  /* ---------- bars : style B (stacked) ---------- */
+  .rowB{padding:10px 0;}
+  .headB{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px;}
+  .headB .lbl{font-size:13.5px;color:#3d4453;font-weight:500;padding-right:8px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .headB .val{font-size:14px;font-weight:700;flex:none;}
+  .bottomB{display:flex;align-items:center;gap:12px;}
+  .trkB{flex:1;height:7px;background:var(--track);border-radius:6px;overflow:hidden;}
+  .fillB{height:100%;border-radius:6px;}
+  .pctB{font-size:12px;font-weight:600;color:var(--faint);width:38px;text-align:right;flex:none;}
+
+  .fill-blue{background:var(--blue);}
+  .fill-cyan{background:var(--cyan);}
+
+  /* growth */
+  .grid2{display:flex;gap:8px;}
+  .growth{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;}
+  .growth .gname{font-size:12.5px;color:var(--muted);font-weight:500;}
+  .growth .gval{font-size:18px;font-weight:800;}
+  .gsep{width:1px;background:#e8ebf0;margin:6px 0;}
+  .gtag{display:inline-flex;align-items:center;gap:3px;color:var(--green);background:var(--green-bg);
+    font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:14px;}
+
+  /* two stat cards */
+  .duo{display:flex;gap:13px;margin-bottom:14px;}
+  .duo .card{flex:1;margin:0;padding:12px;}
+  .duo .bignum{font-size:20px;}
+  .duo .pill{margin-top:13px;}
+
+  /* housing */
+  .housing{display:flex;text-align:center;}
+  .hcell{flex:1;display:flex;flex-direction:column;align-items:center;gap:9px;}
+  .hcell .hname{font-size:11.5px;color:var(--muted);font-weight:500;line-height:1.3;}
+  .hcell .hval{font-size:17px;font-weight:800;}
+  .hsep{width:1px;background:#eceef2;margin:4px 0;}
+
+  /* region map */
+  .maplabel{font-size:11px;font-weight:700;fill:var(--ink);}
+  .mapval{font-size:13px;font-weight:800;fill:var(--ink);}
+  .mapgrow{font-size:10px;font-weight:700;fill:var(--cyan);}
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- HEADER -->
+  <div class="topbar">
+    <div class="brand">
+      <span class="ic">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+      </span>
+      <div>
+        <h1>Geo Intelligence</h1>
+        <p>Updated 2 mins ago</p>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" data-tab="population">Population</button>
+      <button class="tab" data-tab="labour">Labour</button>
+      <button class="tab" data-tab="realestate">Real Estate</button>
+    </div>
+  </div>
+
+  <!-- ================= POPULATION ================= -->
+  <section class="panel active" id="population">
+
+    <div class="card">
+      <div class="ctitle">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg></span>
+        <h2>Total Population</h2>
+      </div>
+      <div class="stat-row">
+        <div class="bignum">4,135,985</div>
+        <span class="pill">+8.2% <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 6-6 6 6"/></svg></span>
+      </div>
+      <div class="chart">
+        <svg viewBox="0 0 380 70" width="100%" height="70" preserveAspectRatio="none">
+          <defs><linearGradient id="ln1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe0ff"/><stop offset="1" stop-color="#ffffff"/></linearGradient></defs>
+          <path d="M0,42 C40,40 70,34 110,36 C150,38 175,44 210,42 C250,40 290,26 330,22 C355,20 370,18 380,18 L380,70 L0,70 Z" fill="url(#ln1)"/>
+          <path d="M0,42 C40,40 70,34 110,36 C150,38 175,44 210,42 C250,40 290,26 330,22 C355,20 370,18 380,18" fill="none" stroke="#2f6bf6" stroke-width="2.4"/>
+        </svg>
+      </div>
+      <p class="subtle">Abu Dhabi Emirates</p>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 5.2a3 3 0 0 1 0 5.6"/><path d="M17.5 13.5a5.5 5.5 0 0 1 3 5.5"/></svg></span>
+        <h2>Regional Distribution</h2>
+      </div>
+      <div class="donut-wrap">
+        <svg width="108" height="108" viewBox="0 0 42 42">
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="#eef2f7" stroke-width="5"/>
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--cyan)" stroke-width="5" stroke-dasharray="62 38" stroke-dashoffset="25" stroke-linecap="round"/>
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--blue)" stroke-width="5" stroke-dasharray="30 70" stroke-dashoffset="-37" stroke-linecap="round"/>
+          <text x="21" y="20.5" text-anchor="middle" font-size="7" font-weight="800" fill="#161b29">68%</text>
+          <text x="21" y="26" text-anchor="middle" font-size="3.3" fill="#7b8494">Tourism</text>
+        </svg>
+        <div class="legend">
+          <div class="leg-row"><span class="leg-left"><span class="dot" style="background:var(--blue)"></span>Abu Dhabi</span><span class="leg-val">68%</span></div>
+          <div class="leg-row"><span class="leg-left"><span class="dot" style="background:var(--cyan)"></span>Al Ain</span><span class="leg-val">32%</span></div>
+          <div class="leg-row"><span class="leg-left"><span class="dot" style="background:var(--blue)"></span>AL Dhafra</span><span class="leg-val">8%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.5-1.5 2-3.2 2-5a4 4 0 0 0-7-2.6A4 4 0 0 0 7 9c0 1.8.5 3.5 2 5l5 5Z"/></svg></span>
+        <h2>Marital Status</h2>
+      </div>
+      <div id="maritalBars"></div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="14" r="5"/><path d="m14 10 6-6m-4 0h4v4"/></svg></span>
+        <h2>Gender</h2>
+      </div>
+      <div class="donut-wrap">
+        <svg width="108" height="108" viewBox="0 0 42 42">
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="#eef2f7" stroke-width="5"/>
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--blue)" stroke-width="5" stroke-dasharray="68 32" stroke-dashoffset="25" stroke-linecap="round"/>
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--cyan)" stroke-width="5" stroke-dasharray="32 68" stroke-dashoffset="-43" stroke-linecap="round"/>
+        </svg>
+        <div class="legend">
+          <div class="leg-row"><span class="leg-left"><span class="dot" style="background:var(--cyan)"></span>Women</span><span class="leg-val">1,490,610 (32%)</span></div>
+          <div class="leg-row"><span class="leg-left"><span class="dot" style="background:var(--blue)"></span>Men</span><span class="leg-val">3,029,745 (68%)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.5" r="2"/><path d="M7 9.5h7l2 2.5"/><path d="M9 9.5v6.5h5"/><circle cx="11.5" cy="17.5" r="4.5"/></svg></span>
+        <h2>Disability</h2>
+      </div>
+      <div id="disabilityBars"></div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 5.2a3 3 0 0 1 0 5.6"/></svg></span>
+        <h2>Citizen Growth Yearly</h2>
+      </div>
+      <div class="grid2">
+        <div class="growth">
+          <svg width="56" height="56" viewBox="0 0 44 44"><circle cx="22" cy="22" r="19" fill="none" stroke="#e9eef6" stroke-width="4"/><circle cx="22" cy="22" r="19" fill="none" stroke="var(--cyan)" stroke-width="4" stroke-dasharray="40 100" stroke-linecap="round" transform="rotate(-90 22 22)"/><g transform="translate(22 22)"><circle cx="0" cy="-3" r="4" fill="#9aa6b8"/><path d="M-7 9a7 7 0 0 1 14 0Z" fill="#9aa6b8"/></g></svg>
+          <span class="gname">Emirates</span>
+          <span class="gval">3.4%</span>
+          <span class="gtag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7m0 0h-7m7 0v7"/></svg>3.4</span>
+        </div>
+        <div class="gsep"></div>
+        <div class="growth">
+          <svg width="56" height="56" viewBox="0 0 44 44"><circle cx="22" cy="22" r="19" fill="none" stroke="#e9eef6" stroke-width="4"/><circle cx="22" cy="22" r="19" fill="none" stroke="var(--blue)" stroke-width="4" stroke-dasharray="78 100" stroke-linecap="round" transform="rotate(-90 22 22)"/><g transform="translate(22 22)"><circle cx="0" cy="-3" r="4" fill="var(--blue)"/><path d="M-7 9a7 7 0 0 1 14 0Z" fill="var(--blue)"/></g></svg>
+          <span class="gname">Non Emirates</span>
+          <span class="gval">8.56%</span>
+          <span class="gtag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7m0 0h-7m7 0v7"/></svg>3.4</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18"/></svg></span>
+        <h2>Average Household Expenditure</h2>
+      </div>
+      <div class="donut-wrap">
+        <svg width="108" height="108" viewBox="0 0 42 42">
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="#eef2f7" stroke-width="5"/>
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--blue)" stroke-width="5" stroke-dasharray="71 29" stroke-dashoffset="25" stroke-linecap="round"/>
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--cyan)" stroke-width="5" stroke-dasharray="29 71" stroke-dashoffset="-46" stroke-linecap="round"/>
+          <text x="21" y="20.5" text-anchor="middle" font-size="7" font-weight="800" fill="#161b29">4.5K</text>
+          <text x="21" y="26" text-anchor="middle" font-size="3.3" fill="#7b8494">AED</text>
+        </svg>
+        <div class="legend">
+          <div class="leg-row"><span class="leg-left"><span class="dot" style="background:var(--blue)"></span>Emirates</span><span class="leg-val">AED 561,730</span></div>
+          <div class="leg-row"><span class="leg-left"><span class="dot" style="background:var(--cyan)"></span>Non Emirates</span><span class="leg-val">AED 229,081</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+        <h2>Region</h2>
+      </div>
+      <img src="assets/maps.svg" alt="map" style="width: 100%;height: auto;">
+    </div>
+
+  </section>
+
+  <!-- ================= LABOUR ================= -->
+  <section class="panel" id="labour">
+
+    <div class="card">
+      <div class="ctitle">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M8 7V5.5A1.5 1.5 0 0 1 9.5 4h5A1.5 1.5 0 0 1 16 5.5V7"/></svg></span>
+        <h2>Employed Population</h2>
+      </div>
+      <div class="stat-row">
+        <div class="bignum">3,235,985</div>
+        <span class="pill">+8.2% <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 6-6 6 6"/></svg></span>
+      </div>
+      <div class="chart">
+        <svg viewBox="0 0 380 70" width="100%" height="70" preserveAspectRatio="none">
+          <defs><linearGradient id="ln2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe0ff"/><stop offset="1" stop-color="#ffffff"/></linearGradient></defs>
+          <path d="M0,40 C40,38 70,28 110,30 C150,32 175,40 210,38 C250,36 290,24 330,26 C355,27 370,22 380,20 L380,70 L0,70 Z" fill="url(#ln2)"/>
+          <path d="M0,40 C40,38 70,28 110,30 C150,32 175,40 210,38 C250,36 290,24 330,26 C355,27 370,22 380,20" fill="none" stroke="#2f6bf6" stroke-width="2.4"/>
+        </svg>
+      </div>
+      <p class="subtle">Abu Dhabi Emirates</p>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M8.5 12.5 7 21l5-2.5L17 21l-1.5-8.5"/></svg></span>
+        <h2>Top Economic Activities</h2>
+      </div>
+      <div class="barsA" id="topEcon"></div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 9 12 4 2 9l10 5 10-5Z"/><path d="M6 11.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+        <h2>By Education Level</h2>
+      </div>
+      <div class="barsA" id="eduLevel"></div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><circle cx="16" cy="8" r="3"/><path d="M2.5 19a5.5 5.5 0 0 1 11 0"/><path d="M13 19a5.5 5.5 0 0 1 8.5-4.6"/></svg></span>
+        <h2>Total Emirati Jobseekers</h2>
+      </div>
+      <div class="bignum">18,578</div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.5-1.5 2-3.2 2-5a4 4 0 0 0-7-2.6A4 4 0 0 0 7 9c0 1.8.5 3.5 2 5l5 5Z"/></svg></span>
+        <h2>Employed by Occupation Level</h2>
+      </div>
+      <div id="occLevel"></div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.5-1.5 2-3.2 2-5a4 4 0 0 0-7-2.6A4 4 0 0 0 7 9c0 1.8.5 3.5 2 5l5 5Z"/></svg></span>
+        <h2>Employed Economic Activities</h2>
+      </div>
+      <div id="econAct"></div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="14" r="5"/><path d="m14 10 6-6m-4 0h4v4"/></svg></span>
+        <h2>Gender</h2>
+      </div>
+      <div class="donut-wrap">
+        <svg width="108" height="108" viewBox="0 0 42 42">
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="#eef2f7" stroke-width="5"/>
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--blue)" stroke-width="5" stroke-dasharray="68 32" stroke-dashoffset="25" stroke-linecap="round"/>
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--cyan)" stroke-width="5" stroke-dasharray="32 68" stroke-dashoffset="-43" stroke-linecap="round"/>
+        </svg>
+        <div class="legend">
+          <div class="leg-row"><span class="leg-left"><span class="dot" style="background:var(--cyan)"></span>Women</span><span class="leg-val">1,490,610 (32%)</span></div>
+          <div class="leg-row"><span class="leg-left"><span class="dot" style="background:var(--blue)"></span>Men</span><span class="leg-val">3,029,745 (68%)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+        <h2>Region</h2>
+      </div>
+      <img src="assets/maps.svg" alt="map" style="width: 100%;height: auto;">
+    </div>
+
+  </section>
+
+  <!-- ================= REAL ESTATE ================= -->
+  <section class="panel" id="realestate">
+
+    <div class="duo">
+      <div class="card">
+        <div class="ctitle">
+          <span class="ic" style="color:var(--red)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-5h6v5"/><path d="M9 9h.01M15 9h.01M9 12.5h.01M15 12.5h.01"/></svg></span>
+          <h2>Total Buildings</h2>
+        </div>
+        <div class="bignum">299,365</div>
+        <span class="pill">+8.2% <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 6-6 6 6"/></svg></span>
+      </div>
+      <div class="card">
+        <div class="ctitle">
+          <span class="ic" style="color:var(--cyan)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/></svg></span>
+          <h2>Total Units</h2>
+        </div>
+        <div class="bignum">783,970</div>
+        <span class="pill">+8.2% <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 6-6 6 6"/></svg></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h2M8 11h2M8 15h2M14 7h2M14 11h2M14 15h2"/></svg></span>
+        <h2>Buildings by use</h2>
+      </div>
+      <div class="barsA" id="bldUse"></div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 5.2a3 3 0 0 1 0 5.6"/></svg></span>
+        <h2>Region Distribution</h2>
+      </div>
+      <div class="donut-wrap">
+        <svg width="124" height="124" viewBox="0 0 42 42">
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="#eef2f7" stroke-width="4.5"/>
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--blue)" stroke-width="4.5" stroke-dasharray="62 38" stroke-dashoffset="25" stroke-linecap="round"/>
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--cyan)" stroke-width="4.5" stroke-dasharray="30 70" stroke-dashoffset="-37" stroke-linecap="round"/>
+          <text x="21" y="20.5" text-anchor="middle" font-size="7.5" font-weight="800" fill="#161b29">68%</text>
+          <text x="21" y="26" text-anchor="middle" font-size="3.3" fill="#7b8494">Tourism</text>
+        </svg>
+        <div class="legend">
+          <div class="leg-row"><span class="leg-left"><span class="dot" style="background:var(--blue)"></span>Abu Dhabi</span><span class="leg-val">68%</span></div>
+          <div class="leg-row"><span class="leg-left"><span class="dot" style="background:var(--cyan)"></span>Al Ain</span><span class="leg-val">32%</span></div>
+          <div class="leg-row"><span class="leg-left"><span class="dot" style="background:var(--blue)"></span>AL Dhafra</span><span class="leg-val">8%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/></svg></span>
+        <h2>Housing Unit Type</h2>
+      </div>
+      <div class="housing">
+        <div class="hcell">
+          <svg width="58" height="58" viewBox="0 0 46 46"><circle cx="23" cy="23" r="20" fill="none" stroke="#e3f3f6" stroke-width="4"/><circle cx="23" cy="23" r="20" fill="none" stroke="var(--cyan)" stroke-width="4" stroke-dasharray="95 130" stroke-linecap="round" transform="rotate(-90 23 23)"/><g transform="translate(23 23)" stroke="var(--cyan)" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="-6" y="-7" width="12" height="14" rx="1"/><path d="M-3 -4h.01M2 -4h.01M-3 0h.01M2 0h.01M-1.5 7v-3h3v3"/></g></svg>
+          <span class="hname">Apartment</span>
+          <span class="hval">2.8M</span>
+        </div>
+        <div class="hsep"></div>
+        <div class="hcell">
+          <svg width="58" height="58" viewBox="0 0 46 46"><circle cx="23" cy="23" r="20" fill="none" stroke="#e0e9fb" stroke-width="4"/><circle cx="23" cy="23" r="20" fill="none" stroke="var(--blue)" stroke-width="4" stroke-dasharray="70 130" stroke-linecap="round" transform="rotate(-90 23 23)"/><g transform="translate(23 23)" stroke="var(--blue)" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M-7 1 0 -6 7 1"/><path d="M-5 0v6h10v-6"/></g></svg>
+          <span class="hname">Villa / Independent</span>
+          <span class="hval">1.2M</span>
+        </div>
+        <div class="hsep"></div>
+        <div class="hcell">
+          <svg width="58" height="58" viewBox="0 0 46 46"><circle cx="23" cy="23" r="20" fill="none" stroke="#fbe2e0" stroke-width="4"/><circle cx="23" cy="23" r="20" fill="none" stroke="var(--red)" stroke-width="4" stroke-dasharray="18 130" stroke-linecap="round" transform="rotate(-90 23 23)"/><g transform="translate(23 23)" stroke="var(--red)" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M-7 2 0 -5 7 2"/><path d="M-5 1v5h10v-5"/></g></svg>
+          <span class="hname">Other housing</span>
+          <span class="hval">56K</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-5h6v5"/></svg></span>
+        <h2>Building Type</h2>
+      </div>
+      <div id="bldType"></div>
+    </div>
+
+  </section>
+
+</div>
+
+<script>
+  // ---------- tab switching ----------
+  const tabs = document.querySelectorAll('.tab');
+  const panels = document.querySelectorAll('.panel');
+  tabs.forEach(t=>t.addEventListener('click',()=>{
+    tabs.forEach(x=>x.classList.remove('active'));
+    panels.forEach(p=>p.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.tab).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }));
+
+  // ---------- bar builders ----------
+  // style B : label + value on top, bar + pct below
+  function barsB(host, rows, color){
+    document.getElementById(host).innerHTML = rows.map(r=>`
+      <div class="rowB">
+        <div class="headB"><span class="lbl">${r.l}</span><span class="val">${r.v}</span></div>
+        <div class="bottomB">
+          <div class="trkB"><div class="fillB ${color}" style="width:${r.w}%"></div></div>
+          <span class="pctB">${r.p}</span>
+        </div>
+      </div>`).join('');
+  }
+  // style A : label | bar | pct inline
+  function barsA(host, rows, color){
+    document.getElementById(host).innerHTML = rows.map(r=>`
+      <div class="rowA">
+        <span class="lblA">${r.l}</span>
+        <div class="trkA"><div class="fillA ${color}" style="width:${r.w}%"></div></div>
+        <span class="pctA">${r.p}</span>
+      </div>`).join('');
+  }
+
+  // ===== POPULATION =====
+  barsB('maritalBars',[
+    {l:'Never Married',v:'1,802,390',w:51,p:'51%'},
+    {l:'Married',v:'1,689,015',w:48,p:'48%'},
+    {l:'Divorced',v:'30,660',w:14,p:'01%'},
+    {l:'Widowed',v:'15,155',w:18,p:'02%'},
+  ],'fill-blue');
+
+  barsB('disabilityBars',[
+    {l:'Physical',v:'1,802,390',w:51,p:'51%'},
+    {l:'Intellectual',v:'1,689,015',w:48,p:'48%'},
+    {l:'Autism Spectrum',v:'30,660',w:14,p:'01%'},
+    {l:'Multiple',v:'15,155',w:18,p:'02%'},
+  ],'fill-cyan');
+
+  // ===== LABOUR =====
+  barsA('topEcon',[
+    {l:'Construction',w:90,p:'90%'},
+    {l:'Wholesale Trade',w:68,p:'68%'},
+    {l:'Household Activities',w:40,p:'40%'},
+    {l:'Trade & Motor Repair',w:32,p:'32%'},
+  ],'fill-cyan');
+
+  barsA('eduLevel',[
+    {l:'Secondary',w:90,p:'10K'},
+    {l:'Above Secondary',w:62,p:'6.8K'},
+    {l:'Below Secondary',w:32,p:'32%'},
+  ],'fill-blue');
+
+  barsB('occLevel',[
+    {l:'Elementary occupation',v:'982,390',w:45,p:'45%'},
+    {l:'Craft and related trades workers',v:'889,015',w:30,p:'30%'},
+    {l:'Service and sales workers',v:'20,660',w:24,p:'10%'},
+    {l:'Professionals',v:'14,155',w:20,p:'5%'},
+    {l:'Plant and machine operators, and ass...',v:'13,155',w:16,p:'3%'},
+    {l:'Manager, senior officials and legislators',v:'12,155',w:18,p:'3%'},
+    {l:'Technicians and associate professiona...',v:'11,155',w:14,p:'2%'},
+    {l:'Clerks',v:'10,155',w:12,p:'1%'},
+    {l:'Skilled agricultural, forestry and fisher...',v:'9,155',w:10,p:'1%'},
+    {l:'Armed Forces Occupations',v:'8,155',w:8,p:'0.5%'},
+  ],'fill-blue');
+
+  barsB('econAct',[
+    {l:'Construction',v:'902,390',w:45,p:'45%'},
+    {l:'Activities of households',v:'809,015',w:30,p:'30%'},
+    {l:'Wholesale and retail trade',v:'70,660',w:24,p:'10%'},
+    {l:'Administrative and support service',v:'13,155',w:20,p:'5%'},
+    {l:'Manufacturing',v:'12,155',w:16,p:'3%'},
+    {l:'Transportation and storage',v:'11,155',w:14,p:'3%'},
+    {l:'Accommodation and food service acti...',v:'10,155',w:12,p:'2%'},
+    {l:'Professional, scientific and technical a...',v:'9,155',w:10,p:'1%'},
+    {l:'Mining and quarrying',v:'8,155',w:8,p:'1%'},
+  ],'fill-cyan');
+
+  // ===== REAL ESTATE =====
+  barsA('bldUse',[
+    {l:'Residential',w:90,p:'90%'},
+    {l:'Commercial',w:68,p:'68%'},
+    {l:'Agriculture/Forestry',w:40,p:'40%'},
+    {l:'Other',w:32,p:'32%'},
+  ],'fill-cyan');
+
+  barsB('bldType',[
+    {l:'Villa',v:'186,805',w:51,p:'51%'},
+    {l:'Low-rise Building n.e.c',v:'1,689,015',w:48,p:'48%'},
+    {l:'Traditional Arabic house (Bet Shabi)',v:'30,660',w:18,p:'01%'},
+    {l:'High-rise buildings',v:'15,155',w:14,p:'02%'},
+    {l:'Special design buildings',v:'15,155',w:14,p:'02%'},
+  ],'fill-blue');
+
+  // ---------- region map (stylised Abu Dhabi emirate) ----------
+  const mapSVG = `
+  <svg viewBox="0 0 400 250" width="100%">
+    <!-- northern emirates (grey) -->
+    <path d="M300 40 L360 30 L380 70 L350 95 L320 80 Z" fill="#d7dbe2"/>
+    <path d="M345 95 L378 78 L372 120 L340 118 Z" fill="#c9ced7"/>
+    <!-- Al Dhafra (largest, dark) -->
+    <path d="M30 130 L150 95 L210 120 L225 175 L150 220 L60 215 L25 175 Z" fill="#1f4fb0"/>
+    <!-- Abu Dhabi (cyan, coast) -->
+    <path d="M150 95 L255 78 L300 120 L255 150 L210 120 Z" fill="#4fc3d7"/>
+    <!-- Al Ain (medium blue, east) -->
+    <path d="M255 150 L300 120 L345 130 L330 195 L235 200 L225 175 Z" fill="#2f73d8"/>
+
+    <!-- Abu Dhabi label -->
+    <text class="maplabel" x="200" y="118">Abu Dhabi</text>
+    <text class="mapval"   x="200" y="135">825K</text>
+    <text class="mapgrow"  x="200" y="150">+3.2%</text>
+    <!-- Al Dhafra label -->
+    <text class="maplabel" x="70" y="188">Al Dhafra</text>
+    <text class="mapval"   x="70" y="205">196K</text>
+    <text class="mapgrow"  x="70" y="220">+0.8%</text>
+    <!-- Al Ain label -->
+    <text class="maplabel" x="278" y="178">Al Ain</text>
+    <text class="mapval"   x="278" y="195">318K</text>
+    <text class="mapgrow"  x="278" y="210">+1.4%</text>
+  </svg>`;
+  const regionMapEl = document.getElementById('regionMap');
+  if (regionMapEl) regionMapEl.innerHTML = mapSVG;
+  document.querySelectorAll('.regionMapHost').forEach(h=>h.innerHTML=mapSVG);
+</script>
+</body>
+</html>

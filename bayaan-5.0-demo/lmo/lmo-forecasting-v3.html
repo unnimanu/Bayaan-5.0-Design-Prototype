@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Labour Market Observatory — Forecasting · Bayaan</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="../css/pages/lmo-common.css">
+<link rel="stylesheet" href="../css/pages/lmo-forecast-v3.css">
+<script src="lmo-shared.js"></script>
+</head>
+<body class="lmo">
+
+<div class="lsb-rail">
+  <aside class="lsb">
+    <button type="button" class="lsb-btn ai-top" onclick="openChat('Give me a full summary of active LMO forecasts','Forecast Intelligence')">
+      <span class="lsb-ico-wrap"><i class="ti ti-sparkles"></i></span>
+      <span class="lsb-lbl">LMO AI</span>
+    </button>
+    <button type="button" class="lsb-btn">
+      <span class="lsb-ico-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
+      <span class="lsb-lbl">Briefing</span>
+    </button>
+    <button type="button" class="lsb-btn">
+      <span class="lsb-ico-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+      <span class="lsb-lbl">Observe</span>
+    </button>
+    <button type="button" class="lsb-btn act">
+      <span class="lsb-ico-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="18" height="18" rx="3"/><polyline points="7 15 10 11 13 13 17 8"/></svg></span>
+      <span class="lsb-lbl">Forecast</span>
+    </button>
+    <button type="button" class="lsb-btn" data-lmo-nav="simulation">
+      <span class="lsb-ico-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+      <span class="lsb-lbl">Simulations</span>
+    </button>
+  </aside>
+</div>
+
+<!-- ██ APP SHELL ██ -->
+<div class="app-shell">
+<div class="wrap">
+<div class="page">
+
+  <!-- Breadcrumb -->
+  <nav class="ind-page-breadcrumb" aria-label="Breadcrumb">
+    <a href="#" data-lmo-bc="home">Home</a>
+    <span class="ind-bc-sep">›</span>
+    <a href="#" data-lmo-bc="observatory">Observatory</a>
+    <span class="ind-bc-sep">›</span>
+    <span class="ind-bc-current">Labour Market Observatory</span>
+  </nav>
+
+  <!-- Page head -->
+  <div class="ph">
+    <div>
+      <h1 class="ph-title">Labour Market Observatory (LMO)— Forecasting Hub</h1>
+    </div>
+  </div>
+
+  <!-- Signal pulse strip -->
+  <div class="signal-pulse">
+    <div class="sp-dot"></div>
+    <div class="sp-text"><strong>3 forecasts have moved since your last visit.</strong> Construction Employment CI widened. Youth NEET risk elevated. Emiratisation Finance recalibrated.</div>
+    <a class="sp-link" href="#" onclick="reviewMovedForecasts(event)">
+      Review
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+    </a>
+  </div>
+
+  <!-- ── STICKY QUERY BAR ── -->
+  <div class="qbar-wrap" id="qbar-wrap">
+    <div class="qbar-inner">
+      <div class="qbar" id="qbar">
+        <svg class="qbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="qbar-input" placeholder="Ask any forecast question — sector, metric, horizon, scenario…" onkeydown="if(event.key==='Enter')runQuery()"/>
+        <div class="qbar-news-tag">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          Live signals
+        </div>
+        <button class="qbar-run" onclick="runQuery()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5L12 2z"/></svg>
+          <span>Generate Forecast</span>
+        </button>
+    </div>
+    </div>
+    <!-- Quick chips — hidden after first query -->
+    <div class="qchips-row" id="qchips-row">
+      <button class="qchip" onclick="setQ('Expected employment in AI infrastructure sector 2026–2028')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><polyline points="7 15 10 11 13 13 17 8"/></svg>
+        AI infrastructure employment
+      </button>
+      <button class="qchip" onclick="setQ('Female workforce participation forecast through 2031')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        Female participation to 2031
+      </button>
+      <button class="qchip" onclick="setQ('Emiratisation rate in finance sector Q4 2026')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+        Emiratisation in finance
+      </button>
+      <button class="qchip" onclick="setQ('Youth unemployment if NAFIS capacity stays flat through 2027')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+        Youth unemployment risk
+      </button>
+      <button class="qchip" onclick="setQ('Construction sector employment deceleration risk Q3 2026')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/></svg>
+        Construction risk
+      </button>
+    </div>
+  </div>
+
+  <!-- Intent strip -->
+  <div class="intent-strip" id="intent-strip">
+    <span class="intent-lbl">Understood as</span>
+    <div class="intent-pills" id="intent-pills"></div>
+    <button class="intent-edit" onclick="editQuery()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Refine
+    </button>
+  </div>
+
+  <!-- Pipeline -->
+  <div class="pipeline-wrap" id="pipeline-wrap">
+    <div class="pipeline-hd">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Bayaan AutoML · Generating forecast
+    </div>
+    <div class="pipeline-steps" id="pipeline-steps"></div>
+  </div>
+
+  <!-- ── CONTENT AREA ── -->
+  <div class="content-area">
+
+    <!-- ── LANDING STATE ── -->
+    <div class="landing" id="landing">
+
+      <!-- Featured + News board -->
+      <div class="sec-hd">
+        <div class="sec-title">Signal-driven forecasts</div>
+        <a class="sec-link" href="#">Browse all 12 forecasts <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></a>
+      </div>
+
+      <div class="featured-grid">
+        <!-- Featured forecast card -->
+        <div class="featured-card" onclick="setQ('Youth unemployment risk if NAFIS capacity stays flat through 2027')">
+          <div class="fc-hero-banner">
+            <div class="fc-hero-eyebrow">
+              <div class="fc-urgency-badge high">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+                Needs attention
+              </div>
+              <span class="fc-hero-why">Surfaced because: NAFIS capacity report published today</span>
+            </div>
+            <div class="fc-hero-title">Youth Unemployment & NEET Risk</div>
+            <div class="fc-hero-sub">Cohort model · Near-term · Abu Dhabi · Last run: Today</div>
+          </div>
+          <div class="fc-hero-body">
+            <div class="fc-hero-kpis">
+              <div class="fc-hero-kpi">
+                <div class="fhk-lbl">Current Rate</div>
+                <div class="fhk-val">9.4<span class="fhk-unit">%</span></div>
+                <div class="fhk-chg nt">Q2 2026</div>
+              </div>
+              <div class="fc-hero-kpi">
+                <div class="fhk-lbl">2027 Forecast</div>
+                <div class="fhk-val">12.6<span class="fhk-unit">%</span></div>
+                <div class="fhk-chg dn">↑ +3.2pp risk</div>
+              </div>
+              <div class="fc-hero-kpi">
+                <div class="fhk-lbl">Confidence</div>
+                <div class="fhk-val">74<span class="fhk-unit">%</span></div>
+                <div class="fhk-chg nt">NAFIS flat</div>
+              </div>
+            </div>
+            <div class="fc-hero-chart-block">
+              <div class="fc-hero-chart-hd">
+                <div class="fc-hero-chart-title">Youth Unemployment Rate — Actual vs Forecast (%)</div>
+                <div class="sc-pills" id="hero-scenario-pills">
+                  <button type="button" class="sc-pill sel" onclick="event.stopPropagation();switchHeroScenario('base',this)">Base Case</button>
+                  <button type="button" class="sc-pill" onclick="event.stopPropagation();switchHeroScenario('optimistic',this)">Optimistic</button>
+                  <button type="button" class="sc-pill" onclick="event.stopPropagation();switchHeroScenario('pessimistic',this)">Pessimistic</button>
+                </div>
+              </div>
+              <div class="legend-row compact">
+                <div class="legend-item"><div class="legend-line actual"></div>Actual</div>
+                <div class="legend-item"><div class="legend-line forecast"></div>Forecast</div>
+                <div class="legend-item"><div class="legend-line ci"></div>90% CI</div>
+              </div>
+              <div class="fc-hero-chart"><canvas id="hero-chart"></canvas></div>
+            </div>
+            <div class="fc-hero-footer">
+              <div class="fc-hero-model"><div class="fc-hero-model-dot"></div>ARIMA · ClickHouse · Data as of Jun 2026</div>
+          <button type="button" class="fc-explore-btn" onclick="event.stopPropagation();setQ('Youth unemployment risk if NAFIS capacity stays flat through 2027')">Explore forecast <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live news signal board -->
+        <div class="news-board">
+          <div class="nb-hd">
+            <div class="nb-hd-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              Live Signal Board
+            </div>
+            <div class="nb-hd-sub">News signals feeding active forecast models</div>
+          </div>
+          <div class="nb-list" id="nb-list"></div>
+        </div>
+      </div>
+
+      <!-- Forecast shelf -->
+      <div class="sec-hd" style="margin-top:0">
+        <div class="sec-title">Forecast shelf</div>
+        <span style="font-size:11.5px;color:var(--t3)">Reason for surfacing shown on each card</span>
+      </div>
+      <div class="shelf-grid" id="shelf-grid"></div>
+
+    </div><!-- /landing -->
+
+    <!-- ── WORKSPACE STATE ── -->
+    <div class="workspace" id="workspace">
+
+      <!-- Session history rail -->
+      <div class="hist-rail">
+        <div class="hist-hd">This session</div>
+        <div class="hist-list" id="hist-list"></div>
+        <div class="hist-new" onclick="clearWorkspace()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New forecast
+        </div>
+      </div>
+
+      <!-- Active result cards -->
+      <div class="ws-main" id="ws-main"></div>
+
+    </div><!-- /workspace -->
+
+  </div><!-- /content-area -->
+
+</div><!-- /page -->
+</div><!-- /wrap -->
+
+<aside class="cpanel ai-panel" id="cpanel" role="complementary" aria-label="Bayaan AI Panel">
+  <div class="bai-header">
+    <div class="bai-header-left">
+      <img class="bai-icon-wrap" src="../assets/ai-chat-thumb.svg" alt="Bayaan AI" width="38" height="38">
+      <div><div class="bai-header-title">Bayaan AI</div></div>
+    </div>
+    <div class="bai-header-right">
+      <button class="bai-close-btn" type="button" onclick="closeChat()" title="Close AI Panel"><i class="ti ti-x"></i></button>
+    </div>
+  </div>
+  <div class="bai-context-strip">
+    <span class="bai-ctx-label">Analysing</span>
+    <span class="bai-ctx-pill" id="ctx-val">Forecast Intelligence</span>
+    <span class="bai-ctx-dot"></span>
+    <span class="bai-ctx-dot-label">Generating</span>
+  </div>
+  <div class="bai-messages msgs" id="msgs"></div>
+  <div class="suggs" id="suggs"></div>
+  <div class="bai-input-area">
+    <div class="bai-input-row">
+      <textarea class="bai-input" id="cin" placeholder="Ask about any forecast…" rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendC()}"></textarea>
+      <button class="bai-send-btn" type="button" onclick="sendC()" title="Send"><i class="ti ti-send"></i></button>
+    </div>
+  </div>
+</aside>
+</div><!-- /app-shell -->
+
+<script>
+/* ============================================================
+   DATA
+   ============================================================ */
+const AC='#2563EB',UP='#16A34A',DN='#DC2626',WN='#B45309',TL='#0D9488',PU='#7C3AED';
+
+const NEWS_SIGNALS=[
+  {hl:'NAFIS Q2 placement shortfall — 2026 cohort exceeds capacity by 900',src:'NAFIS Report',date:'Today',sent:'neg',impact:'high',topic:'youth'},
+  {hl:'UAE announces $35B digital economy investment in Projects of the 50',src:'WAM',date:'3 days ago',sent:'pos',impact:'high',topic:'ai'},
+  {hl:'CBUAE increases Emiratisation quota penalties for BFSI from Q3 2026',src:'UAE Central Bank',date:'1 week ago',sent:'pos',impact:'high',topic:'emir'},
+  {hl:'Construction permit issuance decelerated 12% YoY in Q2 2026',src:'DMT',date:'1 week ago',sent:'neg',impact:'high',topic:'construction'},
+  {hl:'Abu Dhabi childcare subsidy expansion covering 85% of working mothers',src:'WAM',date:'5 days ago',sent:'pos',impact:'med',topic:'female'},
+  {hl:'ADNOC Digital hyperscaler deal adds 1,200 tech roles in Al Reem campus',src:'The National',date:'1 week ago',sent:'pos',impact:'high',topic:'ai'},
+  {hl:'University graduation cohort 2026 projected at 18,400 — 12% larger',src:'ADEK',date:'1 week ago',sent:'neg',impact:'med',topic:'youth'},
+  {hl:'Hub71 reports record 140 AI startups accelerating data infrastructure demand',src:'Gulf News',date:'2 weeks ago',sent:'pos',impact:'med',topic:'ai'},
+];
+
+const SHELF_CARDS=[
+  {key:'employment',name:'Total Employment',why:'On track · Q2 actuals inline with model',status:'ontrack',color:'c-tl',
+   ico:'tl',val:'1.84',unit:'M',chg:'↑ +70k forecast',dir:'up',
+   spark:[1740,1760,1780,1800,1840,1870,1910],sparkColor:TL},
+  {key:'emiratisation',name:'Emiratisation Rate — Finance',why:'CI widened after penalty announcement',status:'updated',color:'c-up',
+   ico:'up',val:'14.8',unit:'%',chg:'Target: 17% · −2.2pp gap',dir:'nt',
+   spark:[11.2,11.9,12.6,13.1,13.8,14.2,14.8],sparkColor:UP},
+  {key:'construction',name:'Construction Employment',why:'Needs attention · Permit deceleration risk',status:'attention',color:'c-wn',
+   ico:'wn',val:'+0.6',unit:'%',chg:'↓ from 1.8% in 2025',dir:'dn',
+   spark:[2.1,2.0,1.9,1.8,1.6,1.2,0.6],sparkColor:WN},
+  {key:'female',name:'Female Participation',why:'Surfaced: childcare subsidy signal +ve',status:'updated',color:'c-pu',
+   ico:'pu',val:'52.3',unit:'%',chg:'Target: 60% by 2031',dir:'nt',
+   spark:[45.1,46.4,47.9,49.2,51.0,52.3,52.3],sparkColor:PU},
+  {key:'unemployment',name:'Unemployment Rate',why:'On track · Q3 easing confirmed',status:'ontrack',color:'c-blue',
+   ico:'ac',val:'5.4',unit:'%',chg:'↓ −0.4pp Q3 forecast',dir:'up',
+   spark:[6.4,6.2,6.1,5.9,5.8,5.6,5.4],sparkColor:AC},
+  {key:'ai',name:'AI Infrastructure Employment',why:'Featured · AI Strategy briefing week',status:'updated',color:'c-blue',
+   ico:'ac',val:'24.8',unit:'k',chg:'↑ +66% to 2028',dir:'up',
+   spark:[12.1,15.4,19.2,24.8,30.1,35.6,41.2],sparkColor:AC},
+];
+
+/* topic → forecast data */
+const FORECASTS={
+  youth:{
+    title:'Youth Unemployment & NEET Risk',
+    sub:'Cohort model · Near-term · Abu Dhabi · Generated from query',
+    model:'Cohort-based · ARIMA · ClickHouse · Jun 2026',
+    conf:74,
+    color:DN,topicColor:'c-dn',
+    kpis:[
+      {lbl:'Current Rate',val:'9.4',unit:'%',chg:'Q2 2026 estimate',dir:'nt'},
+      {lbl:'2027 Forecast (NAFIS flat)',val:'12.6',unit:'%',chg:'↑ +3.2pp risk',dir:'dn'},
+      {lbl:'NEET Rate 2027',val:'6.8',unit:'%',chg:'↑ +0.4pp vs baseline',dir:'dn'},
+    ],
+    chartTitle:'Youth Unemployment Rate — Scenarios (%)',
+    labels:["Q4'24","Q1'25","Q2'25","Q3'25","Q4'25","Q1'26","Q2'26","Q3'26","Q4'26","Q1'27","Q2'27"],
+    actual:[8.1,8.4,8.9,9.0,9.2,9.5,9.4,null,null,null,null],
+    forecast:[null,null,null,null,null,null,null,10.2,11.1,11.8,12.6],
+    ciH:[null,null,null,null,null,null,null,10.8,12.0,13.2,14.5],
+    ciL:[null,null,null,null,null,null,null,9.6,10.2,10.8,11.2],
+    opt:[null,null,null,null,null,null,null,9.1,9.3,9.4,9.5],
+    pes:[null,null,null,null,null,null,null,11.4,12.7,14.2,15.8],
+    unit:'%',
+    signals:[
+      {hl:'NAFIS Q2 placement shortfall — 2026 cohort exceeds capacity by 900',src:'NAFIS',date:'Today',sent:'neg',impact:'high'},
+      {hl:'UAE university graduation cohort 2026 projected at 18,400 — 12% larger than 2025',src:'ADEK',date:'1 week',sent:'neg',impact:'high'},
+      {hl:'New STEM pathway employment scheme targets 2,000 Emirati graduates',src:'TRA',date:'2 weeks',sent:'pos',impact:'med'},
+      {hl:'Private sector youth hiring incentive scheme extended through Q4 2026',src:'Ministry of HR',date:'3 weeks',sent:'pos',impact:'med'},
+    ],
+    sigInf:81,sigCls:'high',
+    reasoning:'The forecast models the <strong>NAFIS capacity-flat scenario</strong> — the highest-risk case. The Q2 placement shortfall combined with a 12% larger graduation cohort creates a structural imbalance. Youth unemployment reaches <strong>12.6% by Q2 2027</strong> in base case. The <strong>optimistic scenario</strong> (NAFIS +30% + STEM pathway) holds the rate at ~9.5% — policy intervention is the sole determining variable.',
+    drivers:[
+      {t:'2026 graduation cohort 12% larger — supply outpacing private sector absorption capacity',d:'dn'},
+      {t:'NAFIS Q2 shortfall: current gap estimated at 900 placements for H2 2026 cohort',d:'dn'},
+      {t:'STEM pathway scheme and incentive extension provide partial offset in base case',d:'up'},
+    ],
+    risks:[
+      {t:'If NAFIS not expanded by Q3 2026, deterioration accelerates into Q1 2027',d:'dn'},
+      {t:'NEET rate at 6.8% by 2027 has compounding human capital effects beyond labour statistics',d:'dn'},
+      {t:'Private sector incentive take-up rate historically only 42%',d:'nt'},
+    ],
+    related:[{l:'NAFIS capacity expansion model',c:DN},{l:'STEM pipeline gap 2026–2028',c:AC},{l:'Youth unemployment vs GCC peers',c:PU}],
+    intent:[{lbl:'Youth Unemployment',type:'metric'},{lbl:'NEET Risk',type:'sector'},{lbl:'Abu Dhabi',type:'geo'},{lbl:'2026–2027 · Near-term',type:'horizon'}],
+    chatCtx:'youth',
+  },
+  ai:{
+    title:'Employment Forecast — AI & Digital Infrastructure',
+    sub:'Trend + FDI-linked model · Medium-term · Abu Dhabi · Generated from query',
+    model:'Trend+FDI Model · AutoML · ClickHouse · Jun 2026',
+    conf:76,
+    color:AC,topicColor:'c-blue',
+    kpis:[
+      {lbl:'Current Employment',val:'24,800',unit:' roles',chg:'2025 estimate',dir:'nt'},
+      {lbl:'2028 Forecast',val:'41,200',unit:' roles',chg:'↑ +66% growth',dir:'up'},
+      {lbl:'CAGR',val:'13.4',unit:'%',chg:'2025–2028',dir:'up'},
+    ],
+    chartTitle:'AI & Digital Infrastructure Employment — Actual vs Forecast (k)',
+    labels:['2022','2023','2024','2025','2026','2027','2028'],
+    actual:[12.1,15.4,19.2,24.8,null,null,null],
+    forecast:[null,null,null,24.8,30.1,35.6,41.2],
+    ciH:[null,null,null,24.8,33.4,40.8,49.1],
+    ciL:[null,null,null,24.8,26.8,30.4,33.3],
+    opt:[null,null,null,24.8,32.0,38.5,45.8],
+    pes:[null,null,null,24.8,27.5,31.0,34.5],
+    unit:'k',
+    signals:[
+      {hl:'UAE announces $35B digital economy investment as part of Projects of the 50',src:'WAM',date:'3 days',sent:'pos',impact:'high'},
+      {hl:'ADNOC Digital hyperscaler deal adding 1,200 tech roles in Al Reem campus',src:'The National',date:'1 week',sent:'pos',impact:'high'},
+      {hl:'Global AI talent shortage may constrain local hiring velocity',src:'Bloomberg',date:'2 weeks',sent:'neg',impact:'med'},
+      {hl:'Hub71 reports record 140 AI startups accelerating infrastructure demand',src:'Gulf News',date:'2 weeks',sent:'pos',impact:'med'},
+    ],
+    sigInf:72,sigCls:'high',
+    reasoning:'The AI Infrastructure sector shows <strong>strong upward trajectory</strong>, driven by UAE\'s strategic positioning in sovereign AI. The FDI-linked model registers an outsized positive signal from the hyperscaler investments. <strong>Base case (+66% to 2028)</strong> assumes continued GPU cluster buildout. Primary risk is global AI talent scarcity — model applies a −8% constraint on optimistic scenarios.',
+    drivers:[
+      {t:'Hyperscaler infrastructure investment anchored by ADNOC Digital campus expansion ($4B)',d:'up'},
+      {t:'Hub71 startup cohort driving sustained demand for data engineering and ML roles',d:'up'},
+      {t:'UAE AI Strategy 2031 mandating sovereign model training — creating new role categories',d:'up'},
+    ],
+    risks:[
+      {t:'Global AI talent shortage may constrain hiring velocity — model applies -8pp cap on optimistic',d:'dn'},
+      {t:'Role reclassification risk: some "AI" roles may be existing IT roles rebadged',d:'nt'},
+      {t:'If UAE–US chip export restrictions tighten, GPU buildout could pause delaying ~3,200 roles',d:'dn'},
+    ],
+    related:[{l:'Tech sector wage inflation 2026–2027',c:PU},{l:'Emiratisation in digital roles gap',c:AC},{l:'STEM pipeline vs demand',c:UP}],
+    intent:[{lbl:'Employment',type:'metric'},{lbl:'AI Infrastructure',type:'sector'},{lbl:'Abu Dhabi',type:'geo'},{lbl:'2026–2028 · Medium-term',type:'horizon'}],
+    chatCtx:'employment',
+  },
+  emir:{
+    title:'Emiratisation Rate — Finance Sector',
+    sub:'Policy-linked regression · Quarterly · Abu Dhabi · Generated from query',
+    model:'Policy Regression · AutoML · ClickHouse · Jun 2026',
+    conf:79,
+    color:UP,topicColor:'c-up',
+    kpis:[
+      {lbl:'Current Rate (Q2 2026)',val:'14.8',unit:'%',chg:'Private BFSI sector',dir:'nt'},
+      {lbl:'Q4 2026 Forecast',val:'16.3',unit:'%',chg:'↑ +1.5pp pace',dir:'up'},
+      {lbl:'Target Gap',val:'−0.7',unit:'pp',chg:'vs 17% NAFIS target',dir:'dn'},
+    ],
+    chartTitle:'Emiratisation Rate in Finance (%) — Actual vs Forecast',
+    labels:["Q2'24","Q3'24","Q4'24","Q1'25","Q2'25","Q3'25","Q4'25","Q1'26","Q2'26","Q3'26","Q4'26"],
+    actual:[11.2,11.9,12.6,13.1,13.8,null,null,null,null,null,null],
+    forecast:[null,null,null,null,null,14.2,14.9,15.4,14.8,15.6,16.3],
+    ciH:[null,null,null,null,null,14.8,15.7,16.3,15.8,16.8,17.8],
+    ciL:[null,null,null,null,null,13.6,14.1,14.5,13.8,14.4,14.8],
+    opt:[null,null,null,null,null,14.5,15.3,16.0,15.5,16.4,17.3],
+    pes:[null,null,null,null,null,13.8,14.3,14.7,14.1,14.7,15.2],
+    unit:'%',
+    signals:[
+      {hl:'CBUAE increases Emiratisation quota penalties for BFSI from Q3 2026',src:'UAE Central Bank',date:'1 week',sent:'pos',impact:'high'},
+      {hl:'ADGM expansion creating 600 new Emirati-eligible roles in financial regulation',src:'ADGM',date:'2 weeks',sent:'pos',impact:'high'},
+      {hl:'Skilled Emirati finance graduates 2026 estimated at 1,100 — near-matches demand',src:'ADEK',date:'3 weeks',sent:'nt',impact:'med'},
+    ],
+    sigInf:64,sigCls:'high',
+    reasoning:'Finance sector Emiratisation is on a <strong>strong upward trajectory</strong>, accelerating faster than the broader private sector average. CBUAE penalty increase historically produces a <strong>+0.8pp acceleration within 2 quarters</strong>. However base case falls 0.7pp short of the 17% NAFIS annual target — optimistic scenario required to close the gap.',
+    drivers:[
+      {t:'CBUAE penalty enforcement increase historically produces +0.8pp acceleration in 2 quarters',d:'up'},
+      {t:'ADGM expansion adding 600 compliance roles — Emirati-preferred designation in new JDs',d:'up'},
+      {t:'Finance sector showing highest Emirati retention rate (87%) of any private sector category',d:'up'},
+    ],
+    risks:[
+      {t:'Base case misses 17% target by −0.7pp — full compliance requires optimistic scenario',d:'dn'},
+      {t:'Graduate pipeline divergence from 2027: demand grows 18% but pipeline grows only 9%',d:'dn'},
+      {t:'60% of Emirati finance roles in 5 large banks — vulnerable to M&A or restructuring',d:'nt'},
+    ],
+    related:[{l:'NAFIS capacity gap analysis 2027',c:AC},{l:'Finance sector total employment',c:UP},{l:'Emiratisation: Tech vs Finance',c:PU}],
+    intent:[{lbl:'Emiratisation Rate',type:'metric'},{lbl:'Finance / BFSI',type:'sector'},{lbl:'Abu Dhabi',type:'geo'},{lbl:'Q3–Q4 2026 · Near-term',type:'horizon'}],
+    chatCtx:'emiratisation',
+  },
+  female:{
+    title:'Female Labour Force Participation — Forecast to 2031',
+    sub:'Participation trend + policy model · Long-term · Abu Dhabi · Generated from query',
+    model:'Participation Trend · AutoML · ClickHouse · Jun 2026',
+    conf:77,
+    color:PU,topicColor:'c-pu',
+    kpis:[
+      {lbl:'Current Rate (2025)',val:'52.3',unit:'%',chg:'LFS Q2 2025',dir:'nt'},
+      {lbl:'2031 Forecast',val:'59.1',unit:'%',chg:'↑ +6.8pp by 2031',dir:'up'},
+      {lbl:'Vision 2031 Target',val:'60',unit:'%',chg:'−0.9pp gap in base case',dir:'nt'},
+    ],
+    chartTitle:'Female Labour Force Participation Rate (%) — Actual vs Forecast',
+    labels:['2020','2021','2022','2023','2024','2025','2026','2027','2028','2029','2030','2031'],
+    actual:[45.1,46.4,47.9,49.2,51.0,52.3,null,null,null,null,null,null],
+    forecast:[null,null,null,null,null,52.3,53.6,54.8,55.9,57.0,58.1,59.1],
+    ciH:[null,null,null,null,null,52.3,54.4,56.2,57.8,59.4,61.0,62.3],
+    ciL:[null,null,null,null,null,52.3,52.8,53.4,54.0,54.6,55.2,55.9],
+    opt:[null,null,null,null,null,52.3,54.1,55.8,57.3,58.8,60.1,61.4],
+    pes:[null,null,null,null,null,52.3,53.0,53.7,54.3,54.9,55.5,56.1],
+    unit:'%',
+    signals:[
+      {hl:'Abu Dhabi launches expanded childcare subsidy covering 85% of eligible working mothers',src:'WAM',date:'5 days',sent:'pos',impact:'high'},
+      {hl:'ADEK reports 14% rise in female STEM graduates — pipeline strengthening',src:'Gulf News',date:'1 week',sent:'pos',impact:'med'},
+      {hl:'Remote work policy rollback by major banks could reduce female re-entry rates',src:'The National',date:'2 weeks',sent:'neg',impact:'med'},
+      {hl:'Nadeema programme exceeds year-1 targets placing 3,800 Emirati women in private sector',src:'WAM',date:'3 weeks',sent:'pos',impact:'high'},
+    ],
+    sigInf:58,sigCls:'med',
+    reasoning:'The female participation forecast reflects a <strong>sustained upward trend</strong>, but reaching the Vision 2031 target of 60% requires improvement rate to accelerate from +1.2pp/year to <strong>+1.5pp/year from 2027 onward</strong>. The childcare subsidy expansion is a significant positive signal — base case adjusted upward +0.3pp for 2026–2028.',
+    drivers:[
+      {t:'Childcare subsidy expansion directly lowers participation barriers for mothers of young children',d:'up'},
+      {t:'Nadeema programme strong Year 1 placement rates — government pipeline above target',d:'up'},
+      {t:'Growing female STEM graduate pipeline feeding professional-tier roles with higher retention',d:'up'},
+    ],
+    risks:[
+      {t:'Flexible work policy reversal in BFSI — historically the largest employer of Emirati women',d:'dn'},
+      {t:'Gap to Vision 2031 target (−0.9pp base case) requires optimistic scenario activation',d:'nt'},
+      {t:'Participation gains concentrated in government sector; private sector lags by ~14pp',d:'dn'},
+    ],
+    related:[{l:'Childcare infrastructure demand',c:TL},{l:'BFSI sector Emiratisation',c:AC},{l:'Part-time work policy impact',c:PU}],
+    intent:[{lbl:'Participation Rate',type:'metric'},{lbl:'Female Workforce',type:'sector'},{lbl:'Abu Dhabi',type:'geo'},{lbl:'2025–2031 · Long-term',type:'horizon'}],
+    chatCtx:'participation',
+  },
+  construction:{
+    title:'Construction Sector Employment — Risk Scenario',
+    sub:'Permit-linked model · Near-term · Abu Dhabi · Generated from query',
+    model:'Permit-Linked ARIMA · AutoML · ClickHouse · Jun 2026',
+    conf:78,
+    color:WN,topicColor:'c-wn',
+    kpis:[
+      {lbl:'Growth Rate (Q2 2026)',val:'+0.6',unit:'%',chg:'↓ from 1.8% in 2025',dir:'dn'},
+      {lbl:'Q3 Risk Scenario',val:'−0.2',unit:'%',chg:'If permits stay flat',dir:'dn'},
+      {lbl:'Role Lag Risk',val:'4–6k',unit:' roles',chg:'Q3–Q4 2026 drag',dir:'dn'},
+    ],
+    chartTitle:'Construction Employment Growth Rate (%) — Actual vs Forecast',
+    labels:["Q2'24","Q3'24","Q4'24","Q1'25","Q2'25","Q3'25","Q4'25","Q1'26","Q2'26","Q3'26","Q4'26"],
+    actual:[2.1,2.0,1.9,1.8,1.6,null,null,null,null,null,null],
+    forecast:[null,null,null,null,null,1.2,0.9,0.6,0.6,0.3,-0.2],
+    ciH:[null,null,null,null,null,1.6,1.4,1.1,1.0,0.8,0.4],
+    ciL:[null,null,null,null,null,0.8,0.4,0.1,-0.1,-0.4,-0.8],
+    opt:[null,null,null,null,null,1.4,1.2,0.9,0.8,0.6,0.4],
+    pes:[null,null,null,null,null,0.9,0.5,-0.1,-0.3,-0.7,-1.2],
+    unit:'%',
+    signals:[
+      {hl:'Construction permit issuance decelerated 12% YoY in Q2 2026',src:'DMT',date:'1 week',sent:'neg',impact:'high'},
+      {hl:'Major Saadiyat expansion Phase 4 delayed to Q1 2027 — contractor pipeline affected',src:'Abu Dhabi Media',date:'2 weeks',sent:'neg',impact:'high'},
+      {hl:'New housing programme announced — 3,200 social housing units to commence H2 2026',src:'WAM',date:'3 weeks',sent:'pos',impact:'med'},
+    ],
+    sigInf:79,sigCls:'high',
+    reasoning:'Construction employment is the <strong>main downside risk</strong> for Q3–Q4 2026. Permit deceleration of 12% YoY combined with the Saadiyat Phase 4 delay creates a <strong>4,000–6,000 role lag risk</strong>. If Q3 permits don\'t recover, sector employment turns negative — pushing aggregate unemployment toward the <strong>5.7–5.9% upper range</strong>.',
+    drivers:[
+      {t:'Permit deceleration 12% YoY in Q2 — model\'s primary leading indicator weakening',d:'dn'},
+      {t:'Saadiyat Phase 4 delay removes a major contractor pipeline expected in H2 2026',d:'dn'},
+      {t:'New housing programme provides partial offset — ~800 roles expected to activate Q4',d:'up'},
+    ],
+    risks:[
+      {t:'If Q3 permits don\'t recover, Construction turns negative — rare since 2018 downturn',d:'dn'},
+      {t:'Aggregate unemployment pushed toward 5.7–5.9% if construction drag materialises',d:'dn'},
+      {t:'Subcontractor firms have lower resilience — layoffs typically precede permit recovery by 2 quarters',d:'nt'},
+    ],
+    related:[{l:'Aggregate unemployment Q4 scenario',c:AC},{l:'Construction permits vs employment lag',c:WN},{l:'Workforce substitution: construction to AI',c:TL}],
+    intent:[{lbl:'Employment Growth',type:'metric'},{lbl:'Construction',type:'sector'},{lbl:'Abu Dhabi',type:'geo'},{lbl:'Q3–Q4 2026 · Near-term',type:'horizon'}],
+    chatCtx:'sector',
+  },
+  unemployment:{
+    title:'Unemployment Rate — Regional Forecast',
+    sub:'ARIMA + leading indicators · Quarterly · Abu Dhabi · Generated from query',
+    model:'ARIMA(1,1,1) · AutoML · ClickHouse · Jun 2026',
+    conf:81,
+    color:AC,topicColor:'c-blue',
+    kpis:[
+      {lbl:'Current Rate',val:'5.8',unit:'%',chg:'Q2 2026 actual',dir:'nt'},
+      {lbl:'Q3 2026 Forecast',val:'5.4',unit:'%',chg:'▼ −0.4pp easing',dir:'up'},
+      {lbl:'Model Accuracy',val:'81',unit:'%',chg:'Last 8 quarters',dir:'nt'},
+    ],
+    chartTitle:'Quarterly Unemployment Rate (%) — Abu Dhabi',
+    labels:["Q2'24","Q3'24","Q4'24","Q1'25","Q2'25","Q3'25","Q4'25","Q1'26","Q2'26","Q3'26","Q4'26","Q1'27"],
+    actual:[6.4,6.2,6.1,5.9,5.8,null,null,null,null,null,null,null],
+    forecast:[null,null,null,null,null,5.7,5.5,5.6,5.5,5.4,5.3,5.2],
+    ciH:[null,null,null,null,null,6.0,5.9,6.0,5.9,5.8,5.7,5.6],
+    ciL:[null,null,null,null,null,5.4,5.1,5.2,5.1,5.0,4.9,4.8],
+    opt:[null,null,null,null,null,5.6,5.4,5.4,5.3,5.1,5.0,4.9],
+    pes:[null,null,null,null,null,5.9,5.8,5.9,5.8,5.7,5.6,5.5],
+    unit:'%',
+    signals:[
+      {hl:'PMI index rose to 56.2 in May — highest reading since Q3 2024',src:'S&P Global',date:'2 weeks',sent:'pos',impact:'high'},
+      {hl:'Job posting volumes +8.2% QoQ in Finance and Technology',src:'TAMM Analytics',date:'2 weeks',sent:'pos',impact:'med'},
+      {hl:'Construction employment deceleration creates Q4 upside unemployment risk',src:'LMO Internal',date:'1 week',sent:'neg',impact:'med'},
+    ],
+    sigInf:55,sigCls:'med',
+    reasoning:'Unemployment is on a <strong>clear easing trajectory</strong> — PMI above 54 signals continued private sector hiring. The main tail risk is Q4: if construction employment turns negative and NAFIS absorption gaps materialise simultaneously, the model\'s pessimistic scenario of 5.7–5.9% becomes plausible.',
+    drivers:[
+      {t:'PMI at 56.2 — highest since Q3 2024 — signals strong private sector hiring momentum',d:'up'},
+      {t:'Job posting volumes +8.2% QoQ in Finance and Technology sectors',d:'up'},
+      {t:'NAFIS programme absorption partially offsetting Emirati youth entry pressure',d:'ac'},
+    ],
+    risks:[
+      {t:'Construction deceleration creates Q4 risk — +0.3pp if sector turns negative',d:'dn'},
+      {t:'NAFIS capacity gap vs graduation cohort could slow Emirati absorption in H2 2026',d:'nt'},
+    ],
+    related:[{l:'Construction employment risk scenario',c:WN},{l:'Regional unemployment: Al Ain vs Abu Dhabi',c:AC},{l:'PMI vs unemployment 2024–2026',c:TL}],
+    intent:[{lbl:'Unemployment Rate',type:'metric'},{lbl:'All Sectors',type:'sector'},{lbl:'Abu Dhabi',type:'geo'},{lbl:'Q3–Q4 2026 · Near-term',type:'horizon'}],
+    chatCtx:'unemployment',
+  },
+};
+
+const PIPELINE_STEPS=[
+  {lbl:'Parsing query intent — extracting metric, sector, horizon',meta:'~0.4s'},
+  {lbl:'Selecting AutoML model configuration',meta:'ARIMA / regression'},
+  {lbl:'Loading historical labour market data from ClickHouse',meta:'data layer'},
+  {lbl:'Fetching live news signals (WAM, Reuters, Gulf News, ADEK feeds)',meta:'RSS · NLP'},
+  {lbl:'Scoring signal sentiment and computing exogenous weights',meta:'signal layer'},
+  {lbl:'Running model — base, optimistic, pessimistic scenarios',meta:'AutoML →'},
+  {lbl:'Composing interpretation and risk flags',meta:'done'},
+];
+
+const CHAT_RESPONSES={
+  unemployment:{
+    init:'The unemployment rate forecast shows continued easing — Q3 2026 projected at <strong>5.4%</strong>, down from 5.8% in Q2. PMI above 54 is the primary positive driver. Main tail risk: Construction deceleration could push Q4 toward 5.7–5.9% if it turns negative.',
+    suggs:['What drives the Q4 risk?','Regional breakdown?','Compare vs GCC peers'],
+  },
+  participation:{
+    init:'Female participation forecast shows the rate reaching <strong>59.1% by 2031</strong> — close to but still short of the 60% Vision target. The childcare subsidy expansion is the strongest recent positive signal. Achieving 60% requires acceleration to +1.5pp/year from 2027.',
+    suggs:['What policy interventions work best?','How does flexible work affect this?','Vision 2031 gap analysis'],
+  },
+  emiratisation:{
+    init:'Finance sector Emiratisation is at <strong>14.8%</strong> and accelerating — Q4 2026 forecast is 16.3%. The CBUAE penalty increase is a significant positive signal. However, the base case still falls 0.7pp short of the 17% NAFIS annual target.',
+    suggs:['Which sectors are farthest from target?','Show 2027 scenario','ADGM roles impact?'],
+  },
+  employment:{
+    init:'AI Infrastructure employment is on a <strong>strong upward curve</strong> — 24,800 roles in 2025 growing to 41,200 by 2028 (CAGR 13.4%). The primary risk is global AI talent scarcity constraining hiring velocity, which the model caps at -8% on the optimistic case.',
+    suggs:['Break down by role type','What if chip restrictions tighten?','Emiratisation in AI roles'],
+  },
+  youth:{
+    init:'Youth unemployment is the <strong>highest-risk forecast</strong> in this session. If NAFIS capacity stays flat, the rate reaches 12.6% by Q2 2027. The NEET rate of 6.8% has compounding human capital effects. Policy intervention (NAFIS +30% + STEM pathway) is the sole moderating variable.',
+    suggs:['What NAFIS expansion is needed?','STEM pipeline gap analysis','Compare to GCC peers'],
+  },
+  sector:{
+    init:'Construction is the <strong>main downside sector risk</strong> — growth rate at just +0.6%, decelerating from 1.8% in 2025. Permit deceleration of 12% YoY is the leading indicator. If Q3 permits don\'t recover, sector employment turns negative — a rare event since 2018.',
+    suggs:['What triggers the negative scenario?','Housing programme offset analysis','Aggregate unemployment impact'],
+  },
+  default:{
+    init:'The LMO Forecasting Hub has <strong>12 active forecast models</strong>. Current session has generated results for one or more forecasts. Two signals need attention: Youth NEET risk is elevated and Construction employment is decelerating. What specific forecast would you like to explore?',
+    suggs:['What is the highest-risk forecast?','Compare short vs long-term outlook','Vision 2031 gap summary'],
+  }
+};
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let sessionForecasts=[];  // {key, title, val, color}
+let activeHistKey=null;
+let chartInstances={};
+let chatHistory=[];
+let currentChatCtx='default';
+
+/* ============================================================
+   TOPIC DETECTION
+   ============================================================ */
+function detectTopic(q){
+  const lc=q.toLowerCase();
+  if(lc.includes('youth')||lc.includes('neet')||lc.includes('nafis'))return 'youth';
+  if(lc.includes('ai')||lc.includes('digital')||lc.includes('infrastructure')||lc.includes('tech'))return 'ai';
+  if(lc.includes('emir')&&(lc.includes('financ')||lc.includes('bfsi')||lc.includes('bank')||!lc.includes('emir')))return 'emir';
+  if(lc.includes('female')||lc.includes('women')||lc.includes('participat'))return 'female';
+  if(lc.includes('construct')||lc.includes('permit')||lc.includes('build'))return 'construction';
+  if(lc.includes('unemploy'))return 'unemployment';
+  if(lc.includes('emir'))return 'emir';
+  return 'youth'; // default demo
+}
+
+/* ============================================================
+   LANDING STATE
+   ============================================================ */
+function renderLanding(){
+  // News board
+  const nb=document.getElementById('nb-list');
+  nb.innerHTML=NEWS_SIGNALS.map(s=>`
+    <div class="nb-item" onclick="setQ('${s.topic} forecast 2026')">
+      <div class="nbi-top">
+        <div class="nbi-sent ${s.sent}"></div>
+        <div class="nbi-hl">${s.hl}</div>
+      </div>
+      <div class="nbi-meta">
+        <span class="nbi-src">${s.src}</span>
+        <span class="nbi-date">${s.date}</span>
+        <span class="nbi-tag ${s.impact}">${s.impact}</span>
+      </div>
+    </div>`).join('');
+
+  // Shelf
+  const sg=document.getElementById('shelf-grid');
+  sg.innerHTML=SHELF_CARDS.map(c=>`
+    <div class="shelf-card ${c.color}" onclick="setQ('${c.name} forecast Abu Dhabi')">
+      <div class="sc-top">
+        <div class="sc-ico" style="background:${icoColor(c.ico)};border:1px solid ${icoBorder(c.ico)}">
+          ${icoSvg(c.ico)}
+        </div>
+        <div class="sc-status-badge ${c.status}">${statusLabel(c.status)}</div>
+      </div>
+      <div class="sc-name">${c.name}</div>
+      <div class="sc-why">${c.why}</div>
+      <div class="sc-bottom">
+        <div><div class="sc-val">${c.val}<span class="sc-unit">${c.unit}</span></div></div>
+        <div class="sc-chg ${c.dir}">${c.chg}</div>
+      </div>
+      <div class="sc-spark"><canvas id="spark-${c.key}"></canvas></div>
+    </div>`).join('');
+
+  // Hero chart (full Actual vs Forecast like v2)
+  setTimeout(()=>{
+    drawForecastChart('hero-chart',FORECASTS.youth,'base');
+    SHELF_CARDS.forEach(c=>sparkLine('spark-'+c.key,c.spark,c.sparkColor,false));
+  },50);
+}
+
+function switchHeroScenario(scenario,btn){
+  document.querySelectorAll('#hero-scenario-pills .sc-pill').forEach(p=>p.classList.remove('sel'));
+  if(btn)btn.classList.add('sel');
+  drawForecastChart('hero-chart',FORECASTS.youth,scenario);
+}
+
+function icoColor(k){
+  const m={ac:'var(--acbg)',up:'var(--upbg)',dn:'var(--dnbg)',wn:'var(--wnbg)',pu:'var(--pubg)',tl:'var(--tlbg)'};
+  return m[k]||'var(--sf3)';
+}
+function icoBorder(k){
+  const m={ac:'var(--acbr)',up:'var(--upbr)',dn:'var(--dnbr)',wn:'var(--wnbr)',pu:'var(--pubr)',tl:'var(--tlbr)'};
+  return m[k]||'var(--bd)';
+}
+function icoSvg(k){
+  const c={ac:'var(--ac)',up:'var(--up)',dn:'var(--dn)',wn:'var(--wn)',pu:'var(--pu)',tl:'var(--tl)'}[k]||'var(--t3)';
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.75" style="width:15px;height:15px"><polyline points="3 15 7 11 10 13 14 8 21 12"/></svg>`;
+}
+function statusLabel(s){
+  return s==='attention'?'Needs attention':s==='ontrack'?'On track':'Recently updated';
+}
+
+function sparkLine(id,data,color,showArea){
+  const el=document.getElementById(id);
+  if(!el)return;
+  if(el._ch){el._ch.destroy();el._ch=null}
+  const ctx=el.getContext('2d');
+  const grad=ctx.createLinearGradient(0,0,0,el.height||40);
+  grad.addColorStop(0,color+'30');grad.addColorStop(1,color+'00');
+  el._ch=new Chart(ctx,{
+    type:'line',
+    data:{labels:data.map((_,i)=>i),datasets:[{
+      data,borderColor:color,borderWidth:2,
+      fill:showArea,backgroundColor:showArea?grad:'transparent',
+      pointRadius:0,tension:.4
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{enabled:false}},
+      scales:{x:{display:false},y:{display:false}}}
+  });
+}
+
+/* ============================================================
+   STICKY SCROLL BEHAVIOUR
+   ============================================================ */
+window.addEventListener('scroll',()=>{
+  const wrap=document.getElementById('qbar-wrap');
+  if(!wrap)return;
+  const stuck=window.scrollY>100;
+  wrap.classList.toggle('stuck',stuck);
+});
+
+/* ============================================================
+   QUERY FLOW
+   ============================================================ */
+function setQ(q){
+  document.getElementById('qbar-input').value=q;
+  runQuery();
+}
+
+function editQuery(){
+  document.getElementById('qbar-input').focus();
+}
+
+function runQuery(){
+  const q=document.getElementById('qbar-input').value.trim();
+  if(!q)return;
+  const key=detectTopic(q);
+  const data=FORECASTS[key];
+
+  // Hide chips after first query
+  document.getElementById('qchips-row').classList.add('hidden');
+
+  // Show intent
+  showIntent(data.intent);
+
+  // Run pipeline then render
+  runPipeline(data,key);
+}
+
+function showIntent(pills){
+  const strip=document.getElementById('intent-strip');
+  document.getElementById('intent-pills').innerHTML=
+    pills.map(p=>`<span class="ipill ${p.type}">${p.lbl}</span>`).join('');
+  strip.classList.add('vis');
+}
+
+function runPipeline(data,key){
+  const wrap=document.getElementById('pipeline-wrap');
+  const steps=document.getElementById('pipeline-steps');
+  wrap.classList.add('vis');
+
+  steps.innerHTML=PIPELINE_STEPS.map((s,i)=>`
+    <div class="ps" id="ps-${i}">
+      <div class="ps-dot" id="ps-dot-${i}"></div>
+      <span>${s.lbl}</span>
+      <span class="ps-meta">${s.meta}</span>
+    </div>`).join('');
+
+  // Scroll to pipeline
+  wrap.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+  let i=0;
+  function adv(){
+    if(i>0){
+      const prev=document.getElementById('ps-'+(i-1));
+      if(prev){prev.classList.remove('active');prev.classList.add('done');}
+    }
+    if(i>=PIPELINE_STEPS.length){
+      setTimeout(()=>{
+        wrap.classList.remove('vis');
+        renderResult(data,key);
+      },300);
+      return;
+    }
+    const cur=document.getElementById('ps-'+i);
+    if(cur)cur.classList.add('active');
+    i++;
+    setTimeout(adv,i===PIPELINE_STEPS.length?400:240);
+  }
+  adv();
+}
+
+/* ============================================================
+   RENDER RESULT
+   ============================================================ */
+function renderResult(data,key){
+  // Switch to workspace
+  document.getElementById('landing').classList.add('hidden');
+  const ws=document.getElementById('workspace');
+  ws.classList.add('vis');
+
+  // Add to session history
+  const existing=sessionForecasts.find(f=>f.key===key);
+  if(!existing){
+    sessionForecasts.push({key,title:data.title,val:data.kpis[1].val+data.kpis[1].unit,color:data.color});
+  }
+  activeHistKey=key;
+  renderHistRail();
+
+  // Render result card in ws-main
+  const main=document.getElementById('ws-main');
+  // Remove existing card for same key if present
+  const existing_el=document.getElementById('rc-'+key);
+  if(existing_el)existing_el.remove();
+
+  const div=document.createElement('div');
+  div.id='rc-'+key;
+  div.className='result-card';
+  div.innerHTML=buildResultCard(data,key);
+  main.prepend(div);
+
+  // Draw chart
+  setTimeout(()=>{
+    drawForecastChart('fcc-'+key,data,'base');
+    setTimeout(()=>{
+      document.getElementById('rcs-bar-'+key).style.width=data.sigInf+'%';
+      document.getElementById('rcs-bar-'+key).className='rcs-bar '+data.sigCls;
+      document.getElementById('rcs-pct-'+key).textContent=data.sigInf+'%';
+    },400);
+  },60);
+
+  // Scroll result into view
+  div.scrollIntoView({behavior:'smooth',block:'start'});
+
+  // Set chat context
+  currentChatCtx=data.chatCtx;
+}
+
+function buildResultCard(data,key){
+  return `
+  <div class="rc-head">
+    <div class="rc-head-row">
+      <div>
+        <div class="rc-title">${data.title}</div>
+        <div class="rc-meta">
+          <span>${data.model}</span>
+          <span class="rc-meta-dot"></span>
+          <span>${data.conf}% model confidence</span>
+          <span class="rc-meta-dot"></span>
+          <span>Signals: ${data.sigInf}% net influence</span>
+        </div>
+      </div>
+      <div class="rc-head-actions">
+        <button class="rc-action-btn" onclick="openChat('${data.chatCtx} forecast analysis','${data.title}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          Ask AI
+        </button>
+        <button class="rc-action-btn">
+          <i class="ti ti-download" aria-hidden="true"></i>
+          Export
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="rc-kpis">
+    ${data.kpis.map(k=>`
+    <div class="rc-kpi">
+      <div class="rck-lbl">${k.lbl}</div>
+      <div class="rck-val">${k.val}<span class="rck-unit">${k.unit}</span></div>
+      <div class="rck-chg ${k.dir}">${k.chg}</div>
+    </div>`).join('')}
+  </div>
+  <div class="rc-body">
+    <div class="rc-chart-area">
+      <div class="rc-chart-hd">
+        <div class="rc-chart-title">${data.chartTitle}</div>
+        <div class="sc-pills">
+          <button class="sc-pill sel" onclick="switchScenario('${key}','base',this)">Base</button>
+          <button class="sc-pill" onclick="switchScenario('${key}','optimistic',this)">Optimistic</button>
+          <button class="sc-pill" onclick="switchScenario('${key}','pessimistic',this)">Pessimistic</button>
+        </div>
+      </div>
+      <div class="legend-row">
+        <div class="legend-item"><div class="legend-line actual"></div>Actual</div>
+        <div class="legend-item"><div class="legend-line forecast"></div>Forecast</div>
+        <div class="legend-item"><div class="legend-line ci"></div>90% CI</div>
+      </div>
+      <div class="rc-chart-canvas"><canvas id="fcc-${key}"></canvas></div>
+    </div>
+    <div class="rc-signals">
+      <div class="rcs-hd">
+        <div class="rcs-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          News Signals
+        </div>
+        <div class="rcs-sub">Ingested as exogenous inputs</div>
+        <div class="rcs-influence">
+          <span class="rcs-inf-lbl">Net influence</span>
+          <div class="rcs-bar-wrap"><div class="rcs-bar" id="rcs-bar-${key}"></div></div>
+          <span class="rcs-pct" id="rcs-pct-${key}">—</span>
+        </div>
+      </div>
+      <div class="rcs-list">
+        ${data.signals.map(s=>`
+        <div class="rcs-item">
+          <div class="rci-top">
+            <div class="rci-sent ${s.sent}"></div>
+            <div class="rci-hl">${s.hl}</div>
+          </div>
+          <div class="rci-meta">
+            <span class="rci-src">${s.src}</span>
+            <span class="rci-date">${s.date}</span>
+            <span class="rci-tag ${s.impact}">${s.impact}</span>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>
+  <div class="rc-interp">
+    <div class="rci-block">
+      <div class="rcib-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Key Drivers
+      </div>
+      <ul class="rcib-list">
+        ${data.drivers.map(d=>`<li><div class="rcib-dot ${d.d}"></div><span>${d.t}</span></li>`).join('')}
+      </ul>
+    </div>
+    <div class="rci-block">
+      <div class="rcib-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--dn)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+        Risk Flags
+      </div>
+      <ul class="rcib-list">
+        ${data.risks.map(r=>`<li><div class="rcib-dot ${r.d}"></div><span>${r.t}</span></li>`).join('')}
+      </ul>
+    </div>
+  </div>
+  <div class="rc-reasoning">
+    <div class="rc-reasoning-hd">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5L12 2z"/></svg>
+      Bayaan · Model Interpretation
+    </div>
+    <p>${data.reasoning}</p>
+  </div>
+  <div class="rc-related">
+    <span class="rc-rel-lbl">Related</span>
+    <div class="rc-rel-chips">
+      ${data.related.map(r=>`
+      <button class="rc-rel-chip" onclick="setQ('${r.l}')">
+        <div class="rc-rel-chip-dot" style="background:${r.c}"></div>
+        ${r.l}
+      </button>`).join('')}
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   CHART
+   ============================================================ */
+function formatAxisTick(v,unit){
+  const n=Number(v);
+  if(!Number.isFinite(n))return '';
+  const u=unit||'';
+  if(u==='%'||u==='k'||u==='M')return parseFloat(n.toFixed(1))+u;
+  if(Math.abs(n)>=10000)return n.toLocaleString('en-US',{maximumFractionDigits:0});
+  if(Math.abs(n-Math.round(n))<0.05)return Math.round(n)+u;
+  return parseFloat(n.toFixed(1))+u;
+}
+
+function bridgeActualForecast(actual,forecast,ciHigh,ciLow){
+  const a=actual.slice(),f=forecast.slice(),hi=ciHigh?ciHigh.slice():null,lo=ciLow?ciLow.slice():null;
+  let lastIdx=-1,lastVal=null;
+  for(let i=0;i<a.length;i++){if(a[i]!=null){lastIdx=i;lastVal=a[i];}}
+  if(lastIdx<0)return{actual:a,forecast:f,ciHigh:hi,ciLow:lo};
+  let firstFc=-1;
+  for(let i=0;i<f.length;i++){if(f[i]!=null){firstFc=i;break;}}
+  if(firstFc>lastIdx&&f[lastIdx]==null){
+    f[lastIdx]=lastVal;
+    if(hi&&hi[firstFc]!=null&&hi[lastIdx]==null)hi[lastIdx]=lastVal;
+    if(lo&&lo[firstFc]!=null&&lo[lastIdx]==null)lo[lastIdx]=lastVal;
+  }
+  return{actual:a,forecast:f,ciHigh:hi,ciLow:lo};
+}
+
+function drawForecastChart(canvasId,data,scenario){
+  const el=document.getElementById(canvasId);
+  if(!el)return;
+  if(chartInstances[canvasId])chartInstances[canvasId].destroy();
+  const fc=scenario==='optimistic'?data.opt:scenario==='pessimistic'?data.pes:data.forecast;
+  let actual=data.actual.slice(),forecast=fc.slice(),ciH=data.ciH.slice(),ciL=data.ciL.slice();
+  ({actual,forecast,ciHigh:ciH,ciLow:ciL}=bridgeActualForecast(actual,forecast,ciH,ciL));
+  const ctx=el.getContext('2d');
+  const color=data.color;
+  const grad=ctx.createLinearGradient(0,0,0,210);
+  grad.addColorStop(0,color+'22');grad.addColorStop(1,color+'00');
+  const ciGrad=ctx.createLinearGradient(0,0,0,210);
+  ciGrad.addColorStop(0,'rgba(37,99,235,.08)');ciGrad.addColorStop(1,'rgba(37,99,235,.02)');
+  chartInstances[canvasId]=new Chart(ctx,{
+    type:'line',
+    data:{labels:data.labels,datasets:[
+      {label:'90% CI High',data:ciH,borderColor:'transparent',fill:'+1',backgroundColor:ciGrad,pointRadius:0,tension:.4},
+      {label:'90% CI Low',data:ciL,borderColor:'transparent',fill:false,pointRadius:0,tension:.4},
+      {label:'Actual',data:actual,borderColor:color,borderWidth:2.5,fill:true,backgroundColor:grad,
+       pointRadius:3,pointBackgroundColor:color,tension:.4},
+      {label:'Forecast',data:forecast,borderColor:'#94A3B8',borderWidth:2,borderDash:[6,4],fill:false,
+       pointRadius:3,pointBackgroundColor:'#94A3B8',pointBorderColor:'#fff',pointBorderWidth:1.5,tension:.4}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},
+        tooltip:{mode:'index',intersect:false,
+          backgroundColor:'rgba(15,23,42,.9)',titleColor:'#fff',bodyColor:'#CBD5E1',
+          borderColor:'rgba(255,255,255,.1)',borderWidth:1,padding:9,
+          callbacks:{label(c){
+            if(c.dataset.label.includes('CI'))return null;
+            if(c.dataset.label==='Forecast'){
+              const ds=c.chart.data.datasets.find(d=>d.label==='Actual');
+              if(ds&&ds.data[c.dataIndex]!=null&&c.parsed.y===ds.data[c.dataIndex])return null;
+            }
+            const val=c.parsed.y!=null?formatAxisTick(c.parsed.y,data.unit):c.formattedValue;
+            return c.dataset.label+': '+val;
+          }}}},
+      scales:{
+        x:{grid:{color:'rgba(148,163,184,.12)'},ticks:{color:'#94A3B8',font:{size:10}}},
+        y:{grid:{color:'rgba(148,163,184,.12)'},ticks:{color:'#94A3B8',font:{size:10},precision:1,
+           callback:v=>formatAxisTick(v,data.unit)},
+           title:{display:true,text:data.unit||'',color:'#94A3B8',font:{size:9}}}},
+      interaction:{mode:'index',intersect:false}}
+  });
+}
+
+function switchScenario(key,scenario,btn){
+  // Update pills in this card
+  btn.closest('.sc-pills').querySelectorAll('.sc-pill').forEach(p=>p.classList.remove('sel'));
+  btn.classList.add('sel');
+
+  // Redraw chart
+  const data=FORECASTS[key];
+  drawForecastChart('fcc-'+key,data,scenario);
+
+  // Sync KPIs to scenario
+  const kpiEls=document.querySelectorAll(`#rc-${key} .rck-val`);
+  if(scenario==='optimistic'&&kpiEls.length>=2){
+    // Nudge second KPI slightly for optimistic
+    const base=data.kpis[1].val;
+    const numBase=parseFloat(base.replace(/[^0-9.\-]/g,''));
+    const delta=data.color===DN?-1.2:1.8; // worse or better depending on metric
+    const adj=(numBase+delta).toFixed(1);
+    kpiEls[1].innerHTML=`${adj}<span class="rck-unit">${data.kpis[1].unit}</span>`;
+  } else if(scenario==='pessimistic'&&kpiEls.length>=2){
+    const base=data.kpis[1].val;
+    const numBase=parseFloat(base.replace(/[^0-9.\-]/g,''));
+    const delta=data.color===DN?+1.8:-1.4;
+    const adj=(numBase+delta).toFixed(1);
+    kpiEls[1].innerHTML=`${adj}<span class="rck-unit">${data.kpis[1].unit}</span>`;
+  } else {
+    kpiEls[1].innerHTML=`${data.kpis[1].val}<span class="rck-unit">${data.kpis[1].unit}</span>`;
+  }
+}
+
+/* ============================================================
+   HISTORY RAIL
+   ============================================================ */
+function renderHistRail(){
+  const list=document.getElementById('hist-list');
+  list.innerHTML=sessionForecasts.map(f=>`
+    <div class="hist-item ${f.key===activeHistKey?'active-hist':''}" id="hi-${f.key}" onclick="activateHist('${f.key}')">
+      <div class="hi-dot" style="background:${f.color}"></div>
+      <div class="hi-name">${f.title.split('—')[0].trim()}</div>
+      <div class="hi-val">${f.val}</div>
+      <button class="hi-del" onclick="removeHist(event,'${f.key}')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>`).join('');
+}
+
+function activateHist(key){
+  activeHistKey=key;
+  renderHistRail();
+  const card=document.getElementById('rc-'+key);
+  if(card)card.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function removeHist(e,key){
+  e.stopPropagation();
+  sessionForecasts=sessionForecasts.filter(f=>f.key!==key);
+  const card=document.getElementById('rc-'+key);
+  if(card)card.remove();
+  if(sessionForecasts.length===0){clearWorkspace();return;}
+  if(activeHistKey===key)activeHistKey=sessionForecasts[0].key;
+  renderHistRail();
+}
+
+function clearWorkspace(){
+  sessionForecasts=[];
+  activeHistKey=null;
+  document.getElementById('ws-main').innerHTML='';
+  document.getElementById('workspace').classList.remove('vis');
+  document.getElementById('landing').classList.remove('hidden');
+  document.getElementById('intent-strip').classList.remove('vis');
+  document.getElementById('qbar-input').value='';
+  document.getElementById('qchips-row').classList.remove('hidden');
+  renderHistRail();
+}
+
+function reviewMovedForecasts(e){
+  e.preventDefault();
+  setQ('Construction employment deceleration risk Q3 2026');
+}
+
+/* ============================================================
+   CHAT PANEL
+   ============================================================ */
+function openChat(ctx,title){
+  document.getElementById('ctx-val').textContent=title||'Forecast Intelligence';
+  const ctxKey=detectTopic(ctx)||'default';
+  currentChatCtx=CHAT_RESPONSES[ctxKey]?ctxKey:'default';
+  const msgs=document.getElementById('msgs');
+  if(chatHistory.length===0){
+    const resp=(CHAT_RESPONSES[currentChatCtx]||CHAT_RESPONSES.default).init;
+    addMsg('ai',resp);chatHistory.push({role:'ai',text:resp});
+  } else {
+    const note=document.createElement('div');
+    note.className='msg ai';
+    note.innerHTML=`<div class="bubble ai" style="background:var(--acbg);border-color:var(--acbr);color:var(--ac);font-size:11px">📍 Context: <strong>${title}</strong></div>`;
+    msgs.appendChild(note);msgs.scrollTop=msgs.scrollHeight;
+  }
+  const suggs=(CHAT_RESPONSES[currentChatCtx]||CHAT_RESPONSES.default).suggs;
+  document.getElementById('suggs').innerHTML=suggs.map(s=>`<button class="sugg" onclick="sendCT('${s}')">${s}</button>`).join('');
+  document.getElementById('cpanel').classList.add('open');
+  setTimeout(()=>document.getElementById('cin')?.focus(),300);
+}
+
+function closeChat(){document.getElementById('cpanel').classList.remove('open')}
+
+function addMsg(role,text){
+  const ms=document.getElementById('msgs');
+  const d=document.createElement('div');d.className='msg '+role;
+  const b=document.createElement('div');b.className='bubble '+role;b.innerHTML=text;
+  d.appendChild(b);ms.appendChild(d);ms.scrollTop=ms.scrollHeight;
+}
+
+function sendC(){
+  const inp=document.getElementById('cin');
+  const t=inp.value.trim();if(!t)return;
+  sendCT(t);inp.value='';
+}
+
+function sendCT(text){
+  addMsg('user',text);chatHistory.push({role:'user',text});
+  document.getElementById('suggs').innerHTML='';
+  const ms=document.getElementById('msgs');
+  const td=document.createElement('div');td.className='msg ai';td.id='typi';
+  td.innerHTML='<div class="bubble ai"><div class="typing"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div></div>';
+  ms.appendChild(td);ms.scrollTop=ms.scrollHeight;
+  setTimeout(()=>{
+    document.getElementById('typi')?.remove();
+    const lc=text.toLowerCase();
+    let resp;
+    if(lc.includes('risk')||lc.includes('highest'))resp='The <strong>highest-risk forecast</strong> in the current session is Youth Unemployment — projected at 12.6% by Q2 2027 under the NAFIS-flat scenario. Construction Employment is the second concern, with a potential Q4 turn negative.';
+    else if(lc.includes('vision')||lc.includes('2031'))resp='The Vision 2031 E-P ratio target is <strong>78%</strong>. Current trajectory reaches 73.2% by 2028 — a gap of 4.8pp. Female participation needs to sustain above 56% by 2031, and Emiratisation must reach 18% in the private sector.';
+    else if(lc.includes('construct')||lc.includes('permit'))resp='Construction is the <strong>main downside sector risk</strong>. Permit deceleration of 12% YoY in Q2 2026 is the key signal. If Q3 permits don\'t recover, employment turns negative — last seen in 2018 — creating a 4,000–6,000 role drag.';
+    else{const c=CHAT_RESPONSES[currentChatCtx]||CHAT_RESPONSES.default;resp=c.init;}
+    addMsg('ai',resp);chatHistory.push({role:'ai',text:resp});
+    const suggs=(CHAT_RESPONSES[currentChatCtx]||CHAT_RESPONSES.default).suggs;
+    document.getElementById('suggs').innerHTML=suggs.map(s=>`<button class="sugg" onclick="sendCT('${s}')">${s}</button>`).join('');
+    ms.scrollTop=ms.scrollHeight;
+  },1300);
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+document.addEventListener('DOMContentLoaded',()=>{
+  LMO.initLmoBreadcrumb();
+  renderLanding();
+});
+</script>
+</body>
+</html>

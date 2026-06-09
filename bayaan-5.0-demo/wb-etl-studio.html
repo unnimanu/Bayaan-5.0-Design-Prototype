@@ -1,0 +1,1129 @@
+<div class="view" id="v-etl">
+              <!-- ─── SUB-VIEW 1: PIPELINE LIBRARY ─── -->
+              <div class="etl-view active" id="etl-library">
+                <div class="etl-sub-header">
+                  <div class="etl-breadcrumb">
+                    <span class="etl-bc-cur">Data Transformation</span>
+                  </div>
+                  <div class="etl-sub-header-right">
+                    <button class="btn btn-s btn-sm">
+                      <i class="ti ti-search"></i> Search
+                    </button>
+                    <button
+                      class="btn btn-p btn-sm"
+                      onclick="etlGoTo('etl-builder')"
+                    >
+                      <i class="ti ti-plus"></i> New Pipeline
+                    </button>
+                  </div>
+                </div>
+                <div class="lib-body">
+                  <div class="lib-header">
+                    <div class="lib-header-left">
+                      <h1>Data Transformation</h1>
+                      <p>
+                        Build, manage, and monitor your data pipelines — from
+                        source to destination.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="lib-tabs">
+                    <div class="lib-tab active" onclick="etlLibTab(this, 'my')">
+                      My Pipelines
+                    </div>
+                    <div class="lib-tab" onclick="etlLibTab(this, 'tmpl')">
+                      Templates
+                    </div>
+                  </div>
+                  <div id="etl-tab-my">
+                    <div class="section-label">Active pipelines (3)</div>
+                    <div class="pipelines-grid">
+                      <div class="new-card" onclick="etlGoTo('etl-builder')">
+                        <div class="nc-icon"><i class="ti ti-plus"></i></div>
+                        <div class="nc-label">Create new pipeline</div>
+                        <div class="nc-sub">
+                          Connect a source, transform, and deliver
+                        </div>
+                      </div>
+                      <div
+                        class="pipe-card c-blue"
+                        onclick="etlGoTo('etl-workspace')"
+                      >
+                        <div class="pc-head">
+                          <div class="pc-icon blue">
+                            <i class="ti ti-transfer"></i>
+                          </div>
+                          <div class="pc-meta">
+                            <div class="pc-name">Labour Registry Cleanse</div>
+                            <div class="pc-type">PostgreSQL → ClickHouse</div>
+                          </div>
+                          <span class="pc-badge ok"
+                            ><i class="ti ti-check"></i> Healthy</span
+                          >
+                        </div>
+                        <div class="pc-flow">
+                          <div class="pc-flow-node">
+                            <i class="ti ti-database"></i
+                            ><span>PostgreSQL · labour_db</span>
+                          </div>
+                          <div class="pc-flow-arrow">
+                            ——<i class="ti ti-arrow-right"></i>
+                          </div>
+                          <span class="pc-flow-badge">3 transforms</span>
+                          <div class="pc-flow-arrow">
+                            ——<i class="ti ti-arrow-right"></i>
+                          </div>
+                          <div class="pc-flow-node">
+                            <i class="ti ti-database"></i
+                            ><span>ClickHouse · dwh</span>
+                          </div>
+                        </div>
+                        <div class="pc-stats">
+                          <div class="pc-stat">
+                            <div class="pc-stat-val">24</div>
+                            <div class="pc-stat-lbl">Runs</div>
+                          </div>
+                          <div class="pc-stat">
+                            <div class="pc-stat-val">1.2M</div>
+                            <div class="pc-stat-lbl">Rows/run</div>
+                          </div>
+                          <div class="pc-stat">
+                            <div class="pc-stat-val">99.2%</div>
+                            <div class="pc-stat-lbl">Success</div>
+                          </div>
+                        </div>
+                        <div class="pc-footer">
+                          <div class="pc-last">
+                            <i class="ti ti-clock"></i> Last run 06:04 today
+                          </div>
+                          <div class="pc-actions">
+                            <button
+                              class="btn btn-s btn-xs"
+                              onclick="
+                                event.stopPropagation();
+                                toast('Running…', 'ti-player-play');
+                              "
+                            >
+                              <i class="ti ti-player-play"></i>
+                            </button>
+                            <button
+                              class="btn btn-s btn-xs"
+                              onclick="
+                                event.stopPropagation();
+                                etlGoTo('etl-workspace');
+                              "
+                            >
+                              <i class="ti ti-message-chatbot"></i> Open
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="pipe-card c-teal">
+                        <div class="pc-head">
+                          <div class="pc-icon teal">
+                            <i class="ti ti-table-import"></i>
+                          </div>
+                          <div class="pc-meta">
+                            <div class="pc-name">GDP Sector Aggregation</div>
+                            <div class="pc-type">ClickHouse → Tableau</div>
+                          </div>
+                          <span class="pc-badge ok"
+                            ><i class="ti ti-check"></i> Healthy</span
+                          >
+                        </div>
+                        <div class="pc-flow">
+                          <div class="pc-flow-node">
+                            <i class="ti ti-database"></i
+                            ><span>ClickHouse · scad_dw</span>
+                          </div>
+                          <div class="pc-flow-arrow">
+                            ——<i class="ti ti-arrow-right"></i>
+                          </div>
+                          <span class="pc-flow-badge">2 transforms</span>
+                          <div class="pc-flow-arrow">
+                            ——<i class="ti ti-arrow-right"></i>
+                          </div>
+                          <div class="pc-flow-node">
+                            <i class="ti ti-chart-bar"></i
+                            ><span>Tableau · GDP</span>
+                          </div>
+                        </div>
+                        <div class="pc-stats">
+                          <div class="pc-stat">
+                            <div class="pc-stat-val">12</div>
+                            <div class="pc-stat-lbl">Runs</div>
+                          </div>
+                          <div class="pc-stat">
+                            <div class="pc-stat-val">340K</div>
+                            <div class="pc-stat-lbl">Rows/run</div>
+                          </div>
+                          <div class="pc-stat">
+                            <div class="pc-stat-val">100%</div>
+                            <div class="pc-stat-lbl">Success</div>
+                          </div>
+                        </div>
+                        <div class="pc-footer">
+                          <div class="pc-last">
+                            <i class="ti ti-clock"></i> Last run yesterday
+                          </div>
+                          <div class="pc-actions">
+                            <button
+                              class="btn btn-s btn-xs"
+                              onclick="toast('Running…', 'ti-player-play')"
+                            >
+                              <i class="ti ti-player-play"></i>
+                            </button>
+                            <button class="btn btn-s btn-xs">
+                              <i class="ti ti-message-chatbot"></i> Open
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="pipe-card c-orange">
+                        <div class="pc-head">
+                          <div class="pc-icon orange">
+                            <i class="ti ti-file-import"></i>
+                          </div>
+                          <div class="pc-meta">
+                            <div class="pc-name">CPI CSV Ingestor</div>
+                            <div class="pc-type">CSV Upload → PostgreSQL</div>
+                          </div>
+                          <span class="pc-badge warn"
+                            ><i class="ti ti-alert-triangle"></i> 2
+                            warnings</span
+                          >
+                        </div>
+                        <div class="pc-flow">
+                          <div class="pc-flow-node">
+                            <i class="ti ti-file-spreadsheet"></i
+                            ><span>CSV · monthly upload</span>
+                          </div>
+                          <div class="pc-flow-arrow">
+                            ——<i class="ti ti-arrow-right"></i>
+                          </div>
+                          <span class="pc-flow-badge">1 transform</span>
+                          <div class="pc-flow-arrow">
+                            ——<i class="ti ti-arrow-right"></i>
+                          </div>
+                          <div class="pc-flow-node">
+                            <i class="ti ti-database"></i
+                            ><span>PostgreSQL · cpi_db</span>
+                          </div>
+                        </div>
+                        <div class="pc-stats">
+                          <div class="pc-stat">
+                            <div class="pc-stat-val">8</div>
+                            <div class="pc-stat-lbl">Runs</div>
+                          </div>
+                          <div class="pc-stat">
+                            <div class="pc-stat-val">28K</div>
+                            <div class="pc-stat-lbl">Rows/run</div>
+                          </div>
+                          <div class="pc-stat">
+                            <div class="pc-stat-val">87.5%</div>
+                            <div class="pc-stat-lbl">Success</div>
+                          </div>
+                        </div>
+                        <div class="pc-footer">
+                          <div class="pc-last">
+                            <i class="ti ti-clock"></i> Last run 3 days ago
+                          </div>
+                          <div class="pc-actions">
+                            <button
+                              class="btn btn-s btn-xs"
+                              onclick="toast('Running…', 'ti-player-play')"
+                            >
+                              <i class="ti ti-player-play"></i>
+                            </button>
+                            <button class="btn btn-s btn-xs">
+                              <i class="ti ti-message-chatbot"></i> Open
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="etl-tab-tmpl" style="display: none">
+                    <div class="section-label">Ready-to-use templates (3)</div>
+                    <div class="pipelines-grid">
+                      <div class="pipe-card c-blue">
+                        <div class="pc-head">
+                          <div class="pc-icon blue">
+                            <i class="ti ti-transfer"></i>
+                          </div>
+                          <div class="pc-meta">
+                            <div class="pc-name">DB to DB Migration</div>
+                            <div class="pc-type">Any DB → Any DB</div>
+                          </div>
+                        </div>
+                        <div class="pc-flow">
+                          <div class="pc-flow-node">
+                            <i class="ti ti-database"></i><span>Source DB</span>
+                          </div>
+                          <div class="pc-flow-arrow">
+                            ——<i class="ti ti-arrow-right"></i>
+                          </div>
+                          <span class="pc-flow-badge">Cleanse + Map</span>
+                          <div class="pc-flow-arrow">
+                            ——<i class="ti ti-arrow-right"></i>
+                          </div>
+                          <div class="pc-flow-node">
+                            <i class="ti ti-database"></i
+                            ><span>Destination</span>
+                          </div>
+                        </div>
+                        <div class="pc-footer" style="margin-top: 8px">
+                          <div class="pc-last">
+                            <i class="ti ti-users"></i> Used 34 times
+                          </div>
+                          <div class="pc-actions">
+                            <button
+                              class="btn btn-p btn-xs"
+                              onclick="
+                                etlGoTo('etl-builder');
+                                toast('Template loaded', 'ti-check');
+                              "
+                            >
+                              Use template
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="pipe-card c-teal">
+                        <div class="pc-head">
+                          <div class="pc-icon teal">
+                            <i class="ti ti-file-import"></i>
+                          </div>
+                          <div class="pc-meta">
+                            <div class="pc-name">CSV to Database</div>
+                            <div class="pc-type">
+                              CSV Upload → PostgreSQL / ClickHouse
+                            </div>
+                          </div>
+                        </div>
+                        <div class="pc-flow">
+                          <div class="pc-flow-node">
+                            <i class="ti ti-file-spreadsheet"></i
+                            ><span>CSV file</span>
+                          </div>
+                          <div class="pc-flow-arrow">
+                            ——<i class="ti ti-arrow-right"></i>
+                          </div>
+                          <span class="pc-flow-badge">Validate + Load</span>
+                          <div class="pc-flow-arrow">
+                            ——<i class="ti ti-arrow-right"></i>
+                          </div>
+                          <div class="pc-flow-node">
+                            <i class="ti ti-database"></i><span>Target DB</span>
+                          </div>
+                        </div>
+                        <div class="pc-footer" style="margin-top: 8px">
+                          <div class="pc-last">
+                            <i class="ti ti-users"></i> Used 21 times
+                          </div>
+                          <div class="pc-actions">
+                            <button
+                              class="btn btn-p btn-xs"
+                              onclick="
+                                etlGoTo('etl-builder');
+                                toast('Template loaded', 'ti-check');
+                              "
+                            >
+                              Use template
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="pipe-card c-purple">
+                        <div class="pc-head">
+                          <div class="pc-icon purple">
+                            <i class="ti ti-api"></i>
+                          </div>
+                          <div class="pc-meta">
+                            <div class="pc-name">API to Warehouse</div>
+                            <div class="pc-type">REST API → ClickHouse</div>
+                          </div>
+                        </div>
+                        <div class="pc-flow">
+                          <div class="pc-flow-node">
+                            <i class="ti ti-api"></i><span>REST endpoint</span>
+                          </div>
+                          <div class="pc-flow-arrow">
+                            ——<i class="ti ti-arrow-right"></i>
+                          </div>
+                          <span class="pc-flow-badge">Parse + Store</span>
+                          <div class="pc-flow-arrow">
+                            ——<i class="ti ti-arrow-right"></i>
+                          </div>
+                          <div class="pc-flow-node">
+                            <i class="ti ti-database"></i
+                            ><span>ClickHouse</span>
+                          </div>
+                        </div>
+                        <div class="pc-footer" style="margin-top: 8px">
+                          <div class="pc-last">
+                            <i class="ti ti-users"></i> Used 15 times
+                          </div>
+                          <div class="pc-actions">
+                            <button
+                              class="btn btn-p btn-xs"
+                              onclick="
+                                etlGoTo('etl-builder');
+                                toast('Template loaded', 'ti-check');
+                              "
+                            >
+                              Use template
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /etl-library -->
+
+              <!-- ─── SUB-VIEW 2: PIPELINE BUILDER ─── -->
+              <div class="etl-view" id="etl-builder">
+                <div class="etl-sub-header">
+                  <div class="etl-breadcrumb">
+                    <span class="etl-bc-link" onclick="etlGoTo('etl-library')"
+                      >Data Transformation</span
+                    >
+                    <span class="etl-bc-sep">›</span
+                    ><span class="etl-bc-cur">New Pipeline</span>
+                  </div>
+                  <div class="etl-sub-header-right">
+                    <button
+                      class="btn btn-s btn-sm"
+                      onclick="etlGoTo('etl-library')"
+                    >
+                      <i class="ti ti-x"></i> Cancel
+                    </button>
+                  </div>
+                </div>
+                <div class="etl-builder-body">
+                  <!-- LEFT: CHAT -->
+                  <div class="builder-chat">
+                    <div class="builder-chat-top">
+                      <div class="bct-title">
+                        Pipeline Builder <span class="ai-badge">BAYAAN AI</span>
+                      </div>
+                      <div class="bct-sub">
+                        Answer a few questions — your pipeline configures itself
+                        as you go
+                      </div>
+                    </div>
+                    <div class="step-pills" id="etlStepPills">
+                      <div class="step-pill active" id="etlsp0">
+                        <div class="pill-num">
+                          <span class="pill-num-inner">1</span>
+                        </div>
+                        Name
+                      </div>
+                      <div class="step-pill" id="etlsp1">
+                        <div class="pill-num">
+                          <span class="pill-num-inner">2</span>
+                        </div>
+                        Source
+                      </div>
+                      <div class="step-pill" id="etlsp2">
+                        <div class="pill-num">
+                          <span class="pill-num-inner">3</span>
+                        </div>
+                        Connect
+                      </div>
+                      <div class="step-pill" id="etlsp3">
+                        <div class="pill-num">
+                          <span class="pill-num-inner">4</span>
+                        </div>
+                        Destination
+                      </div>
+                      <div class="step-pill" id="etlsp4">
+                        <div class="pill-num">
+                          <span class="pill-num-inner">5</span>
+                        </div>
+                        Transform
+                      </div>
+                      <div class="step-pill" id="etlsp5">
+                        <div class="pill-num">
+                          <span class="pill-num-inner">6</span>
+                        </div>
+                        Schedule
+                      </div>
+                      <div class="step-pill" id="etlsp6">
+                        <div class="pill-num">
+                          <span class="pill-num-inner">7</span>
+                        </div>
+                        Confirm
+                      </div>
+                    </div>
+                    <div class="chat-msgs" id="etlBuilderMsgs"></div>
+                    <div class="chat-input-wrap">
+                      <div class="chat-input-inner">
+                        <textarea
+                          class="chat-ta"
+                          id="etlBuilderInput"
+                          rows="1"
+                          placeholder="Type your answer or tap a suggestion…"
+                          onkeydown="etlBuilderKey(event)"
+                          oninput="autoResize(this)"
+                        ></textarea>
+                        <button class="etl-send-btn" onclick="etlBuilderSend()">
+                          <i class="ti ti-arrow-up"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- RIGHT: LIVE PREVIEW -->
+                  <div class="builder-preview">
+                    <div class="bp-header">
+                      <i
+                        class="ti ti-git-merge"
+                        style="font-size: 16px; color: var(--t3)"
+                      ></i>
+                      <span class="bp-title">Pipeline Preview</span>
+                      <span class="bp-status" id="etlBpStatus"
+                        >Configuring…</span
+                      >
+                      <div style="margin-left: auto; display: flex; gap: 8px">
+                        <button
+                          class="btn btn-p btn-sm"
+                          id="etlBpFinishBtn"
+                          style="display: none"
+                          onclick="etlOpenModal()"
+                        >
+                          <i class="ti ti-device-floppy"></i> Save Pipeline
+                        </button>
+                      </div>
+                    </div>
+                    <div class="bp-body">
+                      <div class="flow-summary" id="etlFlowSummary">
+                        <div class="fs-label">
+                          <i class="ti ti-git-merge"></i> Data flow
+                        </div>
+                        <div class="fs-nodes" id="etlFsNodes">
+                          <div class="fs-placeholder">
+                            Your pipeline will take shape here as you answer the
+                            questions on the left…
+                          </div>
+                        </div>
+                      </div>
+                      <div class="config-strip" id="etlConfigStrip"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /etl-builder -->
+
+              <!-- ─── SUB-VIEW 3: PIPELINE WORKSPACE ─── -->
+              <div class="etl-view" id="etl-workspace">
+                <div class="etl-sub-header">
+                  <div class="etl-breadcrumb">
+                    <span class="etl-bc-link" onclick="etlGoTo('etl-library')"
+                      >Data Transformation</span
+                    >
+                    <span class="etl-bc-sep">›</span>
+                    <span class="etl-bc-link" onclick="etlGoTo('etl-library')"
+                      >My Pipelines</span
+                    >
+                    <span class="etl-bc-sep">›</span>
+                    <span class="etl-bc-cur">Labour Registry Cleanse</span>
+                  </div>
+                  <div class="etl-sub-header-right">
+                    <button
+                      class="btn btn-s btn-sm"
+                      onclick="etlToggleSettings()"
+                    >
+                      <i class="ti ti-settings"></i> Settings
+                    </button>
+                    <button
+                      class="btn btn-p btn-sm"
+                      onclick="toast('Pipeline running…', 'ti-player-play')"
+                    >
+                      <i class="ti ti-player-play"></i> Run now
+                    </button>
+                  </div>
+                </div>
+                <div class="etl-ws-body">
+                  <!-- SIDEBAR -->
+                  <div class="ws-sidebar">
+                    <div class="ws-sidebar-top">
+                      <div class="wsp-info">
+                        <div class="wsp-icon">
+                          <i class="ti ti-transfer"></i>
+                        </div>
+                        <div>
+                          <div class="wsp-name">Labour Registry Cleanse</div>
+                          <div class="wsp-type">
+                            Daily · PostgreSQL → ClickHouse
+                          </div>
+                        </div>
+                      </div>
+                      <div class="wsp-flow-mini">
+                        <i class="ti ti-database"></i
+                        ><span style="font-size: 11px; font-weight: 500"
+                          >labour_db</span
+                        >
+                        <span class="arr">→→</span>
+                        <span
+                          style="
+                            font-size: 10px;
+                            background: var(--purple-50);
+                            color: #5930c4;
+                            padding: 1px 6px;
+                            border-radius: 10px;
+                            font-weight: 600;
+                          "
+                          >3 transforms</span
+                        >
+                        <span class="arr">→→</span>
+                        <i class="ti ti-database"></i
+                        ><span style="font-size: 11px; font-weight: 500"
+                          >dwh</span
+                        >
+                      </div>
+                    </div>
+                    <div class="ws-sidebar-mid">
+                      <div class="ws-sec-label">Run History</div>
+                      <div class="run-item active">
+                        <div class="ri-top">
+                          <div class="ri-title">Today — 06:04 GST</div>
+                        </div>
+                        <div class="ri-sub">1,247,302 rows · 4m 12s</div>
+                        <span class="ri-badge ok"
+                          ><i class="ti ti-check"></i> Success</span
+                        >
+                      </div>
+                      <div class="run-item">
+                        <div class="ri-top">
+                          <div class="ri-title">Yesterday — 06:01 GST</div>
+                        </div>
+                        <div class="ri-sub">1,241,891 rows · 3m 58s</div>
+                        <span class="ri-badge ok"
+                          ><i class="ti ti-check"></i> Success</span
+                        >
+                      </div>
+                      <div class="run-item">
+                        <div class="ri-top">
+                          <div class="ri-title">May 23 — 06:02 GST</div>
+                        </div>
+                        <div class="ri-sub">1,238,445 rows · 4m 34s</div>
+                        <span class="ri-badge warn"
+                          ><i class="ti ti-alert-triangle"></i> 340 rows
+                          skipped</span
+                        >
+                      </div>
+                      <div class="run-item">
+                        <div class="ri-top">
+                          <div class="ri-title">May 22 — 06:00 GST</div>
+                        </div>
+                        <div class="ri-sub">1,236,112 rows · 3m 52s</div>
+                        <span class="ri-badge ok"
+                          ><i class="ti ti-check"></i> Success</span
+                        >
+                      </div>
+                      <div class="run-item">
+                        <div class="ri-top">
+                          <div class="ri-title">May 21 — 06:05 GST</div>
+                        </div>
+                        <div class="ri-sub">1,229,884 rows · 5m 01s</div>
+                        <span class="ri-badge err"
+                          ><i class="ti ti-x"></i> Connection timeout</span
+                        >
+                      </div>
+                      <div class="ws-sec-label" style="margin-top: 8px">
+                        Conversations
+                      </div>
+                      <div class="run-item">
+                        <div class="ri-top">
+                          <div class="ri-title">Asked about May 23 skips</div>
+                        </div>
+                        <div class="ri-sub">Yesterday at 10:22</div>
+                      </div>
+                      <div class="run-item">
+                        <div class="ri-top">
+                          <div class="ri-title">Requested schema export</div>
+                        </div>
+                        <div class="ri-sub">May 22 at 14:05</div>
+                      </div>
+                    </div>
+                    <div class="ws-sidebar-bottom">
+                      <button
+                        class="ws-sb-btn"
+                        onclick="etlSwitchTab('pipeline')"
+                      >
+                        <i class="ti ti-git-merge"></i
+                        ><span>View pipeline diagram</span
+                        ><i class="ti ti-chevron-right arr"></i>
+                      </button>
+                      <button class="ws-sb-btn" onclick="etlToggleSettings()">
+                        <i class="ti ti-settings"></i
+                        ><span>Pipeline settings</span
+                        ><i class="ti ti-chevron-right arr"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <!-- MAIN -->
+                  <div class="ws-main">
+                    <div class="ws-main-tabs">
+                      <div
+                        class="ws-tab active"
+                        id="etl-tab-chat"
+                        onclick="etlSwitchTab('chat')"
+                      >
+                        <i class="ti ti-message-chatbot"></i> Chat
+                      </div>
+                      <div
+                        class="ws-tab"
+                        id="etl-tab-pipeline"
+                        onclick="etlSwitchTab('pipeline')"
+                      >
+                        <i class="ti ti-git-merge"></i> View Pipeline
+                      </div>
+                      <div class="ws-tab-divider"></div>
+                      <div
+                        class="ws-tab"
+                        onclick="toast('Opening logs…', 'ti-file-text')"
+                      >
+                        <i class="ti ti-file-text"></i> Logs
+                      </div>
+                      <div class="ws-tab-right">
+                        <button
+                          class="btn btn-s btn-sm"
+                          onclick="toast('Schema exported', 'ti-download')"
+                        >
+                          <i class="ti ti-download"></i> Export schema
+                        </button>
+                      </div>
+                    </div>
+                    <!-- CHAT PANE -->
+                    <div class="ws-chat-pane" id="etlWsChatPane">
+                      <div
+                        style="
+                          display: flex;
+                          align-items: center;
+                          gap: 10px;
+                          margin-bottom: 12px;
+                          margin-top: 4px;
+                        "
+                      >
+                        <div class="rsc-icon ok">
+                          <i class="ti ti-check"></i>
+                        </div>
+                        <div>
+                          <div
+                            style="
+                              font-size: 13.5px;
+                              font-weight: 700;
+                              color: var(--t1);
+                            "
+                          >
+                            Today's run completed — 1,247,302 rows processed
+                          </div>
+                          <div style="font-size: 11.5px; color: var(--t3)">
+                            06:04 GST · 4m 12s · 0 errors
+                          </div>
+                        </div>
+                        <button
+                          class="btn btn-s btn-xs"
+                          style="margin-left: auto"
+                          onclick="
+                            etlWsAsk('Show me a sample of today\'s output data')
+                          "
+                        >
+                          View output
+                        </button>
+                      </div>
+                      <div
+                        style="
+                          background: var(--white);
+                          border: 1px solid var(--border);
+                          border-radius: 18px;
+                          padding: 16px 20px;
+                          margin-bottom: 16px;
+                        "
+                      >
+                        <div
+                          style="
+                            font-size: 11px;
+                            font-weight: 700;
+                            letter-spacing: 0.07em;
+                            text-transform: uppercase;
+                            color: var(--t3);
+                            margin-bottom: 10px;
+                            display: flex;
+                            align-items: center;
+                            gap: 6px;
+                          "
+                        >
+                          <i
+                            class="ti ti-chart-bar"
+                            style="font-size: 13px; color: var(--acc)"
+                          ></i
+                          >Run metrics
+                        </div>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap">
+                          <div class="rsc-metric">
+                            <div class="rsc-metric-val">1.24M</div>
+                            <div class="rsc-metric-lbl">Rows loaded</div>
+                          </div>
+                          <div class="rsc-metric">
+                            <div class="rsc-metric-val">0</div>
+                            <div class="rsc-metric-lbl">Errors</div>
+                          </div>
+                          <div class="rsc-metric">
+                            <div class="rsc-metric-val">4m 12s</div>
+                            <div class="rsc-metric-lbl">Duration</div>
+                          </div>
+                          <div class="rsc-metric">
+                            <div class="rsc-metric-val">99.2%</div>
+                            <div class="rsc-metric-lbl">Data quality</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="ws-msg agent etl-fade-up">
+                        <img class="ws-msg-av agent" src="./assets/ai-chat-thumb.svg" alt="Bayaan AI" width="30" height="30" />
+                        <div class="ws-msg-bubble">
+                          <p>
+                            Today's run completed cleanly. All 1,247,302 rows
+                            from <strong>labour_db.registrations</strong> were
+                            cleansed and loaded into
+                            <strong>ClickHouse · dwh.labour_clean</strong>.
+                          </p>
+                          <p>
+                            You can ask me about data quality, request a sample
+                            output, check schema differences, or adjust the
+                            transform rules for the next run.
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        class="ws-msg user etl-fade-up"
+                        style="animation-delay: 0.1s"
+                      >
+                        <div class="ws-msg-bubble">
+                          Why were 340 rows skipped on May 23?
+                        </div>
+                      </div>
+                      <div
+                        class="ws-msg agent etl-fade-up"
+                        style="animation-delay: 0.15s"
+                      >
+                        <img class="ws-msg-av agent" src="./assets/ai-chat-thumb.svg" alt="Bayaan AI" width="30" height="30" />
+                        <div class="ws-msg-bubble">
+                          <p>
+                            I checked the May 23 run log. The 340 skipped rows
+                            all failed the
+                            <strong>null validation rule</strong> on the
+                            <code
+                              style="
+                                background: var(--gray-100);
+                                padding: 2px 5px;
+                                border-radius: 4px;
+                                font-family: monospace;
+                                font-size: 12px;
+                              "
+                              >nationality_code</code
+                            >
+                            field — they came in as empty strings rather than
+                            NULL, which your current filter doesn't catch.
+                          </p>
+                          <p>I can fix this in two ways:</p>
+                          <ul>
+                            <li>
+                              <strong>Auto-fix:</strong> Update the cleanse rule
+                              to treat empty strings as NULL and forward-fill
+                              from prior record
+                            </li>
+                            <li>
+                              <strong>Quarantine:</strong> Route these rows to a
+                              <code
+                                style="
+                                  background: var(--gray-100);
+                                  padding: 2px 5px;
+                                  border-radius: 4px;
+                                  font-family: monospace;
+                                  font-size: 12px;
+                                "
+                                >labour_rejected</code
+                              >
+                              table for manual review
+                            </li>
+                          </ul>
+                          <p>Which approach do you prefer?</p>
+                        </div>
+                      </div>
+                      <div id="etlWsExtraMsgs"></div>
+                    </div>
+                    <!-- PIPELINE DIAGRAM PANE -->
+                    <div class="ws-pipeline-pane" id="etlWsPipelinePane">
+                      <div
+                        style="
+                          padding: 20px 24px;
+                          background: var(--white);
+                          border-bottom: 1px solid var(--border);
+                          display: flex;
+                          align-items: center;
+                          gap: 10px;
+                        "
+                      >
+                        <div
+                          style="
+                            font-size: 13px;
+                            font-weight: 600;
+                            color: var(--t1);
+                          "
+                        >
+                          Labour Registry Cleanse — Pipeline Diagram
+                        </div>
+                        <span
+                          style="
+                            font-size: 11px;
+                            font-weight: 600;
+                            padding: 3px 9px;
+                            border-radius: 20px;
+                            background: var(--ok-lt);
+                            color: #3b6d11;
+                            border: 1px solid rgba(99, 153, 34, 0.2);
+                          "
+                          >Healthy</span
+                        >
+                        <div
+                          style="
+                            margin-left: auto;
+                            font-size: 12px;
+                            color: var(--t3);
+                          "
+                        >
+                          Click any node to inspect
+                        </div>
+                      </div>
+                      <div class="pipeline-diagram">
+                        <div
+                          class="pd-node"
+                          onclick="etlOpenNdPanel('source')"
+                          id="etlpdn-source"
+                        >
+                          <div class="pd-node-top blue"></div>
+                          <div class="pd-node-icon blue">
+                            <i class="ti ti-database"></i>
+                          </div>
+                          <div class="pd-type blue">Source</div>
+                          <div class="pd-name">PostgreSQL</div>
+                          <div class="pd-sub">labour_db.registrations</div>
+                        </div>
+                        <div class="pd-arrow">
+                          <div class="pd-arrow-line"></div>
+                          <div class="pd-arrow-head"></div>
+                        </div>
+                        <div
+                          class="pd-node"
+                          onclick="etlOpenNdPanel('cleanse')"
+                          id="etlpdn-cleanse"
+                        >
+                          <div class="pd-node-top purple"></div>
+                          <div class="pd-node-icon purple">
+                            <i class="ti ti-eraser"></i>
+                          </div>
+                          <div class="pd-type purple">Cleanse</div>
+                          <div class="pd-name">Null Handler</div>
+                          <div class="pd-sub">fill · flag · skip</div>
+                        </div>
+                        <div class="pd-arrow">
+                          <div class="pd-arrow-line"></div>
+                          <div class="pd-arrow-head"></div>
+                        </div>
+                        <div
+                          class="pd-node"
+                          onclick="etlOpenNdPanel('join')"
+                          id="etlpdn-join"
+                        >
+                          <div class="pd-node-top purple"></div>
+                          <div class="pd-node-icon purple">
+                            <i class="ti ti-git-merge"></i>
+                          </div>
+                          <div class="pd-type purple">Join</div>
+                          <div class="pd-name">Sector Lookup</div>
+                          <div class="pd-sub">sector_codes table</div>
+                        </div>
+                        <div class="pd-arrow">
+                          <div class="pd-arrow-line"></div>
+                          <div class="pd-arrow-head"></div>
+                        </div>
+                        <div
+                          class="pd-node"
+                          onclick="etlOpenNdPanel('filter')"
+                          id="etlpdn-filter"
+                        >
+                          <div class="pd-node-top orange"></div>
+                          <div class="pd-node-icon orange">
+                            <i class="ti ti-filter"></i>
+                          </div>
+                          <div class="pd-type orange">Filter</div>
+                          <div class="pd-name">Date Range</div>
+                          <div class="pd-sub">2024 – present</div>
+                        </div>
+                        <div class="pd-arrow">
+                          <div class="pd-arrow-line"></div>
+                          <div class="pd-arrow-head"></div>
+                        </div>
+                        <div
+                          class="pd-node"
+                          onclick="etlOpenNdPanel('dest')"
+                          id="etlpdn-dest"
+                        >
+                          <div class="pd-node-top green"></div>
+                          <div class="pd-node-icon green">
+                            <i class="ti ti-database"></i>
+                          </div>
+                          <div class="pd-type green">Destination</div>
+                          <div class="pd-name">ClickHouse</div>
+                          <div class="pd-sub">dwh.labour_clean</div>
+                        </div>
+                      </div>
+                      <!-- Node detail panel -->
+                      <div class="nd-panel" id="etlNdPanel">
+                        <div class="nd-panel-head">
+                          <div class="nd-panel-title" id="etlNdPanelTitle">
+                            Node
+                          </div>
+                          <button class="nd-close" onclick="etlCloseNdPanel()">
+                            <i class="ti ti-x"></i>
+                          </button>
+                        </div>
+                        <div class="nd-panel-body" id="etlNdPanelBody"></div>
+                      </div>
+                    </div>
+                    <!-- WS INPUT -->
+                    <div class="ws-input-area" id="etlWsInputArea">
+                      <div class="ws-quick-actions">
+                        <div
+                          class="ws-qa"
+                          onclick="
+                            etlWsAsk(
+                              'Auto-fix the empty string issue in nationality_code',
+                            )
+                          "
+                        >
+                          <i class="ti ti-wand"></i> Auto-fix nulls
+                        </div>
+                        <div
+                          class="ws-qa"
+                          onclick="
+                            etlWsAsk('Show me a sample of today\'s output data')
+                          "
+                        >
+                          <i class="ti ti-table"></i> Sample output
+                        </div>
+                        <div
+                          class="ws-qa"
+                          onclick="
+                            etlWsAsk('Add a deduplication step to the pipeline')
+                          "
+                        >
+                          <i class="ti ti-copy-off"></i> Add dedup step
+                        </div>
+                        <div
+                          class="ws-qa"
+                          onclick="
+                            etlWsAsk('Export the full pipeline schema as JSON')
+                          "
+                        >
+                          <i class="ti ti-download"></i> Export schema
+                        </div>
+                      </div>
+                      <div class="ws-input-inner">
+                        <textarea
+                          class="ws-ta"
+                          id="etlWsInput"
+                          rows="1"
+                          placeholder="Ask the pipeline anything, or give it an instruction…"
+                          onkeydown="etlWsKey(event)"
+                          oninput="autoResize(this)"
+                        ></textarea>
+                        <button class="ws-send" onclick="etlWsSend()">
+                          <i class="ti ti-arrow-up"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- SETTINGS DRAWER -->
+                  <div class="etl-settings-drawer" id="etlSettingsDrawer">
+                    <div class="sd-head">
+                      <h3>Pipeline settings</h3>
+                      <button class="sd-close" onclick="etlToggleSettings()">
+                        <i class="ti ti-x"></i>
+                      </button>
+                    </div>
+                    <div class="sd-body">
+                      <div class="sd-field">
+                        <div class="sd-label">Pipeline name</div>
+                        <div class="sd-val">Labour Registry Cleanse</div>
+                      </div>
+                      <div class="sd-field">
+                        <div class="sd-label">Source</div>
+                        <div class="sd-val">PostgreSQL</div>
+                        <div class="sd-val-sub">10.0.0.42:5432 · labour_db</div>
+                      </div>
+                      <div class="sd-field">
+                        <div class="sd-label">Destination</div>
+                        <div class="sd-val">ClickHouse</div>
+                        <div class="sd-val-sub">dwh.labour_clean</div>
+                      </div>
+                      <div class="sd-field">
+                        <div class="sd-label">Transforms</div>
+                        <div class="sd-val">3 steps</div>
+                        <div class="sd-val-sub">
+                          Null handler · Sector join · Date filter
+                        </div>
+                      </div>
+                      <div class="sd-field">
+                        <div class="sd-label">Schedule</div>
+                        <div class="sd-val">Daily at 06:00 GST</div>
+                      </div>
+                      <div class="sd-divider"></div>
+                      <div class="sd-field">
+                        <div class="sd-label">Connection</div>
+                        <div class="sd-val">
+                          Verified <span style="color: #0f6e56">✓</span>
+                        </div>
+                        <div class="sd-val-sub">
+                          Last tested today at 05:58 GST
+                        </div>
+                      </div>
+                      <div class="sd-field">
+                        <div class="sd-label">Visibility</div>
+                        <div class="sd-val">Private</div>
+                      </div>
+                      <div class="sd-field">
+                        <div class="sd-label">Created</div>
+                        <div class="sd-val">May 10, 2026</div>
+                        <div class="sd-val-sub">by Unni</div>
+                      </div>
+                    </div>
+                    <div class="sd-footer">
+                      <button
+                        class="btn btn-s btn-sm"
+                        style="justify-content: center"
+                        onclick="toast('Opening editor…', 'ti-edit')"
+                      >
+                        <i class="ti ti-edit"></i> Edit pipeline
+                      </button>
+                      <button
+                        class="btn btn-danger btn-sm"
+                        style="justify-content: center"
+                        onclick="
+                          toast('Pipeline deleted', 'ti-trash');
+                          etlToggleSettings();
+                          etlGoTo('etl-library');
+                        "
+                      >
+                        <i class="ti ti-trash"></i> Delete pipeline
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /etl-workspace -->
+            </div>

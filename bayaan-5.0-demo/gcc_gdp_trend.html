@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GCC GDP Growth — Benchmark Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f4f6f9;
+    color: #1a1d23;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 32px 20px;
+  }
+
+  .card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05);
+    padding: 28px 28px 24px;
+    width: 100%;
+    max-width: 900px;
+  }
+
+  /* ── Header ── */
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .header-left {}
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #eaf2ff;
+    color: #1a6fd4;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+  }
+  .tag-dot { width: 6px; height: 6px; background: #1a6fd4; border-radius: 50%; }
+  .title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #0f1117;
+    line-height: 1.3;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #7a8195;
+    margin-top: 3px;
+    font-weight: 400;
+  }
+  .header-right {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .rank-badge {
+    background: #eaf2ff;
+    border: 1px solid #c0d9f7;
+    border-radius: 10px;
+    padding: 8px 14px;
+    text-align: center;
+  }
+  .rank-num {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1a6fd4;
+    line-height: 1;
+    font-family: 'DM Mono', monospace;
+  }
+  .rank-label { font-size: 10px; color: #7a8195; margin-top: 2px; }
+
+  /* ── KPI row ── */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 18px 0 22px;
+  }
+  .kpi {
+    background: #f8f9fc;
+    border: 1px solid #e8eaf0;
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .kpi-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #9aa0b0;
+    margin-bottom: 5px;
+  }
+  .kpi-value {
+    font-size: 20px;
+    font-weight: 600;
+    color: #0f1117;
+    font-family: 'DM Mono', monospace;
+    line-height: 1;
+  }
+  .kpi-value.blue { color: #1a6fd4; }
+  .kpi-value.green { color: #1a9e6f; }
+  .kpi-sub {
+    font-size: 11px;
+    color: #9aa0b0;
+    margin-top: 3px;
+  }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #5a6070;
+    font-weight: 400;
+  }
+  .legend-line {
+    width: 20px;
+    height: 2.5px;
+    border-radius: 2px;
+  }
+  .legend-dashed {
+    width: 20px;
+    height: 0;
+    border-top: 2px dashed #f4a623;
+  }
+  .legend-you {
+    font-size: 10px;
+    background: #1a6fd4;
+    color: #fff;
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-weight: 500;
+  }
+
+  /* ── Chart area ── */
+  .chart-wrap {
+    position: relative;
+    width: 100%;
+    height: 280px;
+    margin-bottom: 8px;
+  }
+
+  .chart-note {
+    font-size: 10.5px;
+    color: #a0a8b8;
+    text-align: right;
+    margin-bottom: 22px;
+    font-style: italic;
+  }
+
+  /* ── Insight section ── */
+  .insight-header {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 12px;
+  }
+  .insight-icon {
+    width: 22px;
+    height: 22px;
+    background: #eaf2ff;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .insight-icon svg { width: 13px; height: 13px; }
+  .insight-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1a6fd4;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .insights-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .insight-card {
+    background: #f8f9fc;
+    border: 1px solid #e8eaf0;
+    border-radius: 10px;
+    padding: 13px 14px;
+    border-left: 3px solid #e8eaf0;
+  }
+  .insight-card.blue  { border-left-color: #1a6fd4; }
+  .insight-card.green { border-left-color: #1a9e6f; }
+  .insight-card.amber { border-left-color: #d97b1a; }
+  .insight-card.red   { border-left-color: #c0392b; }
+
+  .insight-card-label {
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #9aa0b0;
+    margin-bottom: 6px;
+  }
+  .insight-card-text {
+    font-size: 12px;
+    color: #3a3f50;
+    line-height: 1.6;
+  }
+  .insight-card-text strong { font-weight: 600; }
+  .insight-card-text .hl-blue  { color: #1a6fd4; font-weight: 600; }
+  .insight-card-text .hl-green { color: #1a9e6f; font-weight: 600; }
+  .insight-card-text .hl-red   { color: #c0392b; font-weight: 600; }
+
+  /* ── Responsive ── */
+  @media (max-width: 680px) {
+    .card { padding: 20px 16px; }
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .insights-grid { grid-template-columns: repeat(2, 1fr); }
+    .header { flex-direction: column; }
+    .header-right { text-align: left; }
+    .title { font-size: 15px; }
+  }
+  @media (max-width: 420px) {
+    .kpi-row { grid-template-columns: 1fr 1fr; }
+    .insights-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="tag"><span class="tag-dot"></span> GCC Ranking · GDP</div>
+      <h1 class="title">Real YoY GDP Growth</h1>
+      <p class="subtitle">Q3 2025 – Q2 2026 &nbsp;·&nbsp; Higher is better &nbsp;·&nbsp; Refreshed 4 hrs ago</p>
+    </div>
+    <div class="header-right">
+      <div class="rank-badge">
+        <div class="rank-num">#1</div>
+        <div class="rank-label">of 5 economies</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-label">Top performer</div>
+      <div class="kpi-value blue">3.4%</div>
+      <div class="kpi-sub">Abu Dhabi · AE</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Regional average</div>
+      <div class="kpi-value">2.8%</div>
+      <div class="kpi-sub">GCC benchmark</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Your rank</div>
+      <div class="kpi-value blue">#1</div>
+      <div class="kpi-sub">of 5 economies</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Performance gap</div>
+      <div class="kpi-value green">+0.6pp</div>
+      <div class="kpi-sub">vs regional average</div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-line" style="background:#1a6fd4;"></div>
+      Abu Dhabi <span class="legend-you">YOU</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-line" style="background:#2da87e;"></div>
+      Bahrain
+    </div>
+    <div class="legend-item">
+      <div class="legend-line" style="background:#e0873a;"></div>
+      Saudi Arabia
+    </div>
+    <div class="legend-item">
+      <div class="legend-line" style="background:#a259d9;"></div>
+      Qatar
+    </div>
+    <div class="legend-item">
+      <div class="legend-line" style="background:#9eaab3;"></div>
+      Kuwait
+    </div>
+    <div class="legend-item">
+      <div class="legend-dashed"></div>
+      GCC avg
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="chart-wrap">
+    <canvas id="chart" role="img" aria-label="Multi-line trend chart showing Real YoY GDP growth for GCC economies from Q3 2025 to Q2 2026. Abu Dhabi leads at 3.4%."></canvas>
+  </div>
+  <p class="chart-note">Q3–Q4 2025 values are illustrative estimates &nbsp;·&nbsp; Q1–Q2 2026 are actual figures</p>
+
+  <!-- AI Insights -->
+  <div class="insight-header">
+    <div class="insight-icon">
+      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 1l1.5 4.5H14l-3.7 2.7 1.4 4.3L8 10l-3.7 2.5 1.4-4.3L2 5.5h4.5L8 1z" fill="#1a6fd4"/>
+      </svg>
+    </div>
+    <span class="insight-title">AI Insight</span>
+  </div>
+
+  <div class="insights-grid">
+    <div class="insight-card blue">
+      <div class="insight-card-label">Leader trajectory</div>
+      <div class="insight-card-text">
+        Abu Dhabi climbed steadily from <span class="hl-blue">2.6% → 3.4%</span> over 4 quarters — the steepest upward run in the GCC.
+      </div>
+    </div>
+    <div class="insight-card green">
+      <div class="insight-card-label">Rising challenger</div>
+      <div class="insight-card-text">
+        Bahrain has accelerated sharply since Q4 2025, closing the gap from <span class="hl-green">−1.0pp to −0.5pp</span> vs Abu Dhabi.
+      </div>
+    </div>
+    <div class="insight-card amber">
+      <div class="insight-card-label">Divergence risk</div>
+      <div class="insight-card-text">
+        Qatar and Kuwait are the only two economies trending below GCC average. Qatar has softened for <strong>2 consecutive quarters</strong>.
+      </div>
+    </div>
+    <div class="insight-card red">
+      <div class="insight-card-label">Signal</div>
+      <div class="insight-card-text">
+        Kuwait has stayed below GCC average for <span class="hl-red">all 4 quarters</span> with zero QoQ change — a structural review is warranted.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const quarters = ['Q3 2025', 'Q4 2025', 'Q1 2026', 'Q2 2026'];
+
+  const series = [
+    { label: 'Abu Dhabi',    data: [2.6, 2.8, 3.0, 3.4], color: '#1a6fd4', dash: [], bw: 2.5, pr: 5 },
+    { label: 'Bahrain',      data: [2.3, 2.5, 2.7, 2.9], color: '#2da87e', dash: [], bw: 2,   pr: 4 },
+    { label: 'Saudi Arabia', data: [2.4, 2.4, 2.5, 2.6], color: '#e0873a', dash: [], bw: 2,   pr: 4 },
+    { label: 'Qatar',        data: [2.4, 2.3, 2.2, 2.1], color: '#a259d9', dash: [], bw: 2,   pr: 4 },
+    { label: 'Kuwait',       data: [1.9, 1.8, 1.8, 1.8], color: '#9eaab3', dash: [], bw: 2,   pr: 4 },
+    { label: 'GCC avg',      data: [2.3, 2.4, 2.6, 2.8], color: '#f4a623', dash: [6, 4], bw: 1.5, pr: 0 },
+  ];
+
+  const endLabels = series.filter(s => s.label !== 'GCC avg');
+
+  new Chart(document.getElementById('chart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: quarters,
+      datasets: series.map(s => ({
+        label: s.label,
+        data: s.data,
+        borderColor: s.color,
+        backgroundColor: 'transparent',
+        borderWidth: s.bw,
+        borderDash: s.dash,
+        pointBackgroundColor: s.color,
+        pointBorderColor: '#fff',
+        pointBorderWidth: 1.5,
+        pointRadius: s.pr,
+        pointHoverRadius: s.pr + 2,
+        tension: 0.35,
+      }))
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      layout: { padding: { right: 56, top: 8 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#fff',
+          borderColor: '#e0e3ec',
+          borderWidth: 1,
+          titleColor: '#0f1117',
+          bodyColor: '#5a6070',
+          padding: 10,
+          cornerRadius: 8,
+          callbacks: {
+            label: c => `  ${c.dataset.label}: ${c.parsed.y.toFixed(1)}%`
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(0,0,0,0.05)', drawTicks: false },
+          border: { color: 'rgba(0,0,0,0.08)' },
+          ticks: {
+            color: '#9aa0b0',
+            font: { family: "'DM Sans', sans-serif", size: 11 },
+            padding: 8
+          }
+        },
+        y: {
+          min: 1.2,
+          max: 4.2,
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          border: { display: false },
+          ticks: {
+            color: '#9aa0b0',
+            font: { family: "'DM Sans', sans-serif", size: 11 },
+            callback: v => v.toFixed(1) + '%',
+            padding: 8
+          }
+        }
+      }
+    },
+    plugins: [{
+      id: 'endLabels',
+      afterDatasetsDraw(chart) {
+        const { ctx, scales: { x, y } } = chart;
+        ctx.save();
+        ctx.font = "500 11px 'DM Mono', monospace";
+        ctx.textAlign = 'left';
+        endLabels.forEach(s => {
+          const val = s.data[s.data.length - 1];
+          const px = x.getPixelForValue(3);
+          const py = y.getPixelForValue(val);
+          ctx.fillStyle = s.color;
+          ctx.fillText(val.toFixed(1) + '%', px + 10, py + 4);
+        });
+        ctx.restore();
+      }
+    }]
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Labour Market Observatory — Simulations · Bayaan</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="../css/pages/lmo-common.css">
+<link rel="stylesheet" href="../css/pages/lmo-simulation.css">
+<script src="lmo-shared.js"></script>
+</head>
+<body class="lmo lmo--simulation">
+
+<div class="lsb-rail">
+  <aside class="lsb">
+    <button type="button" class="lsb-btn ai-top" onclick="openChat('What are the highest-impact simulations to run now?','Simulation AI')">
+      <span class="lsb-ico-wrap"><i class="ti ti-sparkles"></i></span>
+      <span class="lsb-lbl">LMO AI</span>
+    </button>
+    <button type="button" class="lsb-btn" data-lmo-nav="briefing"><span class="lsb-ico-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span><span class="lsb-lbl">Briefing</span></button>
+    <button type="button" class="lsb-btn" data-lmo-nav="observe"><span class="lsb-ico-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span class="lsb-lbl">Observe</span></button>
+    <button type="button" class="lsb-btn" data-lmo-nav="forecasting"><span class="lsb-ico-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="18" height="18" rx="3"/><polyline points="7 15 10 11 13 13 17 8"/></svg></span><span class="lsb-lbl">Forecast</span></button>
+    <button type="button" class="lsb-btn act"><span class="lsb-ico-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span><span class="lsb-lbl">Simulations</span></button>
+  </aside>
+</div>
+
+<div class="app-shell">
+<div class="wrap">
+<div class="page">
+
+  <nav class="ind-page-breadcrumb" aria-label="Breadcrumb">
+    <a href="#" data-lmo-bc="home">Home</a>
+    <span class="ind-bc-sep">›</span>
+    <a href="#" data-lmo-bc="observatory">Observatory</a>
+    <span class="ind-bc-sep">›</span>
+    <a href="lmo-simulation.html">Simulations</a>
+    <span class="ind-bc-sep">›</span>
+    <span class="ind-bc-current" id="bc-sim">Emiratisation Push +3pp</span>
+  </nav>
+
+  <div class="ph">
+    <div class="ph-l">
+      <h1 class="ph-title">Labour Market Observatory (LMO) - Simulation Hub</h1>
+    </div>
+  </div>
+
+  <div class="stage-layout">
+    <div class="stage-card">
+      <div class="stage-hd">
+        <div>
+          <h2 class="ph-title stage-scenario-title"><span id="stage-title">Emiratisation Push +3pp</span> <button type="button" class="ai-sparkle-action ai-sparkle-action--ph" onclick="openChat('What are the highest-impact simulations to run now?','Simulation AI')"><i class="ti ti-sparkles" aria-hidden="true"></i></button></h2>
+          <div class="ph-meta" id="stage-sub">Emiratisation Push +3% vs Base Case · Q1 2025 – Q2 2027</div>
+        </div>
+      </div>
+      <div class="stage-kpi-row">
+        <div class="skpi">
+          <div class="skpi-lbl">Q3 2026 (Sim)</div>
+          <div class="skpi-val" id="kpi-q3">5.1%</div>
+          <div class="skpi-chg up" id="kpi-q3-chg"><span class="skpi-chip up" id="kpi-q3-chip">▼ –0.7pp</span> vs base</div>
+        </div>
+        <div class="skpi">
+          <div class="skpi-lbl">Q4 2026 (Sim)</div>
+          <div class="skpi-val" id="kpi-q4">5.0%</div>
+          <div class="skpi-chg up" id="kpi-q4-chg"><span class="skpi-chip up" id="kpi-q4-chip">▼ –0.6pp</span> vs base</div>
+        </div>
+        <div class="skpi">
+          <div class="skpi-lbl">Model Confidence</div>
+          <div class="skpi-val">76%</div>
+          <div class="skpi-chg nt">Moderate · ARIMA+policy</div>
+        </div>
+        <div class="skpi">
+          <div class="skpi-lbl">Vision 2031 Gap</div>
+          <div class="skpi-val" id="kpi-gap">–3.4pp</div>
+          <div class="skpi-chg nt" id="kpi-gap-lbl">E-P ratio shortfall closing</div>
+        </div>
+      </div>
+
+      <div class="stage-chart-area">
+        <div class="stage-chart-wrap"><canvas id="main-chart"></canvas></div>
+      </div>
+      <div class="stage-legend">
+        <div class="leg"><div class="leg-line actual"></div>Actual</div>
+        <div class="leg"><div class="leg-line sim"></div>Simulation</div>
+        <div class="leg"><div class="leg-line base"></div>Base</div>
+      </div>
+    </div>
+
+    <div class="driver-panel">
+      <div class="dp-hd">
+        <div class="dp-hd-title">
+          Simulation Drivers
+        </div>
+        <button type="button" class="dp-reset" onclick="resetSliders()">Reset</button>
+      </div>
+      <!-- <div class="driver-list">
+        <div class="drv selected" onclick="selectDrv(this,'emiratisation')">
+          <div class="drv-ico bl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+          <div class="drv-body"><div class="drv-name">Emiratisation Target</div><div class="drv-val">+3.0pp above base</div></div>
+          <span class="drv-badge hi">High</span>
+        </div>
+        <div class="drv" onclick="selectDrv(this,'gdp')">
+          <div class="drv-ico am"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+          <div class="drv-body"><div class="drv-name">GDP Growth Rate</div><div class="drv-val">+4.2% baseline</div></div>
+          <span class="drv-badge hi">High</span>
+        </div>
+        <div class="drv" onclick="selectDrv(this,'visa')">
+          <div class="drv-ico tl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+          <div class="drv-body"><div class="drv-name">Visa Issuance Volume</div><div class="drv-val">Baseline quota</div></div>
+          <span class="drv-badge md">Med</span>
+        </div>
+        <div class="drv" onclick="selectDrv(this,'female')">
+          <div class="drv-ico pu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M12 12v9"/><path d="M9 18h6"/></svg></div>
+          <div class="drv-body"><div class="drv-name">Female Participation</div><div class="drv-val">52.3% → target</div></div>
+          <span class="drv-badge md">Med</span>
+        </div>
+        <div class="drv" onclick="selectDrv(this,'nafis')">
+          <div class="drv-ico gn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg></div>
+          <div class="drv-body"><div class="drv-name">NAFIS Capacity</div><div class="drv-val">6,400/yr base</div></div>
+          <span class="drv-badge lo">Low–Med</span>
+        </div>
+      </div> -->
+      <div class="dp-slider-section">
+        <div class="dp-active-label" id="dp-active-label">Emiratisation Rate Target</div>
+        <div class="slider-row">
+          <div class="slider-meta">
+            <span class="slider-name">Uplift above base (pp)</span>
+            <span class="slider-val" id="sv1">+3.0pp</span>
+          </div>
+          <input type="range" class="sim-range" id="sl1" min="0" max="8" step="0.5" value="3" oninput="onSlider(1,this)" style="--pct:37.5%">
+        </div>
+        <div class="slider-row">
+          <div class="slider-meta">
+            <span class="slider-name">NAFIS multiplier</span>
+            <span class="slider-val" id="sv2">1.5×</span>
+          </div>
+          <input type="range" class="sim-range" id="sl2" min="1" max="3" step="0.25" value="1.5" oninput="onSlider(2,this)" style="--pct:25%">
+        </div>
+        <div class="slider-row">
+          <div class="slider-meta">
+            <span class="slider-name">Compliance rate (%)</span>
+            <span class="slider-val" id="sv3">70%</span>
+          </div>
+          <input type="range" class="sim-range" id="sl3" min="30" max="100" step="5" value="70" oninput="onSlider(3,this)" style="--pct:57.1%">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ai-insights-card">
+    <div class="ai-insights-hd">
+      <div class="ai-insights-title ai-insights-title--md">
+        AI-Generated Insights
+        <button type="button" class="ai-sparkle-action" onclick="openChat('Explain the full impact analysis of a 3pp Emiratisation push simulation on labour market outcomes','Simulation Intelligence')" title="Deep-dive with AI" aria-label="Deep-dive with AI"><i class="ti ti-sparkles" aria-hidden="true"></i></button>
+      </div>
+    </div>
+    <div class="ai-insight-list" id="insight-list">
+      <div class="ai-insight-item">
+        <span class="ai-insight-sparkle" aria-hidden="true"><i class="ti ti-sparkles"></i></span>
+        <div class="ai-insight-text">A <strong>+3pp Emiratisation push</strong> applied consistently through Q4 would reduce unemployment to <strong>5.1%</strong> — 0.7pp below base — driven by Finance and Technology sector absorption.</div>
+      </div>
+      <div class="ai-insight-item">
+        <span class="ai-insight-sparkle" aria-hidden="true"><i class="ti ti-sparkles"></i></span>
+        <div class="ai-insight-text"><strong>NAFIS capacity constraint</strong> is the binding bottleneck — current throughput covers only 58% of projected demand. Scaling to 1.5× capacity unlocks the full simulation gain.</div>
+      </div>
+      <div class="ai-insight-item">
+        <span class="ai-insight-sparkle" aria-hidden="true"><i class="ti ti-sparkles"></i></span>
+        <div class="ai-insight-text">Simulation assumes <strong>70% private sector compliance</strong>. Dropping below 55% reduces the unemployment improvement to less than 0.3pp — enforcement is the key sensitivity.</div>
+      </div>
+      <div class="ai-insight-item">
+        <span class="ai-insight-sparkle" aria-hidden="true"><i class="ti ti-sparkles"></i></span>
+        <div class="ai-insight-text">Construction sector drag is <strong>not offset</strong> by this scenario. A parallel construction permit stimulus is recommended to prevent Q4 unemployment reverting toward 5.5%.</div>
+      </div>
+    </div>
+    <div class="sim-impact-hd">Predicted Impacts</div>
+    <div class="impact-grid">
+      <div class="imp"><div class="imp-lbl">Emirati Private Jobs</div><div class="imp-val" id="imp1">+18.4k</div><div class="imp-chg up">↑ net new by Q4 2026</div></div>
+      <div class="imp"><div class="imp-lbl">Youth Unemployment</div><div class="imp-val" id="imp2">9.8%</div><div class="imp-chg up">▼ –1.4pp vs base</div></div>
+      <div class="imp"><div class="imp-lbl">Participation Rate</div><div class="imp-val" id="imp3">80.2%</div><div class="imp-chg up">↑ +0.8pp uplift</div></div>
+      <div class="imp"><div class="imp-lbl">V2031 E-P Gap</div><div class="imp-val" id="imp4">–3.4pp</div><div class="imp-chg nt">→ Partially closed</div></div>
+    </div>
+  </div>
+
+  <div class="rel-sec">
+    <div class="rel-sec-hd">
+      <div class="rel-sec-title">Related Simulations</div>
+      <button type="button" class="rel-all">View All <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+    </div>
+    <div class="rel-grid" id="rel-grid"></div>
+  </div>
+
+</div>
+</div>
+
+<aside class="cpanel ai-panel" id="cpanel" role="complementary" aria-label="Bayaan AI Panel">
+  <div class="bai-header">
+    <div class="bai-header-left">
+      <img class="bai-icon-wrap" src="../assets/ai-chat-thumb.svg" alt="Bayaan AI" width="38" height="38">
+      <div><div class="bai-header-title">Bayaan AI</div></div>
+    </div>
+    <div class="bai-header-right">
+      <button class="bai-close-btn" type="button" onclick="closeChat()" title="Close AI Panel"><i class="ti ti-x"></i></button>
+    </div>
+  </div>
+  <div class="bai-context-strip">
+    <span class="bai-ctx-label">Analysing</span>
+    <span class="bai-ctx-pill" id="ctx-val">Simulation Intelligence</span>
+    <span class="bai-ctx-dot"></span>
+    <span class="bai-ctx-dot-label">Generating</span>
+  </div>
+  <div class="bai-messages msgs" id="msgs"></div>
+  <div class="suggs" id="suggs"></div>
+  <div class="bai-input-area">
+    <div class="bai-input-row">
+      <textarea class="bai-input" id="cin" placeholder="Ask about this simulation…" rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendC()}"></textarea>
+      <button class="bai-send-btn" type="button" onclick="sendC()" title="Send"><i class="ti ti-send"></i></button>
+    </div>
+  </div>
+</aside>
+</div>
+
+<script>
+const LABELS = ['Q1\'25','Q2\'25','Q3\'25','Q4\'25','Q1\'26','Q2\'26','Q3\'26','Q4\'26','Q1\'27','Q2\'27'];
+const ACTUAL  = [5.9,5.8,null,null,null,null,null,null,null,null];
+const BASE    = [null,5.8,5.7,5.5,5.6,5.5,5.4,5.3,5.2,5.1];
+const CHART_AC = '#0066FF';
+const CHART_SIM = '#EA580C';
+
+const SIM_PERIOD = 'Q1 2025 – Q2 2027';
+
+const SIM_NAMES = {
+  emiratisation: 'Emiratisation Push +3pp',
+  gdp: 'GDP Shock –2pp Stress Test',
+  visa: 'Skilled Visa Quota Expansion +20%',
+  female: 'Female Participation Accelerator',
+  nafis: 'NAFIS Scale-Up ×2 Capacity',
+  construction: 'Construction Sector Rebound',
+  recession: 'Mild Recession Stress Test'
+};
+
+const SCENARIOS = {
+  emiratisation:{ sim:[null,null,5.6,5.3,5.3,5.2,5.1,5.0,4.9,4.8], q3:'5.1%', q4:'5.0%', q3d:'▼ –0.7pp', q4d:'▼ –0.6pp', q3up:true, q4up:true, gap:'–3.4pp', gaplbl:'E-P ratio shortfall closing', badge:'Ready', bclass:'', sub:'Emiratisation Push +3% vs Base Case · ' + SIM_PERIOD, i1:'+18.4k', i2:'9.8%', i3:'80.2%', i4:'–3.4pp' },
+  gdp:          { sim:[null,null,5.8,6.0,6.1,6.2,6.4,6.5,6.6,6.5], q3:'6.4%', q4:'6.5%', q3d:'▲ +1.0pp', q4d:'▲ +1.2pp', q3up:false, q4up:false, gap:'+1.8pp', gaplbl:'E-P gap widening under shock', badge:'Risk', bclass:'risk', sub:'GDP Shock –2pp vs Base Case · ' + SIM_PERIOD, i1:'–8.2k', i2:'12.4%', i3:'78.1%', i4:'+1.8pp' },
+  visa:         { sim:[null,null,5.6,5.4,5.4,5.3,5.3,5.2,5.1,5.0], q3:'5.3%', q4:'5.2%', q3d:'▼ –0.5pp', q4d:'▼ –0.1pp', q3up:true, q4up:true, gap:'–2.8pp', gaplbl:'Gap slightly improved', badge:'Ready', bclass:'', sub:'Visa Expansion +20% vs Base Case · ' + SIM_PERIOD, i1:'+62k', i2:'10.2%', i3:'79.8%', i4:'–2.8pp' },
+  female:       { sim:[null,null,5.7,5.4,5.3,5.2,5.0,4.9,4.8,4.7], q3:'5.0%', q4:'4.9%', q3d:'▼ –0.8pp', q4d:'▼ –0.4pp', q3up:true, q4up:true, gap:'–3.6pp', gaplbl:'Best gap closure scenario', badge:'Ready', bclass:'', sub:'Female Participation +5% vs Base Case · ' + SIM_PERIOD, i1:'+24.1k', i2:'9.5%', i3:'81.0%', i4:'–3.6pp' },
+  nafis:        { sim:[null,null,5.6,5.3,5.2,5.1,4.9,4.8,4.7,4.6], q3:'4.9%', q4:'4.8%', q3d:'▼ –0.9pp', q4d:'▼ –0.5pp', q3up:true, q4up:true, gap:'–3.8pp', gaplbl:'Fastest closing trajectory', badge:'Ready', bclass:'', sub:'NAFIS ×2 Scale-Up vs Base Case · ' + SIM_PERIOD, i1:'+30.2k', i2:'8.9%', i3:'80.6%', i4:'–3.8pp' },
+  construction: { sim:[null,null,5.6,5.4,5.4,5.3,5.2,5.0,4.9,4.8], q3:'5.2%', q4:'5.0%', q3d:'▼ –0.6pp', q4d:'▼ –0.3pp', q3up:true, q4up:true, gap:'–3.0pp', gaplbl:'Partial gap improvement', badge:'Ready', bclass:'', sub:'Construction Rebound vs Base Case · ' + SIM_PERIOD, i1:'+5.2k', i2:'10.8%', i3:'79.5%', i4:'–3.0pp' },
+  recession:    { sim:[null,null,5.9,6.1,6.3,6.5,6.8,7.1,7.0,6.8], q3:'6.8%', q4:'7.1%', q3d:'▲ +1.4pp', q4d:'▲ +1.8pp', q3up:false, q4up:false, gap:'+2.6pp', gaplbl:'Gap deteriorating rapidly', badge:'Risk', bclass:'risk', sub:'Mild Recession Stress Test vs Base Case · ' + SIM_PERIOD, i1:'–21k', i2:'14.2%', i3:'76.8%', i4:'+2.6pp' }
+};
+
+const RELATED_SIMS=[
+  {key:'gdp',desc:'Models a –2pp GDP correction across two quarters. Finance and construction sectors most exposed to headcount reduction.',metric:'+1.3pp',metricLbl:'Unemployment uplift (base shock)'},
+  {key:'visa',desc:'Expands skilled visa quota by 20%. Projects +62k employed residents by Q4 2026, primarily in ICT and healthcare.',metric:'+62k',metricLbl:'Total employed increase by Q4'},
+  {key:'female',desc:'Accelerates female labour force participation through targeted childcare subsidies and flexible work mandates across priority sectors.',metric:'+4.7pp',metricLbl:'Participation rate by 2027'},
+  {key:'nafis',desc:'Doubles NAFIS programme throughput to 12,800 placements per year. Reduces youth unemployment through scaled graduate absorption.',metric:'–1.8pp',metricLbl:'Youth unemployment reduction by 2027'},
+  {key:'construction',desc:'Models construction permit recovery scenario. Preserves 5.2k skilled trades jobs that would otherwise be lost by Q4 2025.',metric:'+5.2k',metricLbl:'Construction jobs preserved by Q4'},
+  {key:'recession',desc:'Simulates mild recession with –1.5pp GDP contraction. Stress-tests unemployment ceiling at 7.1% by Q4 2026 under downside conditions.',metric:'7.1%',metricLbl:'Unemployment ceiling (Q4 2026)'}
+];
+
+function simName(key){return SIM_NAMES[key]||'Simulation';}
+
+let chart = null;
+let currentScenario = 'emiratisation';
+let chatHistory = [];
+let currentCtx = 'default';
+
+function scrollPageTop(){
+  window.scrollTo({top:0,behavior:'smooth'});
+  document.documentElement.scrollTop=0;
+  document.body.scrollTop=0;
+  const bc=document.querySelector('.ind-page-breadcrumb');
+  if(bc)bc.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function updateSimHeader(key){
+  const s=SCENARIOS[key];
+  if(!s)return;
+  const titleEl=document.getElementById('stage-title');
+  const subEl=document.getElementById('stage-sub');
+  if(titleEl)titleEl.textContent=simName(key);
+  if(subEl)subEl.textContent=s.sub;
+}
+
+function updateSimNav(key){
+  const name=simName(key);
+  const bc=document.getElementById('bc-sim');
+  if(bc)bc.textContent=name;
+  document.title=`${name} — LMO Simulations · Bayaan`;
+  updateSimHeader(key);
+}
+
+function selectSim(key){
+  if(!SCENARIOS[key]||key===currentScenario)return;
+  applyScenario(key);
+  updateSimNav(key);
+  currentCtx=key;
+  const url=new URL(window.location.href);
+  url.searchParams.set('sim',key);
+  if(LMO.isEmbed())url.searchParams.set('embed','1');
+  history.replaceState(null,'',url.toString());
+  renderRelatedSims();
+  scrollPageTop();
+  setTimeout(LMO.reportEmbedHeight,200);
+}
+
+function renderRelatedSims(){
+  const grid=document.getElementById('rel-grid');
+  if(!grid)return;
+  grid.innerHTML=RELATED_SIMS.filter(s=>s.key!==currentScenario).map(s=>`
+    <article class="rel-card">
+      <div class="rel-top-row">
+        <div class="rel-ico"><i class="ti ti-stack-2" aria-hidden="true"></i></div>
+        <div class="rel-card-head">
+          <div class="rel-name">${simName(s.key)}</div>
+        </div>
+      </div>
+      <p class="rel-desc">${s.desc}</p>
+      <div class="rel-bottom-row">
+        <div><div class="rel-outcome-val">${s.metric}</div><div class="rel-outcome-lbl">${s.metricLbl}</div></div>
+        <button type="button" class="rel-view" onclick="selectSim('${s.key}')">
+          View<i class="ti ti-chevron-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </article>`).join('');
+}
+
+function initSimFromUrl(){
+  const param=new URLSearchParams(location.search).get('sim');
+  const sim=param&&SCENARIOS[param]?param:'emiratisation';
+  applyScenario(sim);
+  updateSimNav(sim);
+  renderRelatedSims();
+  currentCtx=SCENARIOS[sim]?sim:'default';
+}
+
+function bridgeFromActual(data){
+  const bridged=data.slice();
+  const anchor=ACTUAL[1];
+  if(anchor!=null&&bridged[1]==null&&bridged[2]!=null)bridged[1]=anchor;
+  return bridged;
+}
+
+function buildChart(simData){
+  const canvas=document.getElementById('main-chart');
+  if(!canvas||typeof Chart==='undefined')return;
+  const ctx=canvas.getContext('2d');
+  if(chart)chart.destroy();
+  const sg=ctx.createLinearGradient(0,0,0,280);
+  sg.addColorStop(0,'rgba(234,88,12,.13)');
+  sg.addColorStop(1,'rgba(234,88,12,.02)');
+  const ag=ctx.createLinearGradient(0,0,0,280);
+  ag.addColorStop(0,'rgba(0,102,255,.10)');
+  ag.addColorStop(1,'rgba(0,102,255,.02)');
+  const simSeries=bridgeFromActual(simData);
+  chart=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:LABELS,
+      datasets:[
+        {label:'Actual',data:ACTUAL,borderColor:CHART_AC,borderWidth:2.5,fill:true,backgroundColor:ag,pointRadius:5,pointBackgroundColor:CHART_AC,pointBorderColor:'#fff',pointBorderWidth:2,tension:.4,spanGaps:false},
+        {label:'Base',data:BASE,borderColor:'#CBD5E1',borderWidth:1.5,borderDash:[5,4],fill:false,pointRadius:(ctx)=>ctx.dataIndex===1?0:3,pointBackgroundColor:'#CBD5E1',tension:.4,spanGaps:false},
+        {label:'Simulation',data:simSeries,borderColor:CHART_SIM,borderWidth:2.5,fill:true,backgroundColor:sg,pointRadius:(ctx)=>ctx.dataIndex===1?0:5,pointBackgroundColor:CHART_SIM,pointBorderColor:'#fff',pointBorderWidth:2,tension:.4,spanGaps:false}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{mode:'index',intersect:false,backgroundColor:'rgba(15,23,42,.92)',titleColor:'#fff',bodyColor:'#CBD5E1',borderColor:'rgba(255,255,255,.1)',borderWidth:1,padding:12,cornerRadius:8,callbacks:{label:c=>{
+          if(c.parsed.y==null)return null;
+          if(c.dataIndex===1&&c.dataset.label!=='Actual')return null;
+          return `${c.dataset.label}: ${c.parsed.y.toFixed(1)}%`;
+        }}}
+      },
+      scales:{
+        x:{grid:{color:'rgba(148,163,184,.12)'},ticks:{color:'#94A3B8',font:{size:11}}},
+        y:{grid:{color:'rgba(148,163,184,.12)'},min:4.4,max:7.4,ticks:{color:'#94A3B8',font:{size:11},callback:v=>v.toFixed(1)+'%'},title:{display:true,text:'Unemployment Rate (%)',color:'#94A3B8',font:{size:10}}}
+      },
+      interaction:{mode:'index',intersect:false}
+    }
+  });
+}
+
+function applyScenario(key){
+  currentScenario=key;
+  const s=SCENARIOS[key];
+  buildChart(s.sim);
+  document.getElementById('kpi-q3').textContent=s.q3;
+  document.getElementById('kpi-q4').textContent=s.q4;
+  document.getElementById('kpi-gap').textContent=s.gap;
+  document.getElementById('kpi-gap-lbl').textContent=s.gaplbl;
+  const q3chip=document.getElementById('kpi-q3-chip');
+  const q4chip=document.getElementById('kpi-q4-chip');
+  q3chip.textContent=s.q3d;
+  q4chip.textContent=s.q4d;
+  q3chip.className='skpi-chip '+(s.q3up?'up':'dn');
+  q4chip.className='skpi-chip '+(s.q4up?'up':'dn');
+  const badge=document.getElementById('sim-badge');
+  if(badge){
+    badge.textContent=s.badge;
+    badge.className='ready-badge '+(s.bclass||'');
+  }
+  document.getElementById('imp1').textContent=s.i1;
+  document.getElementById('imp2').textContent=s.i2;
+  document.getElementById('imp3').textContent=s.i3;
+  document.getElementById('imp4').textContent=s.i4;
+}
+
+function pct(v,mn,mx){return((v-mn)/(mx-mn)*100).toFixed(1)+'%'}
+function onSlider(n,el){
+  const v=parseFloat(el.value);
+  if(n===1){document.getElementById('sv1').textContent='+'+v.toFixed(1)+'pp';el.style.setProperty('--pct',pct(v,0,8));}
+  if(n===2){document.getElementById('sv2').textContent=v.toFixed(2)+'×';el.style.setProperty('--pct',pct(v,1,3));}
+  if(n===3){document.getElementById('sv3').textContent=v+'%';el.style.setProperty('--pct',pct(v,30,100));}
+}
+function resetSliders(){
+  const sl1=document.getElementById('sl1'),sl2=document.getElementById('sl2'),sl3=document.getElementById('sl3');
+  sl1.value=3;sl2.value=1.5;sl3.value=70;
+  document.getElementById('sv1').textContent='+3.0pp';
+  document.getElementById('sv2').textContent='1.50×';
+  document.getElementById('sv3').textContent='70%';
+  sl1.style.setProperty('--pct','37.5%');
+  sl2.style.setProperty('--pct','25%');
+  sl3.style.setProperty('--pct','57.1%');
+}
+function selectDrv(el,key){
+  document.querySelectorAll('.drv').forEach(d=>d.classList.remove('selected'));
+  el.classList.add('selected');
+  const labels={emiratisation:'Emiratisation Rate Target',gdp:'GDP Growth Rate',visa:'Visa Issuance Volume',female:'Female Participation',nafis:'NAFIS Capacity'};
+  document.getElementById('dp-active-label').textContent=labels[key]||key;
+}
+
+const AI_RESP={
+  emiratisation:"Under the <strong>Emiratisation Push +3pp</strong> scenario, unemployment falls to <strong>5.1% by Q3 2026</strong> — 0.7pp below base. The main transmission channel is Finance and Technology sector absorption. Critical dependency: NAFIS must scale to at least 1.5× to convert the regulatory push into real placements.",
+  gdp:"The <strong>GDP Shock –2pp</strong> scenario pushes unemployment to <strong>6.4–6.5%</strong> by Q3–Q4 2026. Worst-affected: Construction and Retail. Emiratisation compliance may slip as firms reduce headcount. Monitor PMI weekly as an early warning signal.",
+  female:"The <strong>Female Participation +5%</strong> simulation is the highest-efficiency intervention per policy AED spent — unemployment drops to <strong>5.0% by Q3 2026</strong>, with the participation rate rising to 80.2%. Entrants concentrate in Healthcare, Education, and Finance.",
+  nafis:"Doubling NAFIS to <strong>12,800 annual placements</strong> has a compounding effect — unemployment reaches <strong>4.9% by Q3 2026</strong> and youth unemployment drops 1.8pp by 2027. Returns diminish beyond 2× scale without parallel compliance enforcement.",
+  recession:"The <strong>Recession Stress Test</strong> is highest severity: unemployment could reach <strong>6.8–7.1%</strong> by Q4 2026. Construction contracts sharply, non-nationals exit, and Emiratisation targets become difficult to enforce. Consider activating a contingency fiscal stimulus of AED 2–3bn.",
+  default:"The <strong>LMO Simulation Workspace</strong> has 8 active models. Current: <strong>Emiratisation Push +3pp</strong>, projecting 5.1% unemployment by Q3 2026 — 0.7pp below base. What would you like to explore?"
+};
+const SUGGS={
+  emiratisation:['What if compliance drops to 50%?','Which sector absorbs most?','Compare with NAFIS scale-up'],
+  gdp:['Show construction impact','What triggers the recovery?','How long until unemployment peaks?'],
+  female:['What policies drive this?','Compare to GCC peers','Show 2031 trajectory'],
+  nafis:['What is the bottleneck?','Youth unemployment impact?','Combine with female participation'],
+  recession:['Best-case containment?','Sector breakdown?','What is the fiscal response?'],
+  default:['Which sim shows best policy ROI?','What is the Vision 2031 gap?','Show combined scenario']
+};
+
+function openChat(ctx,title){
+  if(document.body.classList.contains('embed')&&window.parent!==window){
+    window.parent.postMessage({type:'lmo-chat',ctx,title:title||'Simulation Intelligence'},'*');
+    return;
+  }
+  document.getElementById('ctx-val').textContent=title||'Simulation Intelligence';
+  currentCtx=Object.keys(AI_RESP).find(k=>ctx.toLowerCase().includes(k))||'default';
+  const ms=document.getElementById('msgs');
+  if(chatHistory.length===0){
+    const r=AI_RESP[currentCtx];
+    addMsg('ai',r);
+    chatHistory.push({role:'ai',text:r});
+  }else{
+    const n=document.createElement('div');
+    n.className='msg ai';
+    n.innerHTML=`<div class="bubble ai" style="font-size:11.5px;background:var(--acbg);border-color:var(--acbr);color:var(--ac)">📍 ${title||'Simulation'}</div>`;
+    ms.appendChild(n);
+    ms.scrollTop=ms.scrollHeight;
+  }
+  const s=SUGGS[currentCtx]||SUGGS.default;
+  document.getElementById('suggs').innerHTML=s.map(x=>`<button type="button" class="sugg" onclick="sendCT('${escAttr(x)}')">${x}</button>`).join('');
+  document.getElementById('cpanel').classList.add('open');
+  setTimeout(()=>document.getElementById('cin').focus(),300);
+}
+function closeChat(){document.getElementById('cpanel').classList.remove('open')}
+function addMsg(role,text){
+  const ms=document.getElementById('msgs');
+  const d=document.createElement('div');d.className='msg '+role;
+  const b=document.createElement('div');b.className='bubble '+role;b.innerHTML=text;
+  d.appendChild(b);ms.appendChild(d);ms.scrollTop=ms.scrollHeight;
+}
+function sendC(){const i=document.getElementById('cin');const t=i.value.trim();if(!t)return;sendCT(t);i.value='';}
+function sendCT(text){
+  addMsg('user',text);chatHistory.push({role:'user',text});
+  document.getElementById('suggs').innerHTML='';
+  const ms=document.getElementById('msgs');
+  const td=document.createElement('div');td.className='msg ai';td.id='typi';
+  td.innerHTML='<div class="typing"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>';
+  ms.appendChild(td);ms.scrollTop=ms.scrollHeight;
+  setTimeout(()=>{
+    document.getElementById('typi')?.remove();
+    const lc=text.toLowerCase();
+    const key=Object.keys(AI_RESP).find(k=>lc.includes(k))||currentCtx;
+    const r=AI_RESP[key]||AI_RESP.default;
+    addMsg('ai',r);chatHistory.push({role:'ai',text:r});
+    const s=SUGGS[key]||SUGGS.default;
+    document.getElementById('suggs').innerHTML=s.map(x=>`<button type="button" class="sugg" onclick="sendCT('${escAttr(x)}')">${x}</button>`).join('');
+    ms.scrollTop=ms.scrollHeight;
+  },1400);
+}
+
+window.addEventListener('load',()=>{
+  LMO.initLmoEmbed();
+  initSimFromUrl();
+  setTimeout(LMO.reportEmbedHeight,300);
+  setTimeout(LMO.reportEmbedHeight,800);
+});
+window.addEventListener('resize',()=>setTimeout(LMO.reportEmbedHeight,200));
+</script>
+</body>
+</html>

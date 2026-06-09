@@ -1,0 +1,771 @@
+﻿            <div class="view" id="v-agent">
+              <!-- VIEW 1: LIBRARY -->
+              <div class="av-view active" id="av-library">
+                <div class="lib-body">
+                  <div class="lib-header">
+                    <div class="lib-header-left">
+                      <h1>Agent Studio</h1>
+                      <p>
+                        Create, manage, and run your AI agents ” each one a
+                        specialised analyst working for you.
+                      </p>
+                    </div>
+                    <button
+                      class="ag-btn ag-btn-primary ag-btn-sm"
+                      onclick="agentGoTo('av-builder')"
+                    >
+                      <i class="ti ti-plus"></i> New Agent
+                    </button>
+                  </div>
+
+                  <div class="lib-tabs">
+                    <div class="lib-tab active" onclick="agLibTab(this, 'my')">
+                      My Agents
+                    </div>
+                    <div class="lib-tab" onclick="agLibTab(this, 'pub')">
+                      Published Library
+                    </div>
+                  </div>
+
+                  <!-- MY AGENTS -->
+                  <div id="ag-tab-my">
+                    <div class="ag-section-label">Active agents (3)</div>
+                    <div class="agents-grid" style="margin-bottom: 28px">
+                      <div
+                        class="new-agent-card"
+                        onclick="agentCreateNew()"
+                      >
+                        <div class="nac-icon"><i class="ti ti-plus"></i></div>
+                        <div class="nac-label">Create new agent</div>
+                        <div class="nac-sub">
+                          Build a custom agent with AI assistance
+                        </div>
+                      </div>
+
+                      <div
+                        class="agent-card color-blue"
+                        onclick="agentGoTo('av-workspace')"
+                      >
+                        <div class="ac-head">
+                          <div class="ac-icon blue">
+                            <i class="ti ti-alert-triangle"></i>
+                          </div>
+                          <div class="ac-meta">
+                            <div class="ac-name">Labour Anomaly Sentinel</div>
+                            <div class="ac-domain">Labour Market</div>
+                          </div>
+                          <span class="ac-badge running"
+                            ><i class="ti ti-clock"></i> Running</span
+                          >
+                        </div>
+                        <div class="ac-desc">
+                          Monitors the Labour Registry daily and flags
+                          statistical anomalies using Ïƒ > 2.0 threshold. Sends
+                          email digest at 06:00 GST.
+                        </div>
+                        <div class="ac-stats">
+                          <div class="ac-stat">
+                            <div class="ac-stat-val">14</div>
+                            <div class="ac-stat-lbl">Runs</div>
+                          </div>
+                          <div class="ac-stat">
+                            <div class="ac-stat-val">3</div>
+                            <div class="ac-stat-lbl">Alerts</div>
+                          </div>
+                          <div class="ac-stat">
+                            <div class="ac-stat-val">1.2M</div>
+                            <div class="ac-stat-lbl">Rows/run</div>
+                          </div>
+                        </div>
+                        <div class="ac-footer">
+                          <div class="ac-last">
+                            <i class="ti ti-clock"></i> Last run 06:02 GST today
+                          </div>
+                          <div class="ac-actions">
+                            <button
+                              class="ag-btn ag-btn-ghost ag-btn-xs"
+                              onclick="
+                                event.stopPropagation();
+                                toast('Running¦', 'ti-player-play');
+                              "
+                            >
+                              <i class="ti ti-player-play"></i>
+                            </button>
+                            <button
+                              class="ag-btn ag-btn-ghost ag-btn-xs"
+                              onclick="
+                                event.stopPropagation();
+                                agentGoTo('av-workspace');
+                              "
+                            >
+                              <i class="ti ti-message-chatbot"></i> Open
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="agent-card color-teal">
+                        <div class="ac-head">
+                          <div class="ac-icon teal">
+                            <i class="ti ti-chart-line"></i>
+                          </div>
+                          <div class="ac-meta">
+                            <div class="ac-name">CPI Trend Monitor</div>
+                            <div class="ac-domain">CPI & Inflation</div>
+                          </div>
+                          <span class="ac-badge private"
+                            ><i class="ti ti-lock"></i> Private</span
+                          >
+                        </div>
+                        <div class="ac-desc">
+                          Tracks month-on-month CPI movement across essential
+                          and non-essential categories. Generates weekly summary
+                          reports automatically.
+                        </div>
+                        <div class="ac-stats">
+                          <div class="ac-stat">
+                            <div class="ac-stat-val">6</div>
+                            <div class="ac-stat-lbl">Runs</div>
+                          </div>
+                          <div class="ac-stat">
+                            <div class="ac-stat-val">0</div>
+                            <div class="ac-stat-lbl">Alerts</div>
+                          </div>
+                          <div class="ac-stat">
+                            <div class="ac-stat-val">4</div>
+                            <div class="ac-stat-lbl">Reports</div>
+                          </div>
+                        </div>
+                        <div class="ac-footer">
+                          <div class="ac-last">
+                            <i class="ti ti-clock"></i> Last run 2 days ago
+                          </div>
+                          <div class="ac-actions">
+                            <button
+                              class="ag-btn ag-btn-ghost ag-btn-xs"
+                              onclick="toast('Running¦', 'ti-player-play')"
+                            >
+                              <i class="ti ti-player-play"></i>
+                            </button>
+                            <button class="ag-btn ag-btn-ghost ag-btn-xs">
+                              <i class="ti ti-message-chatbot"></i> Open
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="agent-card color-amber">
+                        <div class="ac-head">
+                          <div class="ac-icon amber">
+                            <i class="ti ti-chart-area"></i>
+                          </div>
+                          <div class="ac-meta">
+                            <div class="ac-name">GDP Forecast Agent</div>
+                            <div class="ac-domain">Economic</div>
+                          </div>
+                          <span class="ac-badge published"
+                            ><i class="ti ti-world"></i> Published</span
+                          >
+                        </div>
+                        <div class="ac-desc">
+                          Generates quarterly GDP forecasts using regression
+                          analysis on National Accounts data. Compares against
+                          GCC peers automatically.
+                        </div>
+                        <div class="ac-stats">
+                          <div class="ac-stat">
+                            <div class="ac-stat-val">24</div>
+                            <div class="ac-stat-lbl">Runs</div>
+                          </div>
+                          <div class="ac-stat">
+                            <div class="ac-stat-val">12</div>
+                            <div class="ac-stat-lbl">Users</div>
+                          </div>
+                          <div class="ac-stat">
+                            <div class="ac-stat-val">8</div>
+                            <div class="ac-stat-lbl">Reports</div>
+                          </div>
+                        </div>
+                        <div class="ac-footer">
+                          <div class="ac-last">
+                            <i class="ti ti-clock"></i> Last run yesterday
+                          </div>
+                          <div class="ac-actions">
+                            <button
+                              class="ag-btn ag-btn-ghost ag-btn-xs"
+                              onclick="toast('Running¦', 'ti-player-play')"
+                            >
+                              <i class="ti ti-player-play"></i>
+                            </button>
+                            <button class="ag-btn ag-btn-ghost ag-btn-xs">
+                              <i class="ti ti-message-chatbot"></i> Open
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- PUBLISHED tab (hidden) -->
+                  <div id="ag-tab-pub" style="display: none">
+                    <div class="ag-section-label">
+                      Published by the community (2)
+                    </div>
+                    <div class="agents-grid">
+                      <div class="agent-card color-purple">
+                        <div class="ac-head">
+                          <div class="ac-icon purple">
+                            <i class="ti ti-file-description"></i>
+                          </div>
+                          <div class="ac-meta">
+                            <div class="ac-name">Policy Brief Generator</div>
+                            <div class="ac-domain">Multi-domain</div>
+                          </div>
+                          <span class="ac-badge published"
+                            ><i class="ti ti-world"></i> Library</span
+                          >
+                        </div>
+                        <div class="ac-desc">
+                          Drafts structured policy briefs from observatory data.
+                          Supports multiple domains and customisable output
+                          templates.
+                        </div>
+                        <div class="ac-stats">
+                          <div class="ac-stat">
+                            <div class="ac-stat-val">47</div>
+                            <div class="ac-stat-lbl">Users</div>
+                          </div>
+                          <div class="ac-stat">
+                            <div class="ac-stat-val">4.8</div>
+                            <div class="ac-stat-lbl">Rating</div>
+                          </div>
+                        </div>
+                        <div class="ac-footer">
+                          <div class="ac-last">
+                            <i class="ti ti-user"></i> By Analytics Team
+                          </div>
+                          <div class="ac-actions">
+                            <button
+                              class="ag-btn ag-btn-primary ag-btn-xs"
+                              onclick="
+                                toast('Agent added to My Agents', 'ti-check')
+                              "
+                            >
+                              Use this agent
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="agent-card color-teal">
+                        <div class="ac-head">
+                          <div class="ac-icon teal">
+                            <i class="ti ti-building"></i>
+                          </div>
+                          <div class="ac-meta">
+                            <div class="ac-name">Construction Cost Tracker</div>
+                            <div class="ac-domain">Construction</div>
+                          </div>
+                          <span class="ac-badge published"
+                            ><i class="ti ti-world"></i> Library</span
+                          >
+                        </div>
+                        <div class="ac-desc">
+                          Monitors construction cost indices, flags unusual
+                          movements, and benchmarks against regional data.
+                        </div>
+                        <div class="ac-stats">
+                          <div class="ac-stat">
+                            <div class="ac-stat-val">29</div>
+                            <div class="ac-stat-lbl">Users</div>
+                          </div>
+                          <div class="ac-stat">
+                            <div class="ac-stat-val">4.5</div>
+                            <div class="ac-stat-lbl">Rating</div>
+                          </div>
+                        </div>
+                        <div class="ac-footer">
+                          <div class="ac-last">
+                            <i class="ti ti-user"></i> By SCAD Analytics
+                          </div>
+                          <div class="ac-actions">
+                            <button
+                              class="ag-btn ag-btn-primary ag-btn-xs"
+                              onclick="
+                                toast('Agent added to My Agents', 'ti-check')
+                              "
+                            >
+                              Use this agent
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- VIEW 2: CONVERSATIONAL BUILDER -->
+              <div class="av-view av-builder" id="av-builder">
+                <!-- LEFT: CHAT -->
+                <div class="builder-chat">
+                  <div class="builder-chat-top">
+                    <div class="bct-title">
+                      Build your agent <span class="ai-badge">BAYAAN AI</span>
+                    </div>
+                    <div class="bct-sub">
+                      Answer a few questions ” your agent builds itself as you
+                      go
+                    </div>
+                  </div>
+                  <div class="step-pills" id="agStepPills">
+                    <div class="step-pill active" id="agsp0">
+                      <div class="pill-num">
+                        <span class="pill-num-inner">1</span>
+                      </div>
+                      Purpose
+                    </div>
+                    <div class="step-pill" id="agsp1">
+                      <div class="pill-num">
+                        <span class="pill-num-inner">2</span>
+                      </div>
+                      Name
+                    </div>
+                    <div class="step-pill" id="agsp2">
+                      <div class="pill-num">
+                        <span class="pill-num-inner">3</span>
+                      </div>
+                      Data
+                    </div>
+                    <div class="step-pill" id="agsp3">
+                      <div class="pill-num">
+                        <span class="pill-num-inner">4</span>
+                      </div>
+                      Trigger
+                    </div>
+                    <div class="step-pill" id="agsp4">
+                      <div class="pill-num">
+                        <span class="pill-num-inner">5</span>
+                      </div>
+                      Action
+                    </div>
+                    <div class="step-pill" id="agsp5">
+                      <div class="pill-num">
+                        <span class="pill-num-inner">6</span>
+                      </div>
+                      Visibility
+                    </div>
+                    <div class="step-pill" id="agsp6">
+                      <div class="pill-num">
+                        <span class="pill-num-inner">7</span>
+                      </div>
+                      Confirm
+                    </div>
+                  </div>
+                  <div class="chat-msgs" id="agBuilderMsgs"></div>
+                  <div class="bai-input-area">
+                    <div class="bai-input-row">
+                      <textarea
+                        class="bai-input"
+                        id="agBuilderInput"
+                        rows="2"
+                        placeholder="Type your answer or tap a suggestion…"
+                        onkeydown="agBuilderKey(event)"
+                        oninput="autoResize(this)"
+                      ></textarea>
+                      <button
+                        type="button"
+                        class="bai-send-btn"
+                        id="agBuilderSendBtn"
+                        onclick="agBuilderSend()"
+                        title="Send"
+                      >
+                        <i class="ti ti-send"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <!-- RIGHT: LIVE SUMMARY -->
+                <div class="builder-summary">
+                  <div class="bs-header">
+                    <i
+                      class="ti ti-robot"
+                      style="font-size: 16px; color: var(--t3)"
+                    ></i>
+                    <span class="bs-title">Agent Preview</span>
+                    <span class="bs-status" id="agBsStatus">Configuring¦</span>
+                    <div style="margin-left: auto; display: flex; gap: 8px">
+                      <button
+                        class="ag-btn ag-btn-ghost ag-btn-sm"
+                        onclick="agentGoTo('av-library')"
+                      >
+                        <i class="ti ti-x"></i> Cancel
+                      </button>
+                      <button
+                        class="ag-btn ag-btn-primary ag-btn-sm"
+                        id="agBsFinishBtn"
+                        style="display: none"
+                        onclick="agOpenModal()"
+                      >
+                        <i class="ti ti-rocket"></i> Save Agent
+                      </button>
+                    </div>
+                  </div>
+                  <div class="bs-body">
+                    <div class="nl-summary" id="agNlSummary">
+                      <div class="nl-label">
+                        <i class="ti ti-sparkles"></i> Agent description
+                      </div>
+                      <div class="nl-text" id="agNlText">
+                        <span class="nl-placeholder"
+                          >Your agent's purpose will appear here as you answer
+                          the questions¦</span
+                        >
+                      </div>
+                    </div>
+                    <div class="config-fields" id="agConfigFields"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- VIEW 3: AGENT WORKSPACE -->
+              <div class="av-view av-workspace" id="av-workspace">
+                <!-- LEFT SIDEBAR -->
+                <div class="ws-sidebar">
+                  <div class="ws-sidebar-top">
+                    <div class="ws-agent-info">
+                      <div class="wai-icon">
+                        <i class="ti ti-alert-triangle"></i>
+                      </div>
+                      <div>
+                        <div class="wai-name">Labour Anomaly Sentinel</div>
+                        <div class="wai-domain">Labour Market Â· Daily</div>
+                      </div>
+                    </div>
+                    <div class="ws-status-row">
+                      <div class="ws-status-dot"></div>
+                      <div class="ws-status-txt">Active</div>
+                      <div class="ws-status-time">Next run 06:00 GST</div>
+                    </div>
+                  </div>
+                  <div class="ws-sidebar-mid">
+                    <div class="ws-sec-label">Run History</div>
+                    <div class="run-item active">
+                      <div class="run-item-top">
+                        <div class="run-item-title">Today ” 06:02 GST</div>
+                      </div>
+                      <div class="run-item-sub">1,247,302 rows scanned</div>
+                      <span class="run-badge alert"
+                        ><i class="ti ti-alert-triangle"></i> 3 anomalies</span
+                      >
+                    </div>
+                    <div class="run-item">
+                      <div class="run-item-top">
+                        <div class="run-item-title">Yesterday ” 06:01 GST</div>
+                      </div>
+                      <div class="run-item-sub">1,241,891 rows scanned</div>
+                      <span class="run-badge ok"
+                        ><i class="ti ti-check"></i> All normal</span
+                      >
+                    </div>
+                    <div class="run-item">
+                      <div class="run-item-top">
+                        <div class="run-item-title">May 23 ” 06:00 GST</div>
+                      </div>
+                      <div class="run-item-sub">1,238,445 rows scanned</div>
+                      <span class="run-badge alert"
+                        ><i class="ti ti-alert-triangle"></i> 1 anomaly</span
+                      >
+                    </div>
+                    <div class="ws-sec-label" style="margin-top: 8px">
+                      Your conversations
+                    </div>
+                    <div class="run-item">
+                      <div class="run-item-top">
+                        <div class="run-item-title">
+                          Asked about May 23 spike
+                        </div>
+                      </div>
+                      <div class="run-item-sub">Yesterday at 09:14</div>
+                    </div>
+                    <div class="run-item">
+                      <div class="run-item-top">
+                        <div class="run-item-title">Requested PDF report</div>
+                      </div>
+                      <div class="run-item-sub">May 22 at 14:30</div>
+                    </div>
+                  </div>
+                  <div class="ws-sidebar-bottom">
+                    <button
+                      class="ws-settings-btn"
+                      onclick="agToggleSettings()"
+                    >
+                      <i class="ti ti-settings"></i>
+                      <span>Agent settings</span>
+                      <i
+                        class="ti ti-chevron-right"
+                        style="
+                          margin-left: auto;
+                          font-size: 13px;
+                          color: var(--t3);
+                        "
+                      ></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- MAIN CHAT -->
+                <div class="ws-main">
+                  <div class="ws-main-header">
+                    <button
+                      class="ag-btn ag-btn-ghost ag-btn-xs"
+                      onclick="agentGoTo('av-library')"
+                      style="margin-right: 4px"
+                    >
+                      <i class="ti ti-arrow-left"></i>
+                    </button>
+                    <div>
+                      <div class="ws-agent-label">Labour Anomaly Sentinel</div>
+                      <div class="ws-agent-desc">
+                        Ask anything about labour market anomalies, or give it
+                        new instructions
+                      </div>
+                    </div>
+                    <button
+                      class="ag-btn ag-btn-primary ag-btn-sm ws-run-btn"
+                      onclick="toast('Running agent now¦', 'ti-player-play')"
+                    >
+                      <i class="ti ti-player-play"></i> Run now
+                    </button>
+                    <button
+                      class="ag-btn ag-btn-ghost ag-btn-sm"
+                      onclick="agToggleSettings()"
+                    >
+                      <i class="ti ti-settings"></i> Settings
+                    </button>
+                  </div>
+
+                  <div class="ws-chat" id="agWsChat">
+                    <div class="finding-card alert fade-up">
+                      <div class="fc-head">
+                        <div class="fc-icon alert">
+                          <i class="ti ti-alert-triangle"></i>
+                        </div>
+                        <div>
+                          <div class="fc-title">
+                            3 anomalies detected ” Today's run
+                          </div>
+                        </div>
+                        <div class="fc-time">06:02 GST</div>
+                      </div>
+                      <div class="fc-body">
+                        I scanned <strong>1,247,302 records</strong> from the
+                        Labour Registry and found 3 data points exceeding the Ïƒ
+                        > 2.0 threshold. The most significant anomaly is in the
+                        <strong>Construction sector</strong> where daily
+                        registrations dropped 34% from the 90-day baseline.
+                      </div>
+                      <div class="fc-metrics">
+                        <div class="fc-metric">
+                          <div class="fc-metric-val" style="color: var(--err)">
+                            âˆ’34%
+                          </div>
+                          <div class="fc-metric-lbl">
+                            Construction registrations
+                          </div>
+                        </div>
+                        <div class="fc-metric">
+                          <div class="fc-metric-val">Ïƒ 3.2</div>
+                          <div class="fc-metric-lbl">Deviation score</div>
+                        </div>
+                        <div class="fc-metric">
+                          <div class="fc-metric-val">2 others</div>
+                          <div class="fc-metric-lbl">Minor anomalies</div>
+                        </div>
+                      </div>
+                      <div class="fc-actions">
+                        <button
+                          class="ag-btn ag-btn-ghost ag-btn-xs"
+                          onclick="
+                            agWsAsk(
+                              'Tell me more about the construction sector drop',
+                            )
+                          "
+                        >
+                          <i class="ti ti-search"></i> Deep dive
+                        </button>
+                        <button
+                          class="ag-btn ag-btn-ghost ag-btn-xs"
+                          onclick="
+                            agWsAsk(
+                              'Generate a PDF report of today\'s findings',
+                            )
+                          "
+                        >
+                          <i class="ti ti-download"></i> Export report
+                        </button>
+                        <button
+                          class="ag-btn ag-btn-ghost ag-btn-xs"
+                          onclick="
+                            agWsAsk(
+                              'How does this compare to the May 23 anomaly?',
+                            )
+                          "
+                        >
+                          <i class="ti ti-history"></i> Compare history
+                        </button>
+                      </div>
+                    </div>
+                    <div
+                      class="ws-msg agent fade-up"
+                      style="animation-delay: 0.1s"
+                    >
+                      <img class="ws-msg-av agent" src="./assets/ai-chat-thumb.svg" alt="Bayaan AI" width="30" height="30" />
+                      <div class="ws-msg-bubble">
+                        <p>
+                          I've summarised today's findings above. I'm ready to
+                          dig deeper ” ask me about any anomaly, request a
+                          breakdown by sector or nationality, or ask me to
+                          adjust my detection threshold for future runs.
+                        </p>
+                      </div>
+                    </div>
+                    <div id="agWsExtraMessages"></div>
+                  </div>
+
+                  <div class="ws-input-area">
+                    <div class="ws-quick-actions">
+                      <div
+                        class="ws-qa"
+                        onclick="
+                          agWsAsk('Generate a PDF report of today\'s findings')
+                        "
+                      >
+                        <i class="ti ti-download"></i> Export PDF
+                      </div>
+                      <div
+                        class="ws-qa"
+                        onclick="
+                          agWsAsk('Change the schedule to run every 6 hours')
+                        "
+                      >
+                        <i class="ti ti-clock"></i> Change schedule
+                      </div>
+                      <div
+                        class="ws-qa"
+                        onclick="agWsAsk('Show me last week\'s anomaly trend')"
+                      >
+                        <i class="ti ti-chart-line"></i> Weekly trend
+                      </div>
+                      <div
+                        class="ws-qa"
+                        onclick="
+                          agWsAsk('Draft a notification email to the team')
+                        "
+                      >
+                        <i class="ti ti-mail"></i> Draft email
+                      </div>
+                    </div>
+                    <div class="bai-input-composer">
+                      <textarea
+                        class="bai-input"
+                        id="agWsInput"
+                        rows="1"
+                        placeholder="Ask the agent anything, or give it an instruction…"
+                        onkeydown="agWsKey(event)"
+                        oninput="autoResize(this)"
+                      ></textarea>
+                      <div class="bai-input-toolbar">
+                        <div class="bai-input-toolbar-left"></div>
+                        <button
+                          type="button"
+                          class="bai-send-btn"
+                          onclick="agWsSend()"
+                          title="Send"
+                        >
+                          <i class="ti ti-send"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- SETTINGS DRAWER -->
+                <div class="settings-drawer" id="agSettingsDrawer">
+                  <div class="sd-head">
+                    <h3>Agent settings</h3>
+                    <button class="sd-close" onclick="agToggleSettings()">
+                      <i class="ti ti-x"></i>
+                    </button>
+                  </div>
+                  <div class="sd-body">
+                    <div class="sd-field">
+                      <div class="sd-label">Agent name</div>
+                      <div class="sd-val">Labour Anomaly Sentinel</div>
+                    </div>
+                    <div class="sd-field">
+                      <div class="sd-label">Purpose</div>
+                      <div class="sd-val">Anomaly Detection</div>
+                      <div class="sd-val-sub">Labour Market Â· ClickHouse</div>
+                    </div>
+                    <div class="sd-field">
+                      <div class="sd-label">Schedule</div>
+                      <div class="sd-val">Daily at 06:00 GST</div>
+                    </div>
+                    <div class="sd-field">
+                      <div class="sd-label">Detection threshold</div>
+                      <div class="sd-val">Ïƒ > 2.0 (standard)</div>
+                    </div>
+                    <div class="sd-field">
+                      <div class="sd-label">Output</div>
+                      <div class="sd-val">Email digest + Dashboard</div>
+                    </div>
+                    <div class="sd-divider"></div>
+                    <div class="sd-field">
+                      <div class="sd-label">Visibility</div>
+                      <div class="sd-val">Private ” only you</div>
+                    </div>
+                    <div class="sd-field">
+                      <div class="sd-label">Created</div>
+                      <div class="sd-val">May 11, 2026</div>
+                      <div class="sd-val-sub">by Unni</div>
+                    </div>
+                    <div class="sd-divider"></div>
+                    <button
+                      class="ag-btn ag-btn-ghost ag-btn-sm"
+                      style="
+                        width: 100%;
+                        justify-content: center;
+                        margin-bottom: 8px;
+                      "
+                      onclick="
+                        toast('Publishing for review', 'ti-world');
+                        agToggleSettings();
+                      "
+                    >
+                      <i class="ti ti-world"></i> Publish to Library
+                    </button>
+                  </div>
+                  <div class="sd-footer">
+                    <button
+                      class="ag-btn ag-btn-ghost ag-btn-sm"
+                      style="justify-content: center"
+                      onclick="toast('Opening editor¦', 'ti-edit')"
+                    >
+                      <i class="ti ti-edit"></i> Edit configuration
+                    </button>
+                    <button
+                      class="ag-btn ag-btn-danger ag-btn-sm"
+                      style="justify-content: center"
+                      onclick="
+                        toast('Agent deleted', 'ti-trash');
+                        agToggleSettings();
+                        agentGoTo('av-library');
+                      "
+                    >
+                      <i class="ti ti-trash"></i> Delete agent
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- /v-agent -->

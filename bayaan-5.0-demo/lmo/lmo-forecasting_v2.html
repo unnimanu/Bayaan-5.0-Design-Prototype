@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Labour Market Observatory — Forecasting · Bayaan</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="../css/pages/lmo-common.css">
+<link rel="stylesheet" href="../css/pages/lmo-forecast-v2.css">
+<script src="lmo-shared.js"></script>
+</head>
+<body class="lmo">
+
+<div class="lsb-rail">
+  <aside class="lsb">
+    <button type="button" class="lsb-btn ai-top" onclick="openChat('Give me a summary of all active labour market forecasts and key signals for Q3 2026','Forecast Intelligence')">
+      <span class="lsb-ico-wrap"><i class="ti ti-sparkles"></i></span>
+      <span class="lsb-lbl">LMO AI</span>
+    </button>
+    <button type="button" class="lsb-btn" data-lmo-nav="briefing">
+      <span class="lsb-ico-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      </span>
+      <span class="lsb-lbl">Briefing</span>
+    </button>
+    <button type="button" class="lsb-btn" data-lmo-nav="observe">
+      <span class="lsb-ico-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      </span>
+      <span class="lsb-lbl">Observe</span>
+    </button>
+    <button type="button" class="lsb-btn act">
+      <span class="lsb-ico-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="18" height="18" rx="3"/><polyline points="7 15 10 11 13 13 17 8"/></svg>
+      </span>
+      <span class="lsb-lbl">Forecast</span>
+    </button>
+    <button type="button" class="lsb-btn" data-lmo-nav="simulation">
+      <span class="lsb-ico-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+      </span>
+      <span class="lsb-lbl">Simulations</span>
+    </button>
+  </aside>
+</div>
+
+<!-- ██ MAIN + AI SPLIT ██ -->
+<div class="app-shell">
+<div class="wrap">
+<div class="page">
+
+  <!-- Breadcrumb -->
+  <nav class="ind-page-breadcrumb" aria-label="Breadcrumb">
+    <a href="#" data-lmo-bc="home">Home</a>
+    <span class="ind-bc-sep">›</span>
+    <a href="#" data-lmo-bc="observatory">Observatory</a>
+    <span class="ind-bc-sep">›</span>
+    <span class="ind-bc-current">Labour Market Observatory</span>
+  </nav>
+
+  <!-- Page Head -->
+  <div class="ph">
+    <div class="ph-l">
+      <h1 class="ph-title">Labour Market Observatory (LMO)— Forecasting Hub</h1>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="fc-toolbar">
+    <div class="fc-toolbar-l">
+      <span class="fc-period" id="fc-period">Q3 2026</span>
+      <div class="fc-select-wrap">
+        <select id="fc-select" class="fc-select" aria-label="Select forecast" onchange="selectForecast(this.value)"></select>
+      </div>
+    </div>
+    <div class="fc-toolbar-r">
+      <div class="fc-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="fc-search" placeholder="Search forecasts…" oninput="filterForecastOptions(this.value)">
+      </div>
+      <button type="button" class="btn btn-ghost" onclick="exportDetail()"><i class="ti ti-download" aria-hidden="true"></i> Export</button>
+    </div>
+  </div>
+
+  <!-- Summary KPIs -->
+  <div class="fc-summary" id="fc-summary"></div>
+
+  <!-- Chart + side panels -->
+  <div class="fc-main">
+    <div class="fc-chart-card">
+      <div class="fc-chart-hd">
+        <div class="fc-chart-hd-title" id="fc-chart-title">Forecast trajectory</div>
+        <div class="prod-tabs--mb fc-scenario-pills" id="fc-scenario-pills">
+          <button type="button" class="chip dp-pill sel" onclick="switchLandingScenario('base',this)">Base Case</button>
+          <button type="button" class="chip dp-pill" onclick="switchLandingScenario('optimistic',this)">Optimistic</button>
+          <button type="button" class="chip dp-pill" onclick="switchLandingScenario('pessimistic',this)">Pessimistic</button>
+        </div>
+      </div>
+      <div class="legend-row" style="margin-bottom:12px">
+        <div class="legend-item"><div class="legend-line actual"></div><span>Actual</span></div>
+        <div class="legend-item"><div class="legend-line forecast"></div><span>Forecast</span></div>
+        <div class="legend-item"><div class="legend-line ci"></div><span>90% CI</span></div>
+      </div>
+      <div class="fc-chart-canvas"><canvas id="fc-landing-chart"></canvas></div>
+    </div>
+    <div class="fc-side">
+      <div class="fc-side-card">
+        <div class="fc-side-title">
+          <i class="ti ti-book-2 fc-side-title-ico fc-side-title-ico--interp" aria-hidden="true"></i>
+          Interpretation
+        </div>
+        <ul class="fc-side-list" id="fc-interpretation"></ul>
+      </div>
+      <div class="fc-side-card">
+        <div class="fc-side-title">
+          <i class="ti ti-target fc-side-title-ico fc-side-title-ico--impact" aria-hidden="true"></i>
+          Key Impact
+        </div>
+        <ul class="fc-side-list" id="fc-impacts"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Model note -->
+  <div class="fc-model-banner" id="fc-model-banner"></div>
+
+  <!-- Related forecasts -->
+  <section class="fc-related" id="fc-related" aria-label="Related forecasts">
+    <div class="fc-related-hd">Related Forecasts</div>
+    <p class="fc-related-sub">Explore linked labour market forecasts — select a card to open its detail view.</p>
+    <div class="fc-related-grid" id="fc-related-grid"></div>
+  </section>
+
+
+</div><!-- /page -->
+</div><!-- /wrap -->
+
+<aside class="cpanel ai-panel" id="cpanel" role="complementary" aria-label="Bayaan AI Panel">
+  <div class="bai-header">
+    <div class="bai-header-left">
+      <img class="bai-icon-wrap" src="../assets/ai-chat-thumb.svg" alt="Bayaan AI" width="38" height="38">
+      <div><div class="bai-header-title">Bayaan AI</div></div>
+    </div>
+    <div class="bai-header-right">
+      <button class="bai-close-btn" type="button" onclick="closeChat()" title="Close AI Panel"><i class="ti ti-x"></i></button>
+    </div>
+  </div>
+  <div class="bai-context-strip">
+    <span class="bai-ctx-label">Analysing</span>
+    <span class="bai-ctx-pill" id="ctx-val">Forecast Intelligence</span>
+    <span class="bai-ctx-dot"></span>
+    <span class="bai-ctx-dot-label">Generating</span>
+  </div>
+  <div class="bai-messages msgs" id="msgs"></div>
+  <div class="suggs" id="suggs"></div>
+  <div class="bai-input-area">
+    <div class="bai-input-row">
+      <textarea class="bai-input" id="cin" placeholder="Ask about any forecast…" rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendC()}"></textarea>
+      <button class="bai-send-btn" type="button" onclick="sendC()" title="Send"><i class="ti ti-send"></i></button>
+    </div>
+  </div>
+</aside>
+</div><!-- /app-shell -->
+
+<script>
+/* =========================================================
+   CHART HELPERS
+   ========================================================= */
+const AC='#2563EB', AC2='rgba(37,99,235,.12)';
+const UP='#16A34A', DN='#DC2626', WN='#B45309', TL='#0D9488', PU='#7C3AED';
+
+function sparkLine(id,data,color){
+  const el=document.getElementById(id);
+  if(!el)return;
+  if(el._chart){el._chart.destroy();el._chart=null;}
+  const ctx=el.getContext('2d');
+  const grad=ctx.createLinearGradient(0,0,0,48);
+  grad.addColorStop(0,color+'35');
+  grad.addColorStop(1,color+'00');
+  el._chart=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:data.map((_,i)=>i),
+      datasets:[{
+        data,borderColor:color,borderWidth:2,fill:true,backgroundColor:grad,
+        pointRadius:0,tension:.45
+      }]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false}},
+      scales:{x:{display:false},y:{display:false}},elements:{point:{radius:0}}}
+  });
+}
+
+function miniLine(id,actual,forecast,color){
+  const el=document.getElementById(id);
+  if(!el)return;
+  if(el._chart){el._chart.destroy();el._chart=null;}
+  const ctx=el.getContext('2d');
+  const allLabels=['Q4\'24','Q1\'25','Q2\'25','Q3\'25','Q4\'25','Q1\'26','Q2\'26','Q3\'26','Q4\'26'];
+  const grad=ctx.createLinearGradient(0,0,0,48);
+  grad.addColorStop(0,color+'30');
+  grad.addColorStop(1,color+'00');
+  el._chart=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:allLabels,
+      datasets:[
+        {data:actual,borderColor:color,borderWidth:2,fill:true,backgroundColor:grad,
+         pointRadius:0,tension:.4,borderDash:[]},
+        {data:forecast,borderColor:color,borderWidth:1.5,fill:false,backgroundColor:'transparent',
+         pointRadius:0,tension:.4,borderDash:[4,3]}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false}},
+      scales:{x:{display:false},y:{display:false}}}
+  });
+}
+
+function formatAxisTick(v,unit){
+  const n=Number(v);
+  if(!Number.isFinite(n))return '';
+  const u=unit||'';
+  if(u==='%'||u==='k'||u==='M')return parseFloat(n.toFixed(1))+u;
+  if(Math.abs(n)>=10000)return n.toLocaleString('en-US',{maximumFractionDigits:0});
+  if(Math.abs(n-Math.round(n))<0.05)return Math.round(n)+u;
+  return parseFloat(n.toFixed(1))+u;
+}
+
+function bridgeActualForecast(actual,forecast,ciHigh,ciLow){
+  const a=actual.slice(),f=forecast.slice(),hi=ciHigh?ciHigh.slice():null,lo=ciLow?ciLow.slice():null;
+  let lastIdx=-1,lastVal=null;
+  for(let i=0;i<a.length;i++){if(a[i]!=null){lastIdx=i;lastVal=a[i];}}
+  if(lastIdx<0)return{actual:a,forecast:f,ciHigh:hi,ciLow:lo};
+  let firstFc=-1;
+  for(let i=0;i<f.length;i++){if(f[i]!=null){firstFc=i;break;}}
+  if(firstFc>lastIdx&&f[lastIdx]==null){
+    f[lastIdx]=lastVal;
+    if(hi&&hi[firstFc]!=null&&hi[lastIdx]==null)hi[lastIdx]=lastVal;
+    if(lo&&lo[firstFc]!=null&&lo[lastIdx]==null)lo[lastIdx]=lastVal;
+  }
+  return{actual:a,forecast:f,ciHigh:hi,ciLow:lo};
+}
+
+function mainChart(id,labels,actual,forecast,ciHigh,ciLow,color,label){
+  const el=document.getElementById(id);
+  if(!el)return;
+  if(el._chart)el._chart.destroy();
+  ({actual,forecast,ciHigh,ciLow}=bridgeActualForecast(actual,forecast,ciHigh,ciLow));
+  const ctx=el.getContext('2d');
+  const grad=ctx.createLinearGradient(0,0,0,200);
+  grad.addColorStop(0,color+'20');
+  grad.addColorStop(1,color+'00');
+  const ciGrad=ctx.createLinearGradient(0,0,0,200);
+  ciGrad.addColorStop(0,'rgba(37,99,235,.08)');
+  ciGrad.addColorStop(1,'rgba(37,99,235,.02)');
+  const chart=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels,
+      datasets:[
+        {label:'90% CI High',data:ciHigh,borderColor:'transparent',fill:'+1',backgroundColor:ciGrad,pointRadius:0,tension:.4},
+        {label:'90% CI Low',data:ciLow,borderColor:'transparent',fill:false,pointRadius:0,tension:.4},
+        {label:'Actual',data:actual,borderColor:color,borderWidth:2.5,fill:true,backgroundColor:grad,
+         pointRadius:3,pointBackgroundColor:color,tension:.4},
+        {label:'Forecast',data:forecast,borderColor:'#94A3B8',borderWidth:2,borderDash:[6,4],fill:false,
+         pointRadius:3,pointBackgroundColor:'#94A3B8',pointBorderColor:'#fff',pointBorderWidth:1.5,tension:.4}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          mode:'index',intersect:false,
+          backgroundColor:'rgba(15,23,42,.9)',titleColor:'#fff',bodyColor:'#CBD5E1',
+          borderColor:'rgba(255,255,255,.1)',borderWidth:1,padding:10,
+          callbacks:{
+            label:function(c){
+              if(c.dataset.label.includes('CI'))return null;
+              if(c.dataset.label==='Forecast'){
+                const i=c.dataIndex;
+                const ds=c.chart.data.datasets.find(d=>d.label==='Actual');
+                if(ds&&ds.data[i]!=null&&c.parsed.y===ds.data[i])return null;
+              }
+              const val=c.parsed.y!=null?formatAxisTick(c.parsed.y,label):c.formattedValue;
+              return c.dataset.label+': '+val;
+            }
+          }
+        }
+      },
+      scales:{
+        x:{grid:{color:'rgba(148,163,184,.15)'},ticks:{color:'#94A3B8',font:{size:11}}},
+        y:{
+          grid:{color:'rgba(148,163,184,.15)'},
+          ticks:{color:'#94A3B8',font:{size:11},precision:1,callback:function(v){return formatAxisTick(v,label)}},
+          title:{display:true,text:label||'',color:'#94A3B8',font:{size:10}}
+        }
+      },
+      interaction:{mode:'index',intersect:false}
+    }
+  });
+  el._chart=chart;
+}
+
+/* =========================================================
+   DATA
+   ========================================================= */
+const FORECASTS={
+  unemployment:{
+    title:'Unemployment Rate — Regional Forecast',
+    subtitle:'ARIMA + leading indicators · Quarterly · Abu Dhabi, Al Ain, Al Dhafra',
+    modelMeta:'ARIMA(1,1,1) · Last run: Jun 2026 · RMSE: 0.31 · Confidence: 81%',
+    iconColor:'var(--acbg)',iconStroke:'var(--ac)',
+    kpis:[
+      {lbl:'Current Rate',val:'5.8',unit:'%',chg:'Q2 2026 actual',dir:'nt'},
+      {lbl:'Q3 2026 Forecast',val:'5.4',unit:'%',chg:'▼ –0.4pp easing',dir:'up'},
+      {lbl:'Model Accuracy',val:'81',unit:'%',chg:'Last 8 quarters',dir:'nt'}
+    ],
+    chartTitle:'Quarterly Unemployment Rate — Actual vs Forecast (%) · Abu Dhabi',
+    labels:['Q2\'24','Q3\'24','Q4\'24','Q1\'25','Q2\'25','Q3\'25','Q4\'25','Q1\'26','Q2\'26','Q3\'26','Q4\'26','Q1\'27'],
+    actual:   [6.4,6.2,6.1,5.9,5.8,null,null,null,null,null,null,null],
+    forecast: [null,null,null,null,null,5.7,5.5,5.6,5.5,5.4,5.3,5.2],
+    ciHigh:   [null,null,null,null,null,6.0,5.9,6.0,5.9,5.8,5.7,5.6],
+    ciLow:    [null,null,null,null,null,5.4,5.1,5.2,5.1,5.0,4.9,4.8],
+    optimisticForecast:[null,null,null,null,null,5.6,5.4,5.4,5.3,5.1,5.0,4.9],
+    pessimisticForecast:[null,null,null,null,null,5.9,5.8,5.9,5.8,5.7,5.6,5.5],
+    unit:'%',
+    method:'<strong>Model:</strong> Seasonal ARIMA(1,1,1)(0,1,1) with external regressors. Inputs include quarterly PMI index, job posting volumes from TAMM, construction permit data from DM, and historical LFS microdata.',
+    confidence:81,
+    drivers:['PMI index above 54 signals continued private sector hiring','Job posting volumes +8.2% QoQ in Finance and Technology','Construction permit deceleration creates Q4 risk (+0.3pp)','NAFIS programme Emirati absorption partially offsets pressure'],
+    aiContext:'unemployment rate quarterly forecast regional Abu Dhabi Al Ain',
+    horizon:'sh',signal:false
+  },
+  employment:{
+    title:'Total Employed Residents — Quarterly Forecast',
+    subtitle:'Trend decomposition + GDP-linked model · Quarterly',
+    modelMeta:'Trend+GDP Model · Last run: Jun 2026 · MAE: 18k · Confidence: 84%',
+    iconColor:'var(--tlbg)',iconStroke:'var(--tl)',
+    kpis:[
+      {lbl:'Current Employed',val:'1.84',unit:'M',chg:'Q2 2026 actual',dir:'nt'},
+      {lbl:'Q3 2026 Forecast',val:'1.91',unit:'M',chg:'↑ +70k',dir:'up'},
+      {lbl:'Model Accuracy',val:'84',unit:'%',chg:'Last 8 quarters',dir:'nt'}
+    ],
+    chartTitle:'Total Employed Residents — Actual vs Forecast (Thousands)',
+    labels:['Q2\'24','Q3\'24','Q4\'24','Q1\'25','Q2\'25','Q3\'25','Q4\'25','Q1\'26','Q2\'26','Q3\'26','Q4\'26','Q1\'27'],
+    actual:   [1740,1760,1780,1800,1840,null,null,null,null,null,null,null],
+    forecast: [null,null,null,null,null,1870,1880,1890,1900,1910,1925,1940],
+    ciHigh:   [null,null,null,null,null,1900,1920,1935,1950,1960,1980,2000],
+    ciLow:    [null,null,null,null,null,1840,1840,1845,1850,1860,1870,1880],
+    optimisticForecast:[null,null,null,null,null,1890,1910,1925,1940,1960,1980,2010],
+    pessimisticForecast:[null,null,null,null,null,1850,1855,1860,1870,1880,1890,1900],
+    unit:'k',
+    method:'<strong>Model:</strong> Trend + seasonal decomposition with GDP growth elasticity coefficient (0.42). Sector weights updated quarterly using SCAD business register. Visa issuance volumes from ICP used as leading indicator.',
+    confidence:84,
+    drivers:['Finance sector expansion: +12k roles projected in ADGM and BFSI','Technology hubs driving non-national skilled worker inflow','Construction sector moderated — headcount growth slowing to +1.2%','Healthcare demand increasing due to demographic ageing'],
+    aiContext:'total employment headcount quarterly forecast residents',
+    horizon:'sh',signal:false
+  },
+  participation:{
+    title:'Labour Force Participation Rate — Crude & Refined',
+    subtitle:'Cohort model · Quarterly · By citizenship and gender',
+    modelMeta:'Cohort Model · Last run: Jun 2026 · RMSE: 0.28pp · Confidence: 79%',
+    iconColor:'var(--pubg)',iconStroke:'var(--pu)',
+    kpis:[
+      {lbl:'Current Rate (Crude)',val:'67.7',unit:'%',chg:'Q2 2026 actual',dir:'nt'},
+      {lbl:'Q3 2026 Forecast',val:'79.4',unit:'%',chg:'↑ +1.2pp (Refined)',dir:'up'},
+      {lbl:'Model Accuracy',val:'79',unit:'%',chg:'Last 6 quarters',dir:'nt'}
+    ],
+    chartTitle:'Labour Force Participation Rate (Refined, %) — Actual vs Forecast',
+    labels:['Q2\'24','Q3\'24','Q4\'24','Q1\'25','Q2\'25','Q3\'25','Q4\'25','Q1\'26','Q2\'26','Q3\'26','Q4\'26','Q1\'27'],
+    actual:   [76.2,76.8,77.1,77.5,78.2,null,null,null,null,null,null,null],
+    forecast: [null,null,null,null,null,78.6,78.9,79.1,79.2,79.4,79.7,80.1],
+    ciHigh:   [null,null,null,null,null,79.4,79.8,80.1,80.3,80.6,81.0,81.5],
+    ciLow:    [null,null,null,null,null,77.8,78.0,78.1,78.1,78.2,78.4,78.7],
+    optimisticForecast:[null,null,null,null,null,79.0,79.5,79.8,80.0,80.3,80.6,81.0],
+    pessimisticForecast:[null,null,null,null,null,78.2,78.4,78.5,78.5,78.6,78.8,79.0],
+    unit:'%',
+    method:'<strong>Model:</strong> Cohort-based participation rate model disaggregated by age × citizenship × gender. Gig economy adjustments applied per Q1 2025 LFS methodology update. Female participation trend extrapolated using ADGSCW policy output data.',
+    confidence:79,
+    drivers:['Female participation momentum continues post-52% milestone','Gig economy reclassification adds +1.8pp to refined rate','15–24 age cohort participation improving with STEM enrolment growth','Non-national older workers (55+) showing early retirement signals'],
+    aiContext:'labour force participation rate crude refined forecast quarterly',
+    horizon:'sh',signal:false
+  },
+  emiratisation:{
+    title:'Emiratisation Rate — Target Trajectory Forecast',
+    subtitle:'Target-gap model · Annual · Private sector focus',
+    modelMeta:'Target-Gap Model · Last run: Jun 2026 · MAPE: 2.1% · Confidence: 72%',
+    iconColor:'var(--wnbg)',iconStroke:'var(--wn)',
+    kpis:[
+      {lbl:'Current Rate',val:'13.3',unit:'%',chg:'Q2 2026 actual',dir:'nt'},
+      {lbl:'End-2026 Forecast',val:'13.8',unit:'%',chg:'→ On-track',dir:'nt'},
+      {lbl:'Q3 Target Gap',val:'0.2',unit:'pp',chg:'Ahead of schedule',dir:'up'}
+    ],
+    chartTitle:'Emiratisation Rate (%) — Progress vs NAFIS Milestones',
+    labels:['Q1\'25','Q2\'25','Q3\'25','Q4\'25','Q1\'26','Q2\'26','Q3\'26','Q4\'26','Q1\'27','Q2\'27'],
+    actual:   [12.7,12.9,13.1,13.2,13.2,13.3,null,null,null,null],
+    forecast: [null,null,null,null,null,null,13.5,13.8,14.1,14.4],
+    ciHigh:   [null,null,null,null,null,null,13.8,14.1,14.5,14.9],
+    ciLow:    [null,null,null,null,null,null,13.2,13.5,13.7,14.0],
+    optimisticForecast:[null,null,null,null,null,null,13.7,14.1,14.5,14.9],
+    pessimisticForecast:[null,null,null,null,null,null,13.3,13.5,13.7,14.0],
+    unit:'%',
+    method:'<strong>Model:</strong> Target-gap model using NAFIS programme enrolment, private sector compliance rates by establishment size, and sector-level penalty enforcement data from MoHRE. Scenario analysis runs with and without enforcement escalation.',
+    confidence:72,
+    drivers:['Finance (+18.6%) and Government (+16.2%) well above target','Construction at 2.1% — most significant drag on aggregate','Retail improving but behind at 8.3% vs 13.5% target','NAFIS bridge placements contributing +0.15pp per quarter'],
+    aiContext:'emiratisation rate NAFIS target trajectory forecast 2026 2027',
+    horizon:'me',signal:true
+  },
+  female:{
+    title:'Female Labour Force Participation — Annual Forecast',
+    subtitle:'Cohort-based projection · Annual · By age & citizenship',
+    modelMeta:'Cohort+Policy Model · Last run: Jun 2026 · RMSE: 0.9pp · Confidence: 76%',
+    iconColor:'var(--pubg)',iconStroke:'var(--pu)',
+    kpis:[
+      {lbl:'Current Rate',val:'52.3',unit:'%',chg:'Historic high Q2 2026',dir:'up'},
+      {lbl:'End-2027 Forecast',val:'54.1',unit:'%',chg:'↑ +1.8pp',dir:'up'},
+      {lbl:'Model Accuracy',val:'76',unit:'%',chg:'Last 4 annual',dir:'nt'}
+    ],
+    chartTitle:'Female Participation Rate (Annual, %) — Actual vs Forecast',
+    labels:['2021','2022','2023','2024','2025','2026F','2027F','2028F'],
+    actual:   [46.8,48.2,49.7,51.0,52.3,null,null,null],
+    forecast: [null,null,null,null,null,53.1,54.1,54.9],
+    ciHigh:   [null,null,null,null,null,54.0,55.3,56.4],
+    ciLow:    [null,null,null,null,null,52.2,52.9,53.4],
+    optimisticForecast:[null,null,null,null,null,53.6,55.0,56.2],
+    pessimisticForecast:[null,null,null,null,null,52.5,53.2,53.6],
+    unit:'%',
+    method:'<strong>Model:</strong> Age-sex cohort model with policy dummy variables for childcare subsidy expansion (2024) and flexible work mandates (2023). ADGSCW programme output data used as a structural shifter.',
+    confidence:76,
+    drivers:['Remote-eligible professional roles in Finance and Technology growing fast','NAFIS female bridge programme expanding intake capacity','Childcare infrastructure: 14 new facilities planned 2026–2027','Cultural shift in private sector hiring practices sustained'],
+    aiContext:'female labour force participation forecast annual Abu Dhabi 2026 2027',
+    horizon:'me',signal:false
+  },
+  sector:{
+    title:'Employment by Economic Activity — Sector Forecast',
+    subtitle:'Input-output econometric model · Annual · 6 sectors',
+    modelMeta:'I-O Econometric · Last run: Jun 2026 · MAPE: 1.8% · Confidence: 74%',
+    iconColor:'var(--tlbg)',iconStroke:'var(--tl)',
+    kpis:[
+      {lbl:'Fastest Growing',val:'Finance',unit:'',chg:'+8.2% YoY projected',dir:'up'},
+      {lbl:'Most at Risk',val:'Construction',unit:'',chg:'–1.2% deceleration',dir:'dn'},
+      {lbl:'Model Accuracy',val:'74',unit:'%',chg:'Last 4 annual',dir:'nt'}
+    ],
+    chartTitle:'Sector Employment Growth Rate (%) — 2026 Forecast vs 2025 Actual',
+    labels:['Finance','Technology','Healthcare','Education','Hospitality','Construction'],
+    actual:   [7.4,6.8,4.2,2.1,3.8,1.8],
+    forecast: [8.2,7.5,5.1,2.6,3.2,0.6],
+    ciHigh:   [9.1,8.9,6.0,3.5,4.5,1.5],
+    ciLow:    [7.3,6.1,4.2,1.7,1.9,-0.3],
+    optimisticForecast:[9.0,8.5,5.8,3.0,4.0,1.2],
+    pessimisticForecast:[7.4,6.5,4.4,2.1,2.5,-0.2],
+    unit:'%',
+    method:'<strong>Model:</strong> Sectoral input-output model linked to Abu Dhabi GDP sectoral projections from DoE. Each sector modeled with its own wage elasticity, regulatory environment, and supply constraint factors.',
+    confidence:74,
+    drivers:['ADGM expansion and BFSI digitisation driving Finance growth','AI and cloud adoption accelerating Technology sector hiring','Healthcare demand growing with ageing resident population','Construction exposed to permit deceleration and cost pressures'],
+    aiContext:'sector employment forecast economic activity Finance Technology Healthcare Construction 2026',
+    horizon:'me',signal:false
+  },
+  jobseeker:{
+    title:'Active Job Seeker Count — Quarterly Forecast',
+    subtitle:'Historical trend + NAFIS intake model · Quarterly',
+    modelMeta:'Trend+NAFIS · Last run: Jun 2026 · RMSE: 0.4k · Confidence: 77%',
+    iconColor:'var(--wnbg)',iconStroke:'var(--wn)',
+    kpis:[
+      {lbl:'Current Count',val:'11.8k',unit:'',chg:'Q2 2026 actual',dir:'nt'},
+      {lbl:'Q3 2026 Forecast',val:'13.2k',unit:'',chg:'↑ +1.4k',dir:'dn'},
+      {lbl:'Model Accuracy',val:'77',unit:'%',chg:'Last 6 quarters',dir:'nt'}
+    ],
+    chartTitle:'Active Job Seekers (Thousands) — Actual vs Forecast',
+    labels:['Q2\'24','Q3\'24','Q4\'24','Q1\'25','Q2\'25','Q3\'25','Q4\'25','Q1\'26','Q2\'26','Q3\'26','Q4\'26'],
+    actual:   [10.2,10.8,11.1,11.4,11.6,null,null,null,null,null,null],
+    forecast: [null,null,null,null,null,11.9,12.1,11.8,11.8,13.2,12.8],
+    ciHigh:   [null,null,null,null,null,12.5,12.8,12.6,12.5,14.2,13.8],
+    ciLow:    [null,null,null,null,null,11.3,11.4,11.0,11.1,12.2,11.8],
+    optimisticForecast:[null,null,null,null,null,11.6,11.8,11.4,11.2,12.5,12.0],
+    pessimisticForecast:[null,null,null,null,null,12.2,12.5,12.2,12.3,14.0,13.5],
+    unit:'k',
+    method:'<strong>Model:</strong> Time-series model using TAMM job seeker registration data and NAFIS programme intake. Seasonal adjustment applied for Q1 graduation peaks. Disaggregated by skill level (high / mid / entry).',
+    confidence:77,
+    drivers:['University graduation Q1 seasonal peak creates temporary spike','NAFIS placement rate reducing average duration on register','Mid-skill Emirati demand outpacing supply in Finance/Tech','Entry-level job seeker count declining due to NAFIS upskilling'],
+    aiContext:'job seeker count forecast NAFIS TAMM Abu Dhabi quarterly',
+    horizon:'sh',signal:false
+  },
+  youth:{
+    title:'Youth Unemployment & NEET Rate — Annual Forecast',
+    subtitle:'Cohort + education pipeline model · Annual · Ages 15–24',
+    modelMeta:'Cohort+Education Pipeline · Last run: Jun 2026 · RMSE: 0.6pp · Confidence: 68%',
+    iconColor:'var(--dnbg)',iconStroke:'var(--dn)',
+    kpis:[
+      {lbl:'Youth Unemp. 2025',val:'9.8',unit:'%',chg:'Ages 15–24 (Emirati)',dir:'nt'},
+      {lbl:'2027 Forecast',val:'11.2',unit:'%',chg:'↑ Risk elevated',dir:'dn'},
+      {lbl:'NEET Rate 2027F',val:'6.4',unit:'%',chg:'↑ +0.9pp vs 2025',dir:'dn'}
+    ],
+    chartTitle:'Youth Unemployment Rate 15–24 (%) — Actual vs Forecast',
+    labels:['2021','2022','2023','2024','2025','2026F','2027F','2028F'],
+    actual:   [12.1,11.4,10.8,10.1,9.8,null,null,null],
+    forecast: [null,null,null,null,null,10.4,11.2,10.6],
+    ciHigh:   [null,null,null,null,null,11.0,12.4,12.1],
+    ciLow:    [null,null,null,null,null,9.8,10.0,9.1],
+    optimisticForecast:[null,null,null,null,null,10.0,10.4,9.8],
+    pessimisticForecast:[null,null,null,null,null,10.9,12.0,11.5],
+    unit:'%',
+    method:'<strong>Model:</strong> Cohort-based model tracking ADEK secondary and tertiary enrolment pipeline, STEM graduate output, and NAFIS absorption capacity. NEET rate derived as residual from participation and employment rate projections.',
+    confidence:68,
+    drivers:['STEM graduate pipeline insufficient to meet Technology sector demand','NAFIS capacity not scaling fast enough with graduate cohort growth','Mid-career transition support programmes underfunded','GCC peer benchmarking shows 10%+ risk threshold being approached'],
+    aiContext:'youth unemployment NEET forecast Abu Dhabi 15-24 annual policy',
+    horizon:'me',signal:true
+  },
+  dependency:{
+    title:'Age Dependency Ratio — Annual Projection',
+    subtitle:'Demographic-linked model · Annual',
+    modelMeta:'Demographic Model · Last run: Jun 2026 · RMSE: 0.4pp · Confidence: 88%',
+    iconColor:'var(--upbg)',iconStroke:'var(--up)',
+    kpis:[
+      {lbl:'2025 Actual',val:'19.2',unit:'%',chg:'Residents 18+',dir:'nt'},
+      {lbl:'2027 Forecast',val:'21.4',unit:'%',chg:'↑ +2.2pp',dir:'dn'},
+      {lbl:'Model Accuracy',val:'88',unit:'%',chg:'Last 5 annual',dir:'nt'}
+    ],
+    chartTitle:'Age Dependency Ratio (Annual, %) — Actual vs Forecast',
+    labels:['2020','2021','2022','2023','2024','2025','2026F','2027F','2028F','2030F'],
+    actual:   [17.1,17.4,17.8,18.2,18.8,19.2,null,null,null,null],
+    forecast: [null,null,null,null,null,null,20.1,21.4,22.6,24.5],
+    ciHigh:   [null,null,null,null,null,null,20.8,22.4,24.0,26.5],
+    ciLow:    [null,null,null,null,null,null,19.4,20.4,21.2,22.5],
+    optimisticForecast:[null,null,null,null,null,null,19.8,20.8,21.8,23.5],
+    pessimisticForecast:[null,null,null,null,null,null,20.4,22.0,23.5,25.5],
+    unit:'%',
+    method:'<strong>Model:</strong> Demographic projection model using Abu Dhabi population age-sex pyramid from 2023 Census, linked to LFS participation rate assumptions. Non-national population projected using historical visa issuance trends.',
+    confidence:88,
+    drivers:['Ageing Emirati cohort (40–60) approaching retirement age','Non-national older worker retention rate uncertain post-2027','Increased life expectancy extending the dependent age bracket','National pension system sustainability linked to this ratio'],
+    aiContext:'age dependency ratio forecast Abu Dhabi 2027 demographic ageing pension',
+    horizon:'me',signal:false
+  },
+  lfsize:{
+    title:'Labour Force Size — 10-Year Population Projection',
+    subtitle:'Population projection × participation rate · 3 scenarios · Biennial',
+    modelMeta:'Cohort-Component Model · Last run: Jun 2026 · Confidence: 71%',
+    iconColor:'var(--tlbg)',iconStroke:'var(--tl)',
+    kpis:[
+      {lbl:'2025 Labour Force',val:'1.84',unit:'M',chg:'Base year',dir:'nt'},
+      {lbl:'2030 Base Scenario',val:'2.41',unit:'M',chg:'↑ +560k',dir:'up'},
+      {lbl:'2030 Optimistic',val:'2.68',unit:'M',chg:'↑ +840k',dir:'up'}
+    ],
+    chartTitle:'Labour Force Size (Millions) — Three Scenarios to 2030',
+    labels:['2025','2026','2027','2028','2029','2030'],
+    actual:   [1.84,null,null,null,null,null],
+    forecast: [null,1.98,2.12,2.24,2.34,2.41],
+    ciHigh:   [null,2.08,2.28,2.46,2.58,2.68],
+    ciLow:    [null,1.88,1.96,2.02,2.08,2.14],
+    optimisticForecast:[null,2.08,2.28,2.46,2.58,2.68],
+    pessimisticForecast:[null,1.88,1.96,2.02,2.08,2.14],
+    unit:'M',
+    method:'<strong>Model:</strong> Cohort-component population model × age-sex participation rate matrix. Three scenarios: Conservative (low migration, declining participation), Base (historical trend), Optimistic (accelerated Vision policy outcomes).',
+    confidence:71,
+    drivers:['Non-national migration driven by mega-project pipeline and economic diversification','Emirati natural population growth rate at 2.8% p.a.','Vision 2031 talent attraction policy likely to increase high-skill inflow','Global economic headwinds may constrain non-national inflows in conservative scenario'],
+    aiContext:'labour force size 10 year projection Abu Dhabi 2030 scenarios population',
+    horizon:'lo',signal:false
+  },
+  epop:{
+    title:'Employment-to-Population Ratio — Vision Alignment Forecast',
+    subtitle:'Annual E-P ratio target gap model · Vision 2031 aligned',
+    modelMeta:'E-P Target Gap Model · Last run: Jun 2026 · Confidence: 69%',
+    iconColor:'var(--acbg)',iconStroke:'var(--ac)',
+    kpis:[
+      {lbl:'2025 E-P Ratio',val:'67.4',unit:'%',chg:'Base year',dir:'nt'},
+      {lbl:'2028 Base Scenario',val:'73.2',unit:'%',chg:'↑ +5.8pp',dir:'up'},
+      {lbl:'Vision 2031 Target',val:'78.0',unit:'%',chg:'Gap: 4.8pp to close',dir:'nt'}
+    ],
+    chartTitle:'Employment-to-Population Ratio (Annual, %) — Trajectory to Vision Target',
+    labels:['2023','2024','2025','2026F','2027F','2028F','2029F','2030F','2031F'],
+    actual:   [65.2,66.4,67.4,null,null,null,null,null,null],
+    forecast: [null,null,null,69.1,71.0,73.2,75.1,76.8,78.0],
+    ciHigh:   [null,null,null,70.2,72.5,75.4,77.8,79.9,82.1],
+    ciLow:    [null,null,null,68.0,69.5,71.0,72.4,73.7,74.9],
+    optimisticForecast:[null,null,null,70.0,72.5,75.4,77.8,79.9,82.1],
+    pessimisticForecast:[null,null,null,68.2,69.8,71.2,72.6,74.0,75.3],
+    unit:'%',
+    method:'<strong>Model:</strong> Employment-to-population ratio projected from disaggregated employment and population forecasts. Policy scenarios model three intervention intensities.',
+    confidence:69,
+    drivers:['Accelerated female participation is the single largest lever (+1.5pp)','Emiratisation programme on-track adds +0.8pp over 5 years','Economic diversification reducing oil-sector employment concentration','Youth NEET management critical to sustaining the ratio above 75%'],
+    aiContext:'employment to population ratio Vision 2031 target forecast long-term Abu Dhabi',
+    horizon:'lo',signal:false
+  },
+  structural:{
+    title:'Structural Unemployment Floor — Equilibrium Model',
+    subtitle:'NAIRU estimation · Biennial · Equilibrium analysis',
+    modelMeta:'Kalman Filter NAIRU · Last run: Jun 2026 · Confidence: 65%',
+    iconColor:'var(--dnbg)',iconStroke:'var(--dn)',
+    kpis:[
+      {lbl:'Current NAIRU Est.',val:'4.3',unit:'%',chg:'2025 estimate',dir:'nt'},
+      {lbl:'2030 Projection',val:'4.1',unit:'%',chg:'→ Stable floor',dir:'nt'},
+      {lbl:'Cyclical Component',val:'1.5',unit:'pp',chg:'Of total 5.8%',dir:'nt'}
+    ],
+    chartTitle:'Unemployment Rate — Structural Floor vs Cyclical (%) · Decomposition',
+    labels:['2020','2021','2022','2023','2024','2025','2027F','2030F'],
+    actual:   [7.2,7.0,6.6,6.2,5.9,5.8,null,null],
+    forecast: [null,null,null,null,null,null,4.8,4.1],
+    ciHigh:   [null,null,null,null,null,null,5.4,5.0],
+    ciLow:    [null,null,null,null,null,null,4.2,3.2],
+    optimisticForecast:[null,null,null,null,null,null,4.4,3.8],
+    pessimisticForecast:[null,null,null,null,null,null,5.2,4.7],
+    unit:'%',
+    method:'<strong>Model:</strong> Time-varying NAIRU (Non-Accelerating Inflation Rate of Unemployment) estimated via Kalman filter on LFS and CPI data. Structural component separated using Hodrick-Prescott filter with λ=1600.',
+    confidence:65,
+    drivers:['Skills mismatch accounts for ~1.2pp of structural component','Frictional unemployment irreducible below 1.8% in Abu Dhabi context','Labour market reforms could reduce structural floor by further 0.5pp','GCC labour mobility creates cyclical but not structural pressure'],
+    aiContext:'structural unemployment NAIRU floor forecast equilibrium Abu Dhabi 2030',
+    horizon:'lo',signal:false
+  }
+};
+
+/* =========================================================
+   FORECAST LANDING (dropdown view)
+   ========================================================= */
+const FORECAST_OPTIONS=[
+  {key:'unemployment',label:'Unemployment Rate'},
+  {key:'employment',label:'Employed Residents'},
+  {key:'participation',label:'Participation Rate'},
+  {key:'jobseeker',label:'Active Job Seekers'},
+  {key:'emiratisation',label:'Emiratisation Rate'},
+  {key:'female',label:'Female Participation'},
+  {key:'sector',label:'Employment by Sector'},
+  {key:'youth',label:'Youth Unemployment'},
+  {key:'dependency',label:'Age Dependency Ratio'},
+  {key:'lfsize',label:'Labour Force Size'},
+  {key:'epop',label:'Employment-to-Population'},
+  {key:'structural',label:'Structural Unemployment'}
+];
+
+const FC_COLORS={unemployment:AC,employment:TL,participation:PU,emiratisation:WN,female:PU,jobseeker:WN,youth:DN,dependency:UP,lfsize:TL,epop:AC,structural:DN,sector:TL};
+
+const RELATED_FORECASTS={
+  unemployment:['employment','youth','jobseeker','participation','structural','emiratisation'],
+  employment:['unemployment','participation','sector','lfsize','emiratisation','female'],
+  participation:['employment','female','epop','lfsize','unemployment','emiratisation'],
+  jobseeker:['unemployment','youth','employment','structural','participation','emiratisation'],
+  emiratisation:['employment','female','sector','unemployment','participation','youth'],
+  female:['participation','emiratisation','employment','epop','youth','lfsize'],
+  sector:['employment','emiratisation','unemployment','participation','female','lfsize'],
+  youth:['unemployment','jobseeker','female','participation','structural','emiratisation'],
+  dependency:['epop','lfsize','employment','participation','female','unemployment'],
+  lfsize:['employment','participation','epop','dependency','emiratisation','sector'],
+  epop:['employment','participation','lfsize','dependency','female','unemployment'],
+  structural:['unemployment','youth','jobseeker','participation','employment','emiratisation']
+};
+
+let landingKey='unemployment';
+let landingScenario='base';
+let landingChartInstance=null;
+
+function horizonLabel(h){
+  return h==='sh'?'Short-Term':h==='me'?'Medium-Term':'Long-Term';
+}
+
+function populateForecastSelect(filter=''){
+  const sel=document.getElementById('fc-select');
+  if(!sel)return;
+  const q=filter.trim().toLowerCase();
+  const opts=FORECAST_OPTIONS.filter(o=>!q||o.label.toLowerCase().includes(q));
+  sel.innerHTML=opts.map(o=>`<option value="${o.key}">${o.label}</option>`).join('');
+  if(!opts.find(o=>o.key===landingKey)&&opts.length)landingKey=opts[0].key;
+  sel.value=landingKey;
+}
+
+function filterForecastOptions(q){
+  populateForecastSelect(q);
+}
+
+function setForecastHash(key){
+  const base=window.location.href.split('#')[0];
+  try{
+    history.replaceState(null,'',key?base+'#forecast-'+key:base);
+  }catch(e){
+    window.location.hash=key?'forecast-'+key:'';
+  }
+}
+
+function selectForecast(key){
+  if(!FORECASTS[key])return;
+  landingKey=key;
+  landingScenario='base';
+  const sel=document.getElementById('fc-select');
+  if(sel)sel.value=key;
+  document.querySelectorAll('#fc-scenario-pills .dp-pill').forEach((p,i)=>p.classList.toggle('sel',i===0));
+  renderLandingForecast();
+  setForecastHash(key);
+  setTimeout(reportEmbedHeight,450);
+}
+
+function renderLandingForecast(){
+  const d=FORECASTS[landingKey];
+  if(!d)return;
+
+  const sum=document.getElementById('fc-summary');
+  if(sum){
+    const cards=[
+      {lbl:d.kpis[0].lbl,val:d.kpis[0].val,unit:d.kpis[0].unit,sub:d.kpis[0].chg,dir:d.kpis[0].dir},
+      {lbl:d.kpis[1].lbl,val:d.kpis[1].val,unit:d.kpis[1].unit,sub:d.kpis[1].chg,dir:d.kpis[1].dir},
+      {lbl:'Model Confidence',val:d.confidence,unit:'%',sub:'Forecast reliability score',dir:'nt'},
+      {lbl:'Horizon',val:horizonLabel(d.horizon),unit:'',sub:d.subtitle.split('·')[0].trim(),dir:'nt'}
+    ];
+    sum.innerHTML=cards.map(c=>`
+      <div class="fc-sum-card">
+        <div class="fc-sum-lbl">${c.lbl}</div>
+        <div class="fc-sum-val">${c.val}${c.unit?`<span class="fc-sum-unit">${c.unit==='%'||c.unit==='pp'||c.unit==='k'||c.unit==='M'?c.unit:(' '+c.unit)}</span>`:''}</div>
+        <div class="fc-sum-sub ${c.dir||''}">${c.sub}</div>
+      </div>`).join('');
+  }
+
+  const chartTitle=document.getElementById('fc-chart-title');
+  if(chartTitle)chartTitle.textContent=d.chartTitle;
+
+  const interp=document.getElementById('fc-interpretation');
+  if(interp)interp.innerHTML=d.drivers.slice(0,3).map(x=>`<li>${x}</li>`).join('');
+
+  const impacts=document.getElementById('fc-impacts');
+  if(impacts)impacts.innerHTML=d.drivers.slice(2).map(x=>`<li>${x}</li>`).join('');
+
+  const banner=document.getElementById('fc-model-banner');
+  if(banner){
+    const methodText=d.method.replace(/<[^>]+>/g,'').trim();
+    banner.innerHTML=`<strong>Model-based forecasts.</strong> ${methodText} ${d.modelMeta}`;
+  }
+
+  renderLandingChart(landingKey,landingScenario);
+  renderRelatedForecasts();
+}
+
+function getSparkData(d){
+  const out=[];
+  const len=Math.max(d.actual.length,d.forecast.length);
+  for(let i=0;i<len;i++){
+    const v=d.actual[i]!=null?d.actual[i]:d.forecast[i];
+    if(v!=null)out.push(v);
+  }
+  return out.length?out.slice(-8):[1,2,3,4];
+}
+
+function renderRelatedForecasts(){
+  const grid=document.getElementById('fc-related-grid');
+  if(!grid)return;
+  const keys=(RELATED_FORECASTS[landingKey]||FORECAST_OPTIONS.map(o=>o.key).filter(k=>k!==landingKey)).slice(0,6);
+  grid.innerHTML=keys.map(key=>{
+    const d=FORECASTS[key];
+    const opt=FORECAST_OPTIONS.find(o=>o.key===key);
+    if(!d||!opt)return '';
+    const kpi=d.kpis[1]||d.kpis[0];
+    const chgCls=kpi.dir==='up'?'up':kpi.dir==='dn'?'dn':'';
+    const unit=kpi.unit==='%'||kpi.unit==='pp'||kpi.unit==='k'||kpi.unit==='M'?kpi.unit:(' '+kpi.unit);
+    return `<article class="fc-rel-card" onclick="navigateToForecast('${key}')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();navigateToForecast('${key}')}">
+      <div class="fc-rel-top">
+        <div class="fc-rel-name">${opt.label}</div>
+        <span class="fc-rel-horizon">${horizonLabel(d.horizon)}</span>
+      </div>
+      <div class="fc-rel-val">${kpi.val}<span class="fc-rel-unit">${unit}</span></div>
+      <div class="fc-rel-sub ${chgCls}">${kpi.chg}</div>
+      <div class="fc-rel-conf">${d.confidence}% confidence</div>
+      <div class="fc-rel-spark"><canvas id="rel-spark-${key}"></canvas></div>
+      <div class="fc-rel-link">View forecast <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+    </article>`;
+  }).join('');
+  requestAnimationFrame(()=>{
+    keys.forEach(key=>{
+      const d=FORECASTS[key];
+      if(d)sparkLine('rel-spark-'+key,getSparkData(d),FC_COLORS[key]||AC);
+    });
+    setTimeout(reportEmbedHeight,350);
+  });
+}
+
+function navigateToForecast(key){
+  if(!FORECASTS[key])return;
+  selectForecast(key);
+  const target=document.querySelector('.fc-toolbar')||document.querySelector('.ph');
+  if(target)target.scrollIntoView({behavior:'smooth',block:'start'});
+  else window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderLandingChart(key,scenario){
+  const d=FORECASTS[key];
+  if(!d)return;
+  let forecastData=d.forecast;
+  if(scenario==='optimistic'&&d.optimisticForecast)forecastData=d.optimisticForecast;
+  if(scenario==='pessimistic'&&d.pessimisticForecast)forecastData=d.pessimisticForecast;
+
+  const canvas=document.getElementById('fc-landing-chart');
+  if(!canvas)return;
+  if(landingChartInstance){landingChartInstance.destroy();landingChartInstance=null;}
+  if(canvas._chart){canvas._chart.destroy();canvas._chart=null;}
+
+  if(key==='sector'){
+    const ctx=canvas.getContext('2d');
+    let fc=forecastData;
+    if(scenario==='optimistic')fc=d.optimisticForecast||d.forecast;
+    if(scenario==='pessimistic')fc=d.pessimisticForecast||d.forecast;
+    landingChartInstance=new Chart(ctx,{
+      type:'bar',
+      data:{
+        labels:d.labels,
+        datasets:[
+          {label:'2025 Actual',data:d.actual,backgroundColor:'rgba(37,99,235,.3)',borderColor:AC,borderWidth:1.5,borderRadius:4},
+          {label:'2026 '+scenario.charAt(0).toUpperCase()+scenario.slice(1),data:fc,backgroundColor:'rgba(13,148,136,.3)',borderColor:TL,borderWidth:1.5,borderRadius:4}
+        ]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{
+          legend:{display:true,position:'top',labels:{font:{size:11},color:'#475569'}},
+          tooltip:{backgroundColor:'rgba(15,23,42,.9)',titleColor:'#fff',bodyColor:'#CBD5E1',padding:10}
+        },
+        scales:{
+          x:{grid:{display:false},ticks:{color:'#94A3B8',font:{size:11}}},
+          y:{grid:{color:'rgba(148,163,184,.15)'},ticks:{color:'#94A3B8',font:{size:11},precision:1,callback:v=>formatAxisTick(v,'%')},title:{display:true,text:'Growth %',color:'#94A3B8',font:{size:10}}}
+        }
+      }
+    });
+  }else{
+    mainChart('fc-landing-chart',d.labels,d.actual,forecastData,d.ciHigh,d.ciLow,FC_COLORS[key]||AC,d.unit);
+    landingChartInstance=canvas._chart;
+  }
+}
+
+function switchLandingScenario(scenario,btn){
+  landingScenario=scenario;
+  document.querySelectorAll('#fc-scenario-pills .dp-pill').forEach(p=>p.classList.remove('sel'));
+  if(btn)btn.classList.add('sel');
+  renderLandingChart(landingKey,scenario);
+  setTimeout(reportEmbedHeight,450);
+}
+
+function exportDetail(){
+  if(!landingKey)return;
+  const d=FORECASTS[landingKey];
+  const msg=`Forecast Export — ${d.title}\n\nKPIs:\n${d.kpis.map(k=>`${k.lbl}: ${k.val}${k.unit} (${k.chg})`).join('\n')}\n\nKey Drivers:\n${d.drivers.join('\n')}\n\nModel: ${d.modelMeta}\n\nGenerated: ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`;
+  const blob=new Blob([msg],{type:'text/plain'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`LMO-Forecast-${landingKey}-${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();
+}
+
+window.addEventListener('load',()=>{
+  LMO.initLmoEmbed();
+  populateForecastSelect();
+  const hashKey=window.location.hash?window.location.hash.replace('#forecast-',''):'';
+  selectForecast(FORECASTS[hashKey]?hashKey:'unemployment');
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape')closeChat();
+  });
+  window.addEventListener('resize',LMO.reportEmbedHeight);
+  setTimeout(LMO.reportEmbedHeight,400);
+  setTimeout(LMO.reportEmbedHeight,1200);
+});
+
+
+/* =========================================================
+   AI CHAT — with session memory
+   ========================================================= */
+const AI_RESPONSES={
+  unemployment:"The Q3 2026 unemployment forecast of <strong>5.4%</strong> represents a 0.4pp easing from the current Q2 rate of 5.8%, driven by continued PMI expansion above 54 and job posting volumes growing +8.2% QoQ in Finance and Technology. The main downside risk is the construction permit deceleration — if permits don't recover by August, a Q4 lag of 4,000–6,000 roles is likely, pushing unemployment back to 5.7% by Q1 2027. Regional breakdown: Abu Dhabi city at 5.1%, Al Ain at 6.0%, Al Dhafra at 5.8%.",
+  participation:"The refined participation rate is projected to reach <strong>79.4% by Q3 2026</strong>, up from 78.2% current. The strongest driver is continued female participation growth following the historic 52.3% milestone. The gig economy reclassification adds another +1.8pp to the refined rate vs crude. Long-term, the base scenario projects 80.1% by end-2026 — in line with Abu Dhabi Vision workforce participation targets.",
+  emiratisation:"Emiratisation is on a <strong>76% probability</strong> track to hit the 13.5% Q3 target. Finance (18.6%) and Government (16.2%) are well above target, but Construction at 2.1% and Retail at 8.3% are dragging the aggregate. The 2027 target of 15% will require an additional enforcement escalation round — recommended 60-day cure notices to non-compliant establishments.",
+  employment:"Total employed residents forecast: <strong>1.91 million by Q3 2026</strong>, representing +70k from current levels. Finance (+12k) and Technology (+8k) are the primary growth engines. Healthcare will add +5k driven by demographic demand. Construction is slowing to +1.2% — a significant deceleration from the 4% average of the past three years.",
+  female:"Female participation is forecast to reach <strong>54.1% by end-2027</strong>, making Abu Dhabi the regional leader in female workforce integration. Three structural drivers will sustain this: growth of remote-eligible professional roles, NAFIS female bridge programme expansion, and childcare infrastructure adding 14 new facilities by 2027. Economic contribution per percentage point gain: approximately AED 2.4 billion annually.",
+  youth:"Youth unemployment (15–24) is forecast at <strong>11.2% for 2027</strong> — an elevated risk signal. The NEET rate is projected at 6.4%, above the GCC average of 5.1%. The core problem: ADEK STEM graduate output (420 graduates in 2025) cannot meet Technology sector demand (estimated 1,400 roles). Recommended: emergency STEM bootcamp acceleration and NAFIS capacity expansion for 2026–2027 cohort.",
+  sector:"Sector forecast highlights for 2026: <strong>Finance leads at +8.2%</strong>, driven by ADGM expansion and BFSI digitisation. Technology follows at +7.5% — AI adoption creating new role categories. Healthcare at +5.1%. Construction is the main concern at +0.6%, down from 1.8% in 2025 and at risk of turning negative if permit deceleration continues into Q3.",
+  default:"The LMO Forecasting Hub has <strong>12 active forecast models</strong> across three horizons. Near-term outlook: unemployment easing to 5.4%, employment growing to 1.91M, participation rate reaching 79.4%. Two signals need policy attention: Youth NEET risk is elevated (11.2% projected by 2027) and Construction employment is decelerating faster than expected. Long-term: Employment-to-Population Ratio on track to reach 73.2% by 2028 but needs further acceleration to close the gap to the Vision 2031 target of 78%. What specific forecast would you like to explore?"
+};
+
+// Contextual follow-up suggestions per topic
+const FOLLOW_UP_SUGGESTIONS={
+  unemployment:['Show me the regional breakdown','What drives the Q4 risk?','Compare vs GCC peers'],
+  participation:['How does female participation affect this?','What is the Vision 2031 target?','Gig economy impact?'],
+  emiratisation:['Which sectors are farthest from target?','What happens if Construction stays at 2.1%?','Show 2027 scenario'],
+  employment:['Break down by sector','Finance sector deep dive','Construction risk analysis'],
+  female:['What policy interventions are working?','Compare Abu Dhabi vs GCC region','Show 2031 trajectory'],
+  youth:['What NEET interventions are recommended?','STEM pipeline gap analysis','NAFIS capacity gap?'],
+  sector:['Which sector is highest risk?','Finance sector forecast detail','Construction permit trend'],
+  default:['What is the highest-risk forecast?','Which forecast needs policy action now?','Compare short vs long-term outlook','What is the Vision 2031 gap?']
+};
+
+// Session chat memory
+let chatHistory=[];
+let currentChatCtx='default';
+
+function getTopicKey(text){
+  const lc=text.toLowerCase();
+  if(lc.includes('unemploy')&&!lc.includes('youth')&&!lc.includes('struct'))return 'unemployment';
+  if(lc.includes('participat'))return 'participation';
+  if(lc.includes('emir'))return 'emiratisation';
+  if(lc.includes('employ')&&!lc.includes('unemploy'))return 'employment';
+  if(lc.includes('female')||lc.includes('women'))return 'female';
+  if(lc.includes('youth')||lc.includes('neet'))return 'youth';
+  if(lc.includes('sector')||lc.includes('economic activity')||lc.includes('construction')||lc.includes('finance'))return 'sector';
+  return null;
+}
+
+function getAIResponse(text){
+  const lc=text.toLowerCase();
+  if(lc.includes('risk')||lc.includes('highest'))return "The <strong>highest-risk forecast</strong> is Youth Unemployment, projected to reach 11.2% by 2027 — an elevated reading relative to GCC peers. Combined with the NEET rate rising to 6.4%, this represents a structural human capital risk. Second concern: Construction employment deceleration could create a Q4 2026 drag that elevates short-term unemployment above the 5.5% upper bound.";
+  if(lc.includes('policy')||lc.includes('action'))return "Two forecasts need immediate policy action: <strong>(1) Youth/NEET:</strong> NAFIS capacity expansion required now — the 2026 graduation cohort will exceed current placement capacity by ~800 people. <strong>(2) Construction:</strong> Permit deceleration needs monitoring — if Q3 permits don't recover, activate contingency Emiratisation substitution in other sectors to offset the employment drag.";
+  if(lc.includes('short vs long')||lc.includes('horizon'))return "<strong>Short-term (0–4Q):</strong> Generally positive — unemployment falling to 5.4%, employment growing to 1.91M. Risks contained. <strong>Long-term (3–10Y):</strong> More challenging — the E-P ratio needs to accelerate from current 2.1pp/year to 2.5pp/year to reach Vision 2031 targets. The structural workforce transformation (skills, Emiratisation, female participation) determines whether the gap closes.";
+  if(lc.includes('vision')||lc.includes('2031'))return "The Vision 2031 E-P ratio target is <strong>78%</strong>. Current trajectory reaches 73.2% by 2028 — a gap of 4.8pp. Closing this gap requires: Female participation sustaining above 56% by 2031 (currently 52.3%), Emiratisation reaching 18% in private sector (currently 13.3%), and the overall labour force growing to approximately 2.6M. Under the optimistic scenario (full programme activation), the target is achievable by Q3 2031.";
+  const topicKey=getTopicKey(text);
+  if(topicKey&&AI_RESPONSES[topicKey])return AI_RESPONSES[topicKey];
+  if(lc.includes('regional')||lc.includes('al ain')||lc.includes('al dhafra'))return "Regional breakdown for Q3 2026 forecast: <strong>Abu Dhabi City: 5.1%</strong> unemployment (lowest, driven by Finance/Tech concentration). <strong>Al Ain: 6.0%</strong> — higher structural rate due to education sector dominance and lower private sector density. <strong>Al Dhafra: 5.8%</strong> — energy sector dependent, construction deceleration risk elevated.";
+  if(lc.includes('construction')||lc.includes('permit'))return "Construction employment is the <strong>main downside risk</strong> for Q3–Q4 2026. Permit issuance decelerated 12% YoY in Q2 2026, and the sector's employment growth rate is projected at just +0.6% — down from 1.8% in 2025. If deceleration continues into Q3, Construction could turn negative, creating a 4,000–6,000 role lag and pushing aggregate unemployment toward the 5.7–5.9% range.";
+  return AI_RESPONSES.default;
+}
+
+function openChat(ctx,title){
+  if(document.body.classList.contains('embed')&&window.parent!==window){
+    window.parent.postMessage({type:'lmo-chat',ctx,title:title||'Forecast Intelligence'},'*');
+    return;
+  }
+  document.getElementById('ctx-val').textContent=title||'Forecast Intelligence';
+  currentChatCtx=getTopicKey(ctx+' '+title)||'default';
+
+  // If chat already has history, inject context switch note rather than wiping
+  const ms=document.getElementById('msgs');
+  if(chatHistory.length>0){
+    const note=document.createElement('div');
+    note.className='msg ai';
+    note.innerHTML=`<div class="bubble ai" style="background:var(--acbg);border-color:var(--acbr);color:var(--ac);font-size:11.5px">📍 Switched context to: <strong>${title}</strong></div>`;
+    ms.appendChild(note);
+    ms.scrollTop=ms.scrollHeight;
+  } else {
+    // Fresh session — inject opening AI response
+    const resp=AI_RESPONSES[currentChatCtx]||AI_RESPONSES.default;
+    addMsg('ai',resp);
+    chatHistory.push({role:'ai',text:resp});
+  }
+
+  // Contextual suggestions
+  const suggs=FOLLOW_UP_SUGGESTIONS[currentChatCtx]||FOLLOW_UP_SUGGESTIONS.default;
+  document.getElementById('suggs').innerHTML=suggs.map(s=>`<button class="sugg" onclick="sendCT('${s}')">${s}</button>`).join('');
+
+  document.getElementById('cpanel').classList.add('open');
+  setTimeout(()=>{const inp=document.getElementById('cin');if(inp)inp.focus();},300);
+}
+
+function closeChat(){
+  document.getElementById('cpanel').classList.remove('open');
+}
+
+function addMsg(role,text){
+  const ms=document.getElementById('msgs');
+  const d=document.createElement('div');d.className='msg '+role;
+  const b=document.createElement('div');b.className='bubble '+role;b.innerHTML=text;
+  d.appendChild(b);ms.appendChild(d);ms.scrollTop=ms.scrollHeight;
+}
+
+function sendC(){
+  const inp=document.getElementById('cin');
+  const t=inp.value.trim();if(!t)return;
+  sendCT(t);inp.value='';
+}
+
+function sendCT(text){
+  addMsg('user',text);
+  chatHistory.push({role:'user',text});
+  document.getElementById('suggs').innerHTML='';
+  const ms=document.getElementById('msgs');
+  const td=document.createElement('div');td.className='msg ai';td.id='typi';
+  td.innerHTML='<div class="typing"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>';
+  ms.appendChild(td);ms.scrollTop=ms.scrollHeight;
+  setTimeout(()=>{
+    document.getElementById('typi')?.remove();
+    const resp=getAIResponse(text);
+    addMsg('ai',resp);
+    chatHistory.push({role:'ai',text:resp});
+    // Inject contextual follow-up suggestions after each AI response
+    const newCtx=getTopicKey(text)||currentChatCtx;
+    const suggs=FOLLOW_UP_SUGGESTIONS[newCtx]||FOLLOW_UP_SUGGESTIONS.default;
+    document.getElementById('suggs').innerHTML=suggs.map(s=>`<button class="sugg" onclick="sendCT('${s}')">${s}</button>`).join('');
+    ms.scrollTop=ms.scrollHeight;
+  },1400);
+}
+</script>
+</body>
+</html>

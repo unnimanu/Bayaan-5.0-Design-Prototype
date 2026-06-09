@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"
+    />
+    <style>
+      :root {
+        --blue: #1488c9;
+        --blue-dark: #0f6fa6;
+        --blue-soft: #e8f4fb;
+        --bg: #eef0f3;
+        --panel: #ffffff;
+        --text: #1f2933;
+        --muted: #6b7785;
+        --border: #e6e9ee;
+        --chip-border: #cfe6f5;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        -webkit-font-smoothing: antialiased;
+        padding: 22px;
+      }
+
+      .wrap {
+        background: var(--bg);
+        border-radius: 14px;
+        padding: 24px;
+        max-width: 1240px;
+        margin: 0 auto;
+      }
+
+      /* ===== Top section: sidebar + panel ===== */
+      .top {
+        display: flex;
+        align-items: flex-start;
+        gap: 0;
+      }
+
+      /* Sidebar nav */
+      .sidebar {
+        width: 232px;
+        flex: 0 0 232px;
+        padding-top: 26px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 11px 16px;
+        border-radius: 10px;
+        font-size: 14px;
+        color: var(--text);
+        cursor: pointer;
+        position: relative;
+      }
+
+      .nav-item .ico {
+        color: var(--blue);
+        display: flex;
+      }
+
+      .nav-item.active {
+        background: #ffffff;
+        box-shadow:
+          0 1px 3px rgba(16, 40, 70, 0.06),
+          0 1px 2px rgba(16, 40, 70, 0.04);
+        font-weight: 600;
+      }
+
+      /* little pointer from active tab into the white panel */
+      .nav-item.active::after {
+        content: "";
+        position: absolute;
+        right: -9px;
+        top: 50%;
+        transform: translateY(-50%) rotate(45deg);
+        width: 16px;
+        height: 16px;
+        background: #ffffff;
+        border-radius: 3px;
+        z-index: 3;
+      }
+
+      /* Main white panel */
+      .panel {
+        flex: 1;
+        background: var(--panel);
+        border-radius: 14px;
+        padding: 22px;
+        box-shadow: 0 1px 3px rgba(16, 40, 70, 0.05);
+        position: relative;
+        z-index: 2;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+      }
+
+      .card {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 18px 18px 22px;
+      }
+
+      .card-ico {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: var(--blue-soft);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--blue);
+        margin-bottom: 18px;
+      }
+
+      .card h3 {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+
+      .card p {
+        font-size: 12.5px;
+        color: var(--muted);
+        margin-bottom: 16px;
+        line-height: 1.4;
+      }
+
+      /* Select */
+      .select {
+        position: relative;
+        width: 100%;
+        max-width: 175px;
+      }
+      .select select {
+        width: 100%;
+        appearance: none;
+        -webkit-appearance: none;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 9px 32px 9px 12px;
+        font-size: 13px;
+        color: var(--muted);
+        background: #fff;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .select .chev {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: var(--text);
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        margin-top: 14px;
+        background: #fff;
+        border: 1px solid var(--chip-border);
+        color: var(--blue);
+        border-radius: 20px;
+        padding: 5px 12px;
+        font-size: 12.5px;
+      }
+      .tag .x {
+        cursor: pointer;
+        font-size: 13px;
+        line-height: 1;
+        color: var(--blue);
+      }
+
+      /* Radios */
+      .radio {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 13px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        color: var(--text);
+      }
+      .radio:last-child {
+        margin-bottom: 0;
+      }
+      .radio input {
+        display: none;
+      }
+      .radio .dot {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        border: 1.5px solid #c2c9d2;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 15px;
+      }
+      .radio input:checked + .dot {
+        border-color: var(--blue);
+      }
+      .radio input:checked + .dot::after {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--blue);
+      }
+
+      /* Save button */
+      .panel-footer {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 22px;
+      }
+      .btn-save {
+        background: #fff;
+        border: 1px solid var(--blue);
+        color: var(--blue);
+        font-weight: 600;
+        font-size: 13.5px;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .btn-save:hover {
+        background: var(--blue-soft);
+      }
+
+      /* ===== Explore bar ===== */
+      .explore-wrap {
+        display: flex;
+        justify-content: center;
+        margin-top: 40px;
+      }
+      .explore {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #fff;
+        border-radius: 30px;
+        padding: 8px 8px 8px 18px;
+        width: 100%;
+        max-width: 540px;
+        box-shadow: 0 1px 4px rgba(16, 40, 70, 0.07);
+      }
+      .explore .spark {
+        color: var(--blue);
+        display: flex;
+      }
+      .explore input {
+        flex: 1;
+        border: none;
+        outline: none;
+        font-size: 14px;
+        color: var(--text);
+        font-family: inherit;
+      }
+      .explore input::placeholder {
+        color: #8a93a0;
+      }
+      .explore .search-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--blue);
+        border: none;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex: 0 0 40px;
+      }
+      .explore .search-btn:hover {
+        background: var(--blue-dark);
+      }
+
+      /* ===== Chips ===== */
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 26px;
+      }
+      .chip {
+        background: #fff;
+        border: 1px solid var(--chip-border);
+        color: #2a3b48;
+        font-size: 12.5px;
+        padding: 8px 16px;
+        border-radius: 20px;
+        cursor: pointer;
+      }
+      .chip:hover {
+        background: var(--blue-soft);
+      }
+
+      /* ===== View switching ===== */
+      .view {
+        display: none;
+      }
+      .view.active {
+        display: block;
+      }
+
+      /* ===== Dashboard view ===== */
+      .dash-cards {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+      }
+      .dash-card {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 18px;
+        width: 198px;
+      }
+      .dash-card .card-ico {
+        margin-bottom: 28px;
+      }
+      .dash-card h3 {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .dash-card p {
+        font-size: 12.5px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      /* ===== Profile placeholder ===== */
+      .placeholder {
+        color: var(--muted);
+        font-size: 14px;
+        padding: 24px 6px;
+      }
+
+      .ws-dropdown-header {
+        font-size: 12px;
+        font-weight: 600;
+        color: #94A3B8;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 10px;
+      }
+
+      .ws-list-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background 0.12s;
+        border: 1px solid transparent;
+      }
+
+      .ws-list-item:hover {
+        background: #F8FAFC;
+      }
+
+      .ws-list-item.active-ws {
+        background: #EFF6FF;
+        border-color: #BFDBFE;
+      }
+
+      .active-ws .ws-list-check {
+        display: block;
+      }
+
+      .ws-list-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+
+      .ws-list-name {
+        font-size: 13px;
+        font-weight: 500;
+        color: #0F172A;
+        margin-bottom: 3px;
+      }
+
+      .ws-list-meta {
+        font-size: 11px;
+        color: #0F172A;
+        display: flex;
+        gap: 8px;
+      }
+
+      .ws-list-meta .tag {
+        padding: 1px 7px;
+        font-size: 10px;
+      }
+
+      .ws-list-check {
+        display: none;
+        margin-left: auto;
+        color: #0066FF;
+      }
+
+      .ws-dropdown-divider {
+        height: 1px;
+        background: rgba(15, 23, 42, 0.06);
+        margin: 10px 0;
+      }
+
+      .ws-add-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        cursor: pointer;
+        color: #0066FF;
+        font-size: 13px;
+        font-weight: 500;
+        transition: background 0.12s;
+      }
+
+      .ws-add-btn:hover {
+        background: #EFF6FF;
+      }
+
+      .ws-add-btn i {
+        font-size: 18px;
+      }
+
+      @media (max-width: 860px) {
+        .top {
+          flex-direction: column;
+        }
+        .sidebar {
+          width: 100%;
+          flex-basis: auto;
+        }
+        .nav-item.active::after {
+          display: none;
+        }
+        .cards {
+          grid-template-columns: 1fr;
+        }
+        .dash-card {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <!-- Top: sidebar + settings panel -->
+      <div class="top">
+        <nav class="sidebar">
+          <div class="nav-item" data-view="profile" onclick="showView(this)">
+            <span class="ico">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 21c0-4 3.5-6 8-6s8 2 8 6" />
+              </svg>
+            </span>
+            Your profile
+          </div>
+
+          <div
+            class="nav-item active"
+            data-view="settings"
+            onclick="showView(this)"
+          >
+            <span class="ico">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="3" />
+                <path
+                  d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+                />
+              </svg>
+            </span>
+            Settings
+          </div>
+
+          <div class="nav-item" data-view="dashboards" onclick="showView(this)">
+            <span class="ico">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="3" y="3" width="7" height="9" rx="1" />
+                <rect x="14" y="3" width="7" height="5" rx="1" />
+                <rect x="14" y="12" width="7" height="9" rx="1" />
+                <rect x="3" y="16" width="7" height="5" rx="1" />
+              </svg>
+            </span>
+            Operational Dashboards
+          </div>
+        </nav>
+
+        <section class="panel">
+          <div class="view" id="view-profile">
+            <div class="placeholder">Your profile details will appear here.</div>
+            <!-- <div class="ws-dropdown-header">Switch persona</div>
+            <div
+              class="ws-list-item active-ws"
+              data-persona="analyst"
+              onclick="switchPersona('analyst')"
+            >
+              <div
+                class="ws-list-avatar"
+                style="background: #ebf5ff; color: #0066ff"
+              >
+                <i class="ti ti-chart-line" style="font-size: 16px"></i>
+              </div>
+              <div>
+                <div class="ws-list-name">Analyst</div>
+                <div class="ws-list-meta">
+                  Detailed metrics, alerts &amp; products
+                </div>
+              </div>
+              <div class="ws-list-check persona-check-analyst">
+                <i class="ti ti-check" style="font-size: 16px"></i>
+              </div>
+            </div>
+            <div
+              class="ws-list-item"
+              data-persona="executive"
+              onclick="switchPersona('executive')"
+            >
+              <div
+                class="ws-list-avatar"
+                style="background: #fef3c7; color: #b45309"
+              >
+                <i class="ti ti-briefcase" style="font-size: 16px"></i>
+              </div>
+              <div>
+                <div class="ws-list-name">Executive</div>
+                <div class="ws-list-meta">
+                  Narrative brief, actions &amp; observatory
+                </div>
+              </div>
+              <div
+                class="ws-list-check persona-check-executive"
+                style="display: none"
+              >
+                <i class="ti ti-check" style="font-size: 16px"></i>
+              </div>
+            </div> -->
+          </div>
+
+          <!-- Settings view -->
+          <div class="view active" id="view-settings">
+            <div class="cards">
+              <!-- Region -->
+              <div class="card">
+                <div class="card-ico">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"
+                    />
+                    <circle cx="12" cy="10" r="2.5" />
+                  </svg>
+                </div>
+                <h3>Region</h3>
+                <p>You can select your region from the list</p>
+                <div class="select">
+                  <select>
+                    <option>Select region</option>
+                    <option>Abu Dhabi</option>
+                    <option>Dubai</option>
+                    <option>Sharjah</option>
+                  </select>
+                  <span class="chev">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </span>
+                </div>
+                <div>
+                  <span class="tag"
+                    >Abu Dhabi <span class="x">&times;</span></span
+                  >
+                </div>
+              </div>
+
+              <!-- Language -->
+              <div class="card">
+                <div class="card-ico">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M4 5h7" />
+                    <path d="M7 3v2c0 4-2 6-4 7" />
+                    <path d="M5 9c0 2.5 2.5 4 5 4.5" />
+                    <path d="M13 20l4-9 4 9" />
+                    <path d="M14.5 17h5" />
+                  </svg>
+                </div>
+                <h3>Language</h3>
+                <p>You can switch laguage from the list</p>
+                <label class="radio">
+                  <input type="radio" name="lang" />
+                  <span class="dot"></span>
+                  Arabic
+                </label>
+                <label class="radio">
+                  <input type="radio" name="lang" checked />
+                  <span class="dot"></span>
+                  English
+                </label>
+              </div>
+
+              <!-- Theme -->
+              <div class="card">
+                <div class="card-ico">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                  </svg>
+                </div>
+                <h3>Theme</h3>
+                <p>You can switch laguage from the list</p>
+                <label class="radio">
+                  <input type="radio" name="theme" />
+                  <span class="dot"></span>
+                  Dark
+                </label>
+                <label class="radio">
+                  <input type="radio" name="theme" checked />
+                  <span class="dot"></span>
+                  Light
+                </label>
+              </div>
+            </div>
+
+            <div class="panel-footer">
+              <button class="btn-save">Save settings</button>
+            </div>
+          </div>
+          <!-- /view-settings -->
+
+          <!-- Operational Dashboards view -->
+          <div class="view" id="view-dashboards">
+            <div class="dash-cards">
+              <div class="dash-card">
+                <div class="card-ico">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <rect x="3" y="3" width="8" height="8" rx="1.5" />
+                    <rect x="13" y="3" width="8" height="5" rx="1.5" />
+                    <rect x="13" y="10" width="8" height="11" rx="1.5" />
+                    <rect x="3" y="13" width="8" height="8" rx="1.5" />
+                  </svg>
+                </div>
+                <h3>One Dashboard</h3>
+                <p>
+                  Monitors data availability and publication status across the
+                  platform.
+                </p>
+              </div>
+
+              <div class="dash-card">
+                <div class="card-ico">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M4 6h16" />
+                    <path d="M12 6v14" />
+                    <path d="M7 6l-3 6h6z" />
+                    <path d="M17 6l-3 6h6z" />
+                    <path d="M9 20h6" />
+                  </svg>
+                </div>
+                <h3>Data Governance Dashboard</h3>
+                <p>
+                  Monitors platform utilization, user activity, product
+                  engagement, and entity adoption.
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- /view-dashboards -->
+        </section>
+      </div>
+
+      <!-- Explore bar -->
+      <!-- <div class="explore-wrap">
+        <div class="explore">
+          <span class="spark">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 2l1.6 5.4L19 9l-5.4 1.6L12 16l-1.6-5.4L5 9l5.4-1.6L12 2z"
+              />
+              <path
+                d="M19 14l.7 2.3L22 17l-2.3.7L19 20l-.7-2.3L16 17l2.3-.7L19 14z"
+              />
+            </svg>
+          </span>
+          <input type="text" placeholder="What would you like to explore?" />
+          <button class="search-btn">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </button>
+        </div>
+      </div> -->
+
+      <!-- Suggestion chips -->
+      <!-- <div class="chips">
+        <span class="chip"
+          >Generate KPI dashboard for education trends in 2025</span
+        >
+        <span class="chip">KPIs for GDP monitoring</span>
+        <span class="chip">Population trend in 2025</span>
+        <span class="chip"
+          >Generate report for upcoming Agricultural anomalies</span
+        >
+      </div> -->
+    </div>
+
+    <script>
+      function showView(el) {
+        // toggle active nav item
+        document
+          .querySelectorAll(".nav-item")
+          .forEach((n) => n.classList.remove("active"));
+        el.classList.add("active");
+        // toggle the matching panel view
+        var target = el.getAttribute("data-view");
+        document
+          .querySelectorAll(".view")
+          .forEach((v) => v.classList.remove("active"));
+        document.getElementById("view-" + target).classList.add("active");
+      }
+    </script>
+  </body>
+</html>
