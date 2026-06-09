@@ -1,0 +1,247 @@
+/* Dark theme — overrides semantic tokens only; light values stay in :root */
+
+[data-theme="dark"] {
+  --gray-50: #1A2230;
+  --gray-100: #243044;
+  --gray-200: #334155;
+  --gray-300: #475569;
+  --gray-400: #64748B;
+  --gray-500: #94A3B8;
+  --gray-600: #CBD5E1;
+
+  --bg: #0F1419;
+  --surface: #1A2230;
+  --surface2: #243044;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-md: rgba(255, 255, 255, 0.12);
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-tertiary: #64748B;
+  --accent-light: #0D2847;
+  --accent-mid: #1E4A8C;
+  --glass: rgba(26, 34, 48, 0.92);
+  --footer-bg: #000B14;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.25);
+
+  --nav-active: #60A5FA;
+  --nav-divider: #475569;
+  --nav-icon: #38BDF8;
+  --border-solid: #334155;
+  --blue-50: #0D2847;
+  --blue-100: #1E3A5F;
+  --blue-200: #1E4A8C;
+  --teal-50: #0A2E1A;
+  --teal-100: #0F3D2A;
+  --teal-200: #166534;
+  --teal-400: #34D399;
+  --teal-600: #6EE7B7;
+  --teal-800: #A7F3D0;
+  --amber-50: #3B2F0A;
+  --amber-400: #FBBF24;
+  --amber-600: #FDE68A;
+  --red-50: #3B1515;
+  --red-400: #F87171;
+  --red-600: #FCA5A5;
+  --success: #34D399;
+  --danger-text: #FCA5A5;
+  --amber-text: #FBBF24;
+  --purple: #A78BFA;
+  --purple-bg: #2E1065;
+  --pink-bg: #4A1528;
+  --pink-text: #F9A8D4;
+  --sky-bg: #0C2D48;
+  --sky-text: #7DD3FC;
+  --avatar-bg: #334155;
+  --avatar-text: #E2E8F0;
+  --danger: #F87171;
+  --warning: #FBBF24;
+  --gov-muted: #94A3B8;
+  --gov-link: #7DD3FC;
+  --gov-navy: #E2E8F0;
+  --gov-surface: #243044;
+  --chart-indigo: #818CF8;
+  --success-dark: #6EE7B7;
+  --chart-1: #60A5FA;
+  --chart-2: #34D399;
+  --chart-3: #1E4A8C;
+  --chart-4: #6EE7B7;
+  --chart-5: #FBBF24;
+  --chart-6: #2DD4BF;
+  --chart-7: #5EEAD4;
+  --chart-8: #99F6E4;
+  --panel-dark: #243044;
+  --surface-muted: #1A2230;
+  --navy-deep: #000B14;
+  color-scheme: dark;
+}
+
+/* ── Phase 3: scoped screen tokens ── */
+
+[data-theme="dark"] #screen-govdata {
+  --gd-border: #334155;
+  --gd-muted: #94A3B8;
+  --gd-navy: #E2E8F0;
+}
+
+[data-theme="dark"] #screen-crisis-obs {
+  --blue-light: #0D2847;
+  --navy: #E2E8F0;
+  --text: #F1F5F9;
+  --text2: #CBD5E1;
+  --muted: #94A3B8;
+  --border: #334155;
+  --bg: #0F1419;
+  --white: #1A2230;
+  --red-bg: #3B1515;
+  --red-border: #7F1D1D;
+  --amber-bg: #3B2F0A;
+  --amber-border: #92400E;
+  --blue-watch-bg: #0D2847;
+  --blue-watch-border: #1E40AF;
+  --green-bg: #0A2E1A;
+  --green-border: #166534;
+}
+
+[data-theme="dark"] #screen-indicator-detail {
+  --bg: #0F1419;
+  --bg2: #1A2230;
+  --bg3: #243044;
+  --bg4: #334155;
+  --border: #334155;
+  --border2: #475569;
+  --text: #F1F5F9;
+  --text2: #94A3B8;
+  --text3: #64748B;
+  --acc-l: #0D2847;
+  --risk-bg: #3B1515;
+  --risk-b: #7F1D1D;
+  --warn-bg: #3B2F0A;
+  --warn-b: #92400E;
+  --ok-bg: #0A2E1A;
+  --ok-b: #166534;
+  --pur-bg: #2E1065;
+}
+
+[data-theme="dark"] body.mode-ai {
+  --bg: #0F1419;
+  --white: #1A2230;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-light: #243044;
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-tertiary: #64748B;
+  --accent-light: #0D2847;
+  --ai-surface-elevated: #1A2230;
+  --ai-glow: rgba(37, 99, 235, 0.25);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .screen-home,
+[data-theme="dark"] #exec-story-overlay,
+[data-theme="dark"] #screen-editor .editor-preview-frame {
+  --figma-grey-700: #F1F5F9;
+  --figma-grey-500: #CBD5E1;
+  --figma-grey-400: #94A3B8;
+  --figma-grey-300: #64748B;
+  --figma-subcard-bg: rgba(26, 34, 48, 0.6);
+  --figma-subcard-shadow: 0 24px 30px 0 rgba(0, 0, 0, 0.2);
+  --accent-light: #0D2847;
+}
+
+[data-theme="dark"] #exec-story-overlay .exec-story-modal,
+[data-theme="dark"] .exec-sv-modal {
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-tertiary: #64748B;
+  --border: #334155;
+  --border-light: #243044;
+  --bg-card: #1A2230;
+  --bg-subtle: #243044;
+  --accent-light: #0D2847;
+  --blue-light: #0D2847;
+  --blue-text: #93C5FD;
+}
+
+/* ── Phase 4: settings-submenu tokens ── */
+
+[data-theme="dark"] {
+  --panel: var(--surface);
+  --blue-soft: #0D2847;
+  --chip-border: #334155;
+  --settings-text: var(--text-primary);
+  --settings-muted: var(--text-secondary);
+}
+
+/* ── Phase 2: shell components that still use hardcoded light values ── */
+
+[data-theme="dark"] .topnav {
+  box-shadow: 0 24px 17px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="dark"] .nav-item.active,
+[data-theme="dark"] .settings-submenu .nav-item.active::after {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .screen-home.persona-executive .home-main,
+[data-theme="dark"] body.persona-executive {
+  background: var(--bg);
+}
+
+[data-theme="dark"] .ai-panel,
+[data-theme="dark"] #bayaan-ai-panel {
+  background: var(--surface);
+  border-color: var(--border-md);
+}
+
+[data-theme="dark"] .bai-header,
+[data-theme="dark"] .bai-input-area {
+  background: var(--surface);
+  border-color: var(--border-md);
+}
+
+[data-theme="dark"] .bai-messages {
+  background: var(--bg);
+}
+
+[data-theme="dark"] .bai-input {
+  background: var(--surface2);
+  border-color: var(--border-md);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .bai-context-strip {
+  background: var(--surface2);
+  border-color: var(--border-md);
+}
+
+[data-theme="dark"] #screen-cpi-obs {
+  --blue-light: #0d2847;
+  --navy: #e2e8f0;
+  --text: #f1f5f9;
+  --text2: #94a3b8;
+  --muted: #64748b;
+  --border: #334155;
+  --bg: #0f1419;
+  --white: #1a2230;
+  --accent-light: #0d2847;
+}
+
+[data-theme="dark"] :is(#screen-crisis-obs, #screen-cpi-obs) .sidebar {
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+}
+
+[data-theme="dark"] .ws-list-item:hover {
+  background: var(--surface2);
+}
+
+[data-theme="dark"] .ws-list-item.active-ws {
+  background: var(--accent-light);
+  border-color: var(--accent-mid);
+}

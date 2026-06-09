@@ -1,0 +1,106 @@
+/* === Shared observatory layout + floating pill sidebar === */
+:is(#screen-crisis-obs, #screen-cpi-obs) .crisis-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+:is(#screen-crisis-obs, #screen-cpi-obs) .ind-page-breadcrumb {
+  margin-top: 16px;
+}
+
+:is(#screen-crisis-obs, #screen-cpi-obs) .page-wrap {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: stretch;
+  min-height: calc(100vh - 96px);
+  box-sizing: border-box;
+}
+
+:is(#screen-crisis-obs, #screen-cpi-obs) .sidebar {
+  align-self: start;
+  position: sticky;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #fff;
+  border: none;
+  border-radius: 999px;
+  box-shadow:
+    0 8px 32px rgba(42, 61, 76, 0.1),
+    0 2px 8px rgba(42, 61, 76, 0.06);
+  padding: 22px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 10;
+  margin-inline-start: var(--page-gutter);
+}
+
+:is(#screen-crisis-obs, #screen-cpi-obs) .sidebar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 6px 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+  color: var(--text2);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.15s;
+}
+
+:is(#screen-crisis-obs, #screen-cpi-obs) .sidebar-item:hover,
+:is(#screen-crisis-obs, #screen-cpi-obs) .sidebar-item.active {
+  background: none;
+  color: #272829;
+}
+
+:is(#screen-crisis-obs, #screen-cpi-obs) .sidebar-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #eff4f7;
+  color: #0c4a8e;
+  transition: background 0.15s, color 0.15s;
+}
+
+:is(#screen-crisis-obs, #screen-cpi-obs) .sidebar-icon i {
+  font-size: 20px;
+}
+
+:is(#screen-crisis-obs, #screen-cpi-obs) .sidebar-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+:is(#screen-crisis-obs, #screen-cpi-obs) .sidebar-item:hover:not(.active) .sidebar-icon {
+  background: #e3ecf3;
+}
+
+:is(#screen-crisis-obs, #screen-cpi-obs) .sidebar-item.active .sidebar-icon {
+  background: #0c4a8e;
+  color: #fff;
+}
+
+:is(#screen-crisis-obs, #screen-cpi-obs) .sidebar-item--ai .sidebar-icon {
+  background: linear-gradient(135deg, #ebf5ff 0%, #dbeafe 100%);
+  color: #0066ff;
+}
+
+:is(#screen-crisis-obs, #screen-cpi-obs) .sidebar-item--ai:hover .sidebar-icon,
+:is(#screen-crisis-obs, #screen-cpi-obs) .sidebar-item--ai.active .sidebar-icon {
+  background: linear-gradient(135deg, #0066ff 0%, #0052cc 100%);
+  color: #fff;
+}

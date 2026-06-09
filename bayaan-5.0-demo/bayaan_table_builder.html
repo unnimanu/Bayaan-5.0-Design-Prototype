@@ -1,0 +1,1148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Bayaan 5.0 — Table Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
+<style>
+/* ── Bayaan Design Tokens ── */
+:root {
+  --acc:#0066FF; --acc-lt:#EBF5FF; --acc-dk:#0047b3;
+  --ok:#16a34a; --ok-lt:#dcfce7;
+  --warn:#d97706; --warn-lt:#fef3c7;
+  --err:#dc2626; --err-lt:#fee2e2;
+  --purple:#7c3aed; --purple-lt:#ede9fe;
+  --t1:#111827; --t2:#374151; --t3:#6b7280; --t4:#9ca3af;
+  --bg:#f3f4f6; --surface:#ffffff; --surface2:#f9fafb;
+  --border:#e5e7eb; --border2:#d1d5db;
+  --radius:8px; --radius-lg:12px; --radius-xl:16px;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,.10);
+  --font:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t1);font-size:13px}
+
+/* ── Layout ── */
+.tb-app{display:flex;height:100vh;overflow:hidden}
+
+/* ── Sidebar ── */
+.tb-sidebar{width:272px;min-width:272px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.tb-sb-head{padding:15px 16px;border-bottom:1px solid var(--border);flex-shrink:0}
+.tb-sb-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--t1)}
+.tb-sb-title i{font-size:16px;color:var(--acc)}
+.tb-sb-sub{font-size:11px;color:var(--t3);margin-top:2px;padding-left:24px}
+.tb-steps{flex:1;overflow-y:auto;padding:10px 10px 20px}
+.tb-steps::-webkit-scrollbar{width:4px}
+.tb-steps::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* Step Card */
+.sc{border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--surface);margin-bottom:6px;overflow:hidden;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.sc:hover{border-color:var(--border2)}
+.sc.active{border-color:var(--acc);box-shadow:0 0 0 3px rgba(0,102,255,.08)}
+.sc.done{border-color:#86efac}
+.sc-head{display:flex;align-items:flex-start;gap:10px;padding:11px 13px}
+.sc-num{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border2);background:var(--surface2);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--t3);flex-shrink:0;margin-top:1px;transition:all .15s}
+.sc.active .sc-num{background:var(--acc);border-color:var(--acc);color:#fff}
+.sc.done .sc-num{background:var(--ok);border-color:var(--ok);color:#fff}
+.sc-label{font-size:12px;font-weight:700;color:var(--t1);line-height:1.3}
+.sc-sub{font-size:11px;color:var(--t3);margin-top:2px}
+.sc-body{padding:0 13px 12px;display:none}
+.sc.active .sc-body{display:block}
+
+/* Prompt Panel */
+.pp{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px;margin-top:2px}
+.pp-msg{font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:8px}
+.pp-msg strong{color:var(--acc);font-weight:700}
+.pp-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px}
+.pp-chip{font-size:11px;padding:4px 9px;border:1px solid var(--border);border-radius:20px;background:var(--surface);cursor:pointer;color:var(--t2);transition:all .12s;line-height:1.3}
+.pp-chip:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-lt)}
+.pp-row{display:flex;gap:6px}
+.pp-row input{flex:1;font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--t1);outline:none;font-family:var(--font)}
+.pp-row input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(0,102,255,.08)}
+.pp-row input::placeholder{color:var(--t4)}
+.pp-row button{padding:7px 10px;background:var(--acc);color:#fff;border:none;border-radius:var(--radius);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:4px;font-family:var(--font);font-weight:600;transition:background .12s}
+.pp-row button:hover{background:var(--acc-dk)}
+
+/* Generation progress */
+.gen-wrap{margin-top:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px;display:none}
+.gen-wrap.show{display:block}
+.gs-row{display:flex;align-items:center;gap:7px;padding:3px 0;font-size:12px;color:var(--t3)}
+.gs-row.done{color:var(--t1)}
+.gs-row.run{color:var(--acc)}
+.gs-row i{font-size:13px;flex-shrink:0;width:14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.gs-row.run i{animation:spin .7s linear infinite}
+.gen-bar{height:3px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden}
+.gen-fill{height:100%;background:var(--acc);border-radius:2px;transition:width .35s}
+
+/* Column config */
+.col-list{display:flex;flex-direction:column;gap:4px;margin-top:4px}
+.col-item{display:flex;align-items:center;gap:7px;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);font-size:12px}
+.col-item input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;flex-shrink:0;cursor:pointer}
+.col-name{flex:1;font-weight:500;color:var(--t1)}
+.col-type-tag{font-size:10px;padding:2px 5px;border-radius:8px;background:var(--surface2);color:var(--t3);border:1px solid var(--border);font-weight:600}
+
+/* View type opts */
+.vt-opts{display:flex;flex-direction:column;gap:5px;margin-top:4px}
+.vt-opt{display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all .12s;background:var(--surface)}
+.vt-opt:hover,.vt-opt.sel{border-color:var(--acc);background:var(--acc-lt)}
+.vt-opt i{font-size:16px;color:var(--t3);flex-shrink:0}
+.vt-opt:hover i,.vt-opt.sel i{color:var(--acc)}
+.vt-name{font-size:12px;font-weight:700;color:var(--t1)}
+.vt-desc{font-size:11px;color:var(--t3);margin-top:1px}
+
+/* Fmt options */
+.fmt-list{display:flex;flex-direction:column;gap:5px;margin-top:4px}
+.fmt-item{display:flex;align-items:center;justify-content:space-between;padding:7px 9px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);cursor:pointer;transition:border-color .12s}
+.fmt-item:hover{border-color:var(--border2)}
+.fmt-left{display:flex;align-items:center;gap:7px}
+.fmt-left i{font-size:14px;color:var(--t3);width:16px;text-align:center}
+.fmt-label{font-size:12px;font-weight:600;color:var(--t1)}
+.fmt-sub{font-size:10px;color:var(--t3);margin-top:1px}
+/* Toggle switch */
+.tsw{width:30px;height:17px;border-radius:10px;background:var(--border2);cursor:pointer;position:relative;transition:background .15s;flex-shrink:0}
+.tsw.on{background:var(--acc)}
+.tsw::after{content:'';position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.tsw.on::after{left:15px}
+
+/* Save opts */
+.save-list{display:flex;flex-direction:column;gap:5px;margin-top:4px}
+.save-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);font-size:12px;font-weight:600;cursor:pointer;transition:all .12s;color:var(--t1)}
+.save-item:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-lt)}
+.save-item i{font-size:14px;flex-shrink:0}
+
+/* ── Main area ── */
+.tb-main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* Topbar */
+.tb-topbar{height:50px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:10px;flex-shrink:0}
+.tb-title{font-size:13px;font-weight:700;color:var(--t1);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.view-tabs{display:flex;align-items:center;gap:2px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:3px;flex-shrink:0}
+.vtab{font-size:12px;padding:5px 11px;border-radius:6px;cursor:pointer;color:var(--t3);transition:all .12s;display:flex;align-items:center;gap:5px;font-weight:600;white-space:nowrap}
+.vtab i{font-size:13px}
+.vtab.on{background:var(--surface);color:var(--t1);box-shadow:var(--shadow);border:1px solid var(--border)}
+.badge-ready{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--ok-lt);color:var(--ok);border:1px solid #86efac;font-weight:700}
+.badge-draft{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--surface2);color:var(--t3);border:1px solid var(--border);font-weight:600}
+.icon-btn{height:32px;padding:0 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;cursor:pointer;background:var(--surface);color:var(--t2);display:flex;align-items:center;gap:5px;font-family:var(--font);font-weight:600;transition:all .12s;flex-shrink:0}
+.icon-btn:hover{background:var(--surface2);border-color:var(--border2)}
+.icon-btn i{font-size:14px}
+
+/* Toolbar */
+.tb-bar{height:42px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:5px;flex-shrink:0;overflow-x:auto}
+.tb-bar::-webkit-scrollbar{height:3px}
+.tb-bar::-webkit-scrollbar-thumb{background:var(--border2)}
+.tbb{height:28px;padding:0 9px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;cursor:pointer;background:var(--surface);color:var(--t2);display:flex;align-items:center;gap:4px;font-family:var(--font);font-weight:600;transition:all .12s;white-space:nowrap;flex-shrink:0}
+.tbb:hover{background:var(--surface2);border-color:var(--border2)}
+.tbb.on{background:var(--acc-lt);color:var(--acc);border-color:#93c5fd}
+.tbb i{font-size:13px}
+.tb-sep{width:1px;height:20px;background:var(--border);margin:0 2px;flex-shrink:0}
+.tb-spacer{flex:1}
+.tb-count{font-size:11px;color:var(--t3);flex-shrink:0;padding-right:2px}
+.tb-search{position:relative;display:flex;align-items:center;flex-shrink:0}
+.tb-search input{height:28px;padding:0 8px 0 27px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;background:var(--surface);color:var(--t1);outline:none;width:130px;font-family:var(--font);transition:width .2s,border-color .12s}
+.tb-search input:focus{border-color:var(--acc);width:170px}
+.tb-search i{position:absolute;left:7px;font-size:13px;color:var(--t4);pointer-events:none}
+
+/* Canvas */
+.tb-canvas{flex:1;overflow:auto;padding:16px;background:var(--bg);min-width:0}
+.tb-canvas::-webkit-scrollbar{width:6px;height:6px}
+.tb-canvas::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* Empty state */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;color:var(--t3)}
+.empty-state i{font-size:52px;opacity:.18}
+.empty-state h3{font-size:15px;font-weight:700;color:var(--t2)}
+.empty-state p{font-size:12px;opacity:.8;max-width:280px;text-align:center;line-height:1.6}
+.empty-actions{display:flex;gap:7px;margin-top:6px;flex-wrap:wrap;justify-content:center}
+.empty-btn{padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--t2);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:var(--font);font-weight:600;transition:all .12s}
+.empty-btn:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-lt)}
+
+/* Table */
+.tbl-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow)}
+table.dt{width:100%;border-collapse:collapse;font-size:12.5px}
+table.dt thead tr{background:var(--surface2)}
+table.dt th{padding:9px 13px;text-align:left;font-weight:700;font-size:11.5px;color:var(--t2);border-bottom:1px solid var(--border);border-right:1px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap;position:sticky;top:0;background:var(--surface2);z-index:1}
+table.dt th:last-child{border-right:none}
+table.dt th:hover{background:#eef2f7}
+.th-row{display:flex;align-items:center;gap:5px}
+.ct-badge{font-size:9px;padding:1px 5px;border-radius:8px;background:var(--border);color:var(--t3);font-weight:600;border:1px solid var(--border2);text-transform:uppercase;letter-spacing:.03em;flex-shrink:0}
+.sort-ind{margin-left:auto;font-size:10px;color:var(--t4)}
+.sorted-asc .sort-ind::after{content:'↑';color:var(--acc)}
+.sorted-desc .sort-ind::after{content:'↓';color:var(--acc)}
+table.dt td{padding:8px 13px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);color:var(--t1);vertical-align:middle}
+table.dt td:last-child{border-right:none}
+table.dt tbody tr:last-child td{border-bottom:none}
+table.dt tbody tr:hover td{background:#f7faff}
+.rn{width:32px;text-align:center;color:var(--t4);font-size:11px;font-weight:600}
+
+/* Cell badges */
+.cb{display:inline-flex;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;white-space:nowrap}
+.cb-ok{background:var(--ok-lt);color:#14532d}
+.cb-warn{background:var(--warn-lt);color:#78350f}
+.cb-err{background:var(--err-lt);color:#7f1d1d}
+.cb-acc{background:var(--acc-lt);color:var(--acc-dk)}
+.cb-purple{background:var(--purple-lt);color:#4c1d95}
+.cb-neutral{background:var(--surface2);color:var(--t3);border:1px solid var(--border)}
+.td-ok{color:var(--ok);font-weight:700}
+.td-warn{color:var(--warn);font-weight:700}
+.td-err{color:var(--err)}
+
+/* Heatmap */
+.hm5{background:#bbf7d0!important;color:#14532d!important}
+.hm4{background:#d1fae5!important;color:#065f46!important}
+.hm3{background:#fef3c7!important;color:#78350f!important}
+.hm2{background:#fed7aa!important;color:#9a3412!important}
+.hm1{background:#fecaca!important;color:#7f1d1d!important}
+.hmn{background:#fee2e2!important;color:#7f1d1d!important}
+
+/* In-cell bar */
+.bc{position:relative;min-width:80px}
+.bc-bg{position:absolute;left:0;top:0;bottom:0;background:rgba(0,102,255,.07);border-radius:2px;z-index:0}
+.bc-txt{position:relative;z-index:1}
+
+/* Striped */
+.striped tbody tr:nth-child(even) td{background:var(--surface2)}
+.striped tbody tr:hover td{background:#f0f6ff!important}
+/* No-border */
+.nb table.dt td,.nb table.dt th{border-right:none}
+
+/* Totals footer */
+tfoot.tf tr td{background:var(--surface2);font-weight:700;border-top:2px solid var(--border2)}
+
+/* Summary view */
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:10px;margin-bottom:16px}
+.sum-kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;box-shadow:var(--shadow)}
+.sum-lbl{font-size:11px;color:var(--t3);font-weight:600;margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.sum-lbl i{font-size:13px;color:var(--acc)}
+.sum-val{font-size:21px;font-weight:700;color:var(--t1);line-height:1.1}
+.sum-sub{font-size:11px;color:var(--t3);margin-top:4px}
+.sum-sub .up{color:var(--ok)}.sum-sub .dn{color:var(--err)}
+.section-lbl{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+
+/* Pivot */
+.pivot-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow)}
+table.pv{width:100%;border-collapse:collapse;font-size:12.5px}
+table.pv th,table.pv td{padding:8px 13px;border-bottom:1px solid var(--border);border-right:1px solid var(--border)}
+table.pv th{background:var(--surface2);font-weight:700;font-size:11.5px;color:var(--t2);text-align:left}
+table.pv td{text-align:right;color:var(--t1)}
+table.pv td:first-child{text-align:left;font-weight:700;color:var(--t1);background:var(--surface2)}
+table.pv tfoot tr td{background:#eef2f7;font-weight:700;border-top:2px solid var(--border2)}
+table.pv tfoot td:first-child{color:var(--acc)}
+table.pv td:last-child,table.pv th:last-child{border-right:none;background:var(--acc-lt);color:var(--acc-dk);font-weight:700}
+table.pv tbody tr:hover td{background:#f8faff}
+table.pv tbody tr:hover td:first-child,table.pv tbody tr:hover td:last-child{background:unset}
+
+/* Right panel */
+.tb-right{width:220px;background:var(--surface);border-left:1px solid var(--border);flex-shrink:0;overflow-y:auto;padding:14px;display:none}
+.tb-right.show{display:block}
+.tb-right::-webkit-scrollbar{width:4px}
+.tb-right::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.rp-sec{margin-bottom:16px}
+.rp-sec-title{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.rp-row{margin-bottom:8px}
+.rp-row label{font-size:11px;color:var(--t2);display:block;margin-bottom:4px;font-weight:600}
+.rp-row select,.rp-row input[type=range]{width:100%;font-size:12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--t1);font-family:var(--font);outline:none}
+.rp-row select{padding:5px 8px}
+.rp-row select:focus{border-color:var(--acc)}
+.rp-row input[type=range]{accent-color:var(--acc)}
+.rp-range-lbl{font-size:11px;color:var(--t3);margin-top:2px}
+.rp-tog{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.rp-tog span{font-size:12px;color:var(--t1)}
+
+/* Artifacts shelf */
+.tb-shelf{background:var(--surface);border-top:1px solid var(--border);padding:10px 16px;flex-shrink:0;height:80px}
+.shelf-title{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}
+.shelf-list{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px}
+.shelf-list::-webkit-scrollbar{height:3px}
+.shelf-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.shelf-chip{display:flex;align-items:center;gap:7px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface2);cursor:pointer;transition:all .12s;white-space:nowrap;flex-shrink:0}
+.shelf-chip:hover{border-color:var(--acc);background:var(--acc-lt)}
+.shelf-chip i{font-size:14px;color:var(--acc)}
+.chip-name{font-size:12px;font-weight:700;color:var(--t1)}
+.chip-meta{font-size:10px;color:var(--t3)}
+.shelf-empty{font-size:12px;color:var(--t3);padding:4px 0}
+
+/* Modal */
+.m-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .18s}
+.m-overlay.show{opacity:1;pointer-events:all}
+.m-box{background:var(--surface);border-radius:var(--radius-xl);width:380px;max-width:92vw;border:1px solid var(--border);box-shadow:var(--shadow-md);transform:scale(.96);transition:transform .18s}
+.m-overlay.show .m-box{transform:scale(1)}
+.m-head{padding:16px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.m-head h3{font-size:14px;font-weight:700;color:var(--t1);display:flex;align-items:center;gap:7px}
+.m-head h3 i{color:var(--acc);font-size:16px}
+.m-close{background:none;border:none;cursor:pointer;color:var(--t3);font-size:18px;display:flex;padding:3px;border-radius:4px}
+.m-close:hover{color:var(--t1);background:var(--surface2)}
+.m-body{padding:18px 20px}
+.f-row{margin-bottom:13px}
+.f-row label{font-size:11px;font-weight:700;color:var(--t2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+.f-row input,.f-row select,.f-row textarea{width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--t1);font-family:var(--font);outline:none;transition:border-color .12s}
+.f-row input:focus,.f-row select:focus,.f-row textarea:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(0,102,255,.07)}
+.f-row textarea{resize:none}
+.m-foot{padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:7px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:var(--radius);font-size:12px;font-weight:700;cursor:pointer;border:1px solid transparent;font-family:var(--font);transition:all .12s;line-height:1}
+.btn-p{background:var(--acc);color:#fff;border-color:var(--acc)}
+.btn-p:hover{background:var(--acc-dk);border-color:var(--acc-dk)}
+.btn-g{background:var(--surface);color:var(--t1);border-color:var(--border)}
+.btn-g:hover{background:var(--surface2);border-color:var(--border2)}
+
+/* Toast */
+.toast-wrap{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:6px}
+.toast{display:flex;align-items:center;gap:9px;padding:10px 14px;background:var(--t1);color:#fff;border-radius:var(--radius-lg);font-size:13px;font-weight:600;box-shadow:var(--shadow-md);animation:t-in .2s ease;min-width:220px;max-width:340px}
+.toast i{font-size:15px;flex-shrink:0}
+@keyframes t-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<div class="tb-app">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="tb-sidebar">
+    <div class="tb-sb-head">
+      <div class="tb-sb-title"><i class="ti ti-table"></i>Table Builder</div>
+      <div class="tb-sb-sub">Prompt-assisted table creation</div>
+    </div>
+    <div class="tb-steps" id="stepList">
+
+      <!-- Step 1 -->
+      <div class="sc active" id="sc1">
+        <div class="sc-head" onclick="activateStep(1)">
+          <div class="sc-num" id="sn1">1</div>
+          <div><div class="sc-label">Define your table</div><div class="sc-sub" id="ss1">Describe what you need</div></div>
+        </div>
+        <div class="sc-body">
+          <div class="pp">
+            <div class="pp-msg"><strong>Bayaan AI</strong> — Describe the table you want, or pick a quick start below.</div>
+            <div class="pp-chips">
+              <span class="pp-chip" onclick="qp('GDP by sector and quarter 2024–2026 with YoY growth')">GDP by sector</span>
+              <span class="pp-chip" onclick="qp('Labour market employment by industry 2025')">Labour market</span>
+              <span class="pp-chip" onclick="qp('CPI index by category and year with weights')">CPI index</span>
+              <span class="pp-chip" onclick="qp('Project tracker with owner priority budget and status')">Project tracker</span>
+            </div>
+            <div class="pp-row">
+              <input type="text" id="tblInput" placeholder="Describe your table…" onkeydown="if(event.key==='Enter')submitPrompt()"/>
+              <button onclick="submitPrompt()"><i class="ti ti-wand"></i> Build</button>
+            </div>
+          </div>
+          <div class="gen-wrap" id="genWrap">
+            <div class="gs-row" id="gsr1"><i class="ti ti-circle" style="opacity:.3"></i><span>Parsing prompt</span></div>
+            <div class="gs-row" id="gsr2"><i class="ti ti-circle" style="opacity:.3"></i><span>Inferring columns &amp; types</span></div>
+            <div class="gs-row" id="gsr3"><i class="ti ti-circle" style="opacity:.3"></i><span>Generating row data</span></div>
+            <div class="gs-row" id="gsr4"><i class="ti ti-circle" style="opacity:.3"></i><span>Applying formatting</span></div>
+            <div class="gs-row" id="gsr5"><i class="ti ti-circle" style="opacity:.3"></i><span>Finalising layout</span></div>
+            <div class="gen-bar"><div class="gen-fill" id="genFill" style="width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="sc" id="sc2">
+        <div class="sc-head" onclick="activateStep(2)">
+          <div class="sc-num" id="sn2">2</div>
+          <div><div class="sc-label">Configure columns</div><div class="sc-sub" id="ss2">Toggle fields &amp; types</div></div>
+        </div>
+        <div class="sc-body">
+          <div class="col-list" id="colList"></div>
+          <button class="btn btn-p" style="width:100%;justify-content:center;margin-top:9px;font-size:12px" onclick="applyColumns()">
+            <i class="ti ti-check"></i> Apply columns
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="sc" id="sc3">
+        <div class="sc-head" onclick="activateStep(3)">
+          <div class="sc-num" id="sn3">3</div>
+          <div><div class="sc-label">Choose view</div><div class="sc-sub" id="ss3">Tabular, summary, pivot</div></div>
+        </div>
+        <div class="sc-body">
+          <div class="vt-opts">
+            <div class="vt-opt sel" id="vopt-tabular" onclick="setViewStep('tabular')">
+              <i class="ti ti-table"></i>
+              <div><div class="vt-name">Tabular</div><div class="vt-desc">Row-by-row data grid</div></div>
+            </div>
+            <div class="vt-opt" id="vopt-summary" onclick="setViewStep('summary')">
+              <i class="ti ti-layout-grid"></i>
+              <div><div class="vt-name">Summary</div><div class="vt-desc">KPI cards + data preview</div></div>
+            </div>
+            <div class="vt-opt" id="vopt-pivot" onclick="setViewStep('pivot')">
+              <i class="ti ti-arrows-cross"></i>
+              <div><div class="vt-name">Pivot</div><div class="vt-desc">Cross-tab analysis</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="sc" id="sc4">
+        <div class="sc-head" onclick="activateStep(4)">
+          <div class="sc-num" id="sn4">4</div>
+          <div><div class="sc-label">Formatting</div><div class="sc-sub" id="ss4">Heatmap, bars, density</div></div>
+        </div>
+        <div class="sc-body">
+          <div class="fmt-list">
+            <div class="fmt-item" onclick="toggleFmt('heatmap')">
+              <div class="fmt-left"><i class="ti ti-color-swatch" style="color:var(--acc)"></i><div><div class="fmt-label">Heatmap coloring</div><div class="fmt-sub">Color cells by value intensity</div></div></div>
+              <div class="tsw" id="ts-heatmap"></div>
+            </div>
+            <div class="fmt-item" onclick="toggleFmt('bars')">
+              <div class="fmt-left"><i class="ti ti-chart-bar" style="color:var(--acc)"></i><div><div class="fmt-label">In-cell bars</div><div class="fmt-sub">Inline proportional bars</div></div></div>
+              <div class="tsw" id="ts-bars"></div>
+            </div>
+            <div class="fmt-item" onclick="toggleFmt('stripe')">
+              <div class="fmt-left"><i class="ti ti-list-details" style="color:var(--t3)"></i><div><div class="fmt-label">Striped rows</div></div></div>
+              <div class="tsw" id="ts-stripe"></div>
+            </div>
+            <div class="fmt-item" onclick="toggleFmt('rownum')">
+              <div class="fmt-left"><i class="ti ti-list-numbers" style="color:var(--t3)"></i><div><div class="fmt-label">Row numbers</div></div></div>
+              <div class="tsw" id="ts-rownum"></div>
+            </div>
+            <div class="fmt-item" onclick="toggleFmt('borders')">
+              <div class="fmt-left"><i class="ti ti-border-all" style="color:var(--t3)"></i><div><div class="fmt-label">Column borders</div></div></div>
+              <div class="tsw on" id="ts-borders"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="sc" id="sc5">
+        <div class="sc-head" onclick="activateStep(5)">
+          <div class="sc-num" id="sn5">5</div>
+          <div><div class="sc-label">Save &amp; export</div><div class="sc-sub" id="ss5">Artifacts, CSV, dataset</div></div>
+        </div>
+        <div class="sc-body">
+          <div class="save-list">
+            <div class="save-item" onclick="openSaveModal()"><i class="ti ti-device-floppy"></i>Save to Artifacts</div>
+            <div class="save-item" onclick="exportCSV()"><i class="ti ti-file-export"></i>Export as CSV</div>
+            <div class="save-item" onclick="copyMd()"><i class="ti ti-copy"></i><span id="copyLbl">Copy as Markdown</span></div>
+            <div class="save-item" onclick="publishDs()"><i class="ti ti-database"></i>Publish dataset</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN ═══ -->
+  <div class="tb-main">
+
+    <!-- Topbar -->
+    <div class="tb-topbar">
+      <span class="tb-title" id="tblTitle">Table Builder</span>
+      <div class="view-tabs">
+        <div class="vtab on" id="vtab-tabular" onclick="setView('tabular')"><i class="ti ti-table"></i>Tabular</div>
+        <div class="vtab" id="vtab-summary" onclick="setView('summary')"><i class="ti ti-layout-grid"></i>Summary</div>
+        <div class="vtab" id="vtab-pivot" onclick="setView('pivot')"><i class="ti ti-arrows-cross"></i>Pivot</div>
+      </div>
+      <span id="rBadge" class="badge-draft">Draft</span>
+      <button class="icon-btn" onclick="openSaveModal()"><i class="ti ti-device-floppy"></i>Save</button>
+      <button class="icon-btn" onclick="document.getElementById('tbRight').classList.toggle('show')" title="Format options"><i class="ti ti-adjustments-horizontal"></i></button>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="tb-bar">
+      <button class="tbb" id="tbb-heatmap" onclick="toggleFmt('heatmap')"><i class="ti ti-color-swatch"></i>Heatmap</button>
+      <button class="tbb" id="tbb-bars" onclick="toggleFmt('bars')"><i class="ti ti-chart-bar"></i>Bar cells</button>
+      <div class="tb-sep"></div>
+      <button class="tbb" id="tbb-stripe" onclick="toggleFmt('stripe')"><i class="ti ti-list-details"></i>Striped</button>
+      <button class="tbb" id="tbb-rownum" onclick="toggleFmt('rownum')"><i class="ti ti-list-numbers"></i>Row #</button>
+      <button class="tbb" id="tbb-freeze" onclick="toggleFmt('freeze')"><i class="ti ti-pinned"></i>Freeze</button>
+      <div class="tb-sep"></div>
+      <button class="tbb" onclick="doFilter()"><i class="ti ti-filter"></i>Filter</button>
+      <button class="tbb" onclick="doSort()"><i class="ti ti-arrows-sort"></i>Sort</button>
+      <button class="tbb" onclick="doGroup()"><i class="ti ti-stack-2"></i>Group by</button>
+      <button class="tbb" id="tbb-cleanse" onclick="doCleanse()"><i class="ti ti-shield-check"></i>AI Cleanse</button>
+      <div class="tb-sep"></div>
+      <div class="tb-search"><i class="ti ti-search"></i><input type="text" id="searchInput" placeholder="Search rows…" oninput="searchRows(this.value)"/></div>
+      <div class="tb-spacer"></div>
+      <span class="tb-count" id="rowCount"></span>
+      <button class="tbb" onclick="exportCSV()"><i class="ti ti-download"></i>Export</button>
+    </div>
+
+    <div style="display:flex;flex:1;overflow:hidden;min-width:0">
+
+      <!-- Canvas -->
+      <div class="tb-canvas" id="tblCanvas">
+        <div class="empty-state" id="emptyState">
+          <i class="ti ti-table"></i>
+          <h3>No table yet</h3>
+          <p>Describe your table in the sidebar, or try a quick example to get started.</p>
+          <div class="empty-actions">
+            <button class="empty-btn" onclick="qp('GDP by sector and quarter 2024–2026 with YoY growth');submitPrompt()"><i class="ti ti-bolt"></i>GDP by sector</button>
+            <button class="empty-btn" onclick="qp('Labour market employment by industry 2025');submitPrompt()"><i class="ti ti-bolt"></i>Labour market</button>
+            <button class="empty-btn" onclick="qp('CPI index by category and year with weights');submitPrompt()"><i class="ti ti-bolt"></i>CPI index</button>
+          </div>
+        </div>
+        <div id="tblContent" style="display:none"></div>
+      </div>
+
+      <!-- Right panel -->
+      <div class="tb-right" id="tbRight">
+        <div class="rp-sec">
+          <div class="rp-sec-title">Display</div>
+          <div class="rp-row"><label>Row density</label>
+            <select id="rDensity" onchange="render()">
+              <option value="compact">Compact</option>
+              <option value="default" selected>Default</option>
+              <option value="relaxed">Relaxed</option>
+            </select>
+          </div>
+          <div class="rp-row"><label>Font size</label>
+            <select id="rFontSize" onchange="render()">
+              <option value="11">Small (11px)</option>
+              <option value="12.5" selected>Default</option>
+              <option value="14">Large (14px)</option>
+            </select>
+          </div>
+        </div>
+        <div class="rp-sec">
+          <div class="rp-sec-title">Heatmap</div>
+          <div class="rp-row"><label>Column</label>
+            <select id="rHeatCol" onchange="render()">
+              <option value="">All numeric</option>
+            </select>
+          </div>
+          <div class="rp-row"><label>Threshold</label>
+            <input type="range" min="10" max="90" value="50" id="rThresh" oninput="document.getElementById('rThreshLbl').textContent=this.value+'%';render()"/>
+            <div class="rp-range-lbl" id="rThreshLbl">50%</div>
+          </div>
+        </div>
+        <div class="rp-sec">
+          <div class="rp-sec-title">Options</div>
+          <div class="rp-tog"><span>Bold headers</span><div class="tsw on" id="rto-boldh" onclick="toggleRp('boldh')"></div></div>
+          <div class="rp-tog"><span>Wrap text</span><div class="tsw" id="rto-wrap" onclick="toggleRp('wrap')"></div></div>
+          <div class="rp-tog"><span>Totals row</span><div class="tsw" id="rto-totals" onclick="toggleRp('totals')"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Artifacts shelf -->
+    <div class="tb-shelf">
+      <div class="shelf-title">Artifacts</div>
+      <div class="shelf-list" id="shelfList">
+        <div class="shelf-empty">No saved artifacts — build a table and save it here.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Save Modal -->
+<div class="m-overlay" id="saveModal">
+  <div class="m-box">
+    <div class="m-head">
+      <h3><i class="ti ti-device-floppy"></i>Save to Artifacts</h3>
+      <button class="m-close" onclick="closeSave()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="m-body">
+      <div class="f-row"><label>Table name</label><input type="text" id="sName" placeholder="e.g. GDP Sector Q1 2026"/></div>
+      <div class="f-row"><label>Description</label><textarea id="sDesc" rows="2" placeholder="Optional…"></textarea></div>
+      <div class="f-row"><label>Domain tag</label>
+        <select id="sTag">
+          <option>Economic</option><option>Labour Market</option><option>CPI &amp; Prices</option>
+          <option>Demographics</option><option>Finance</option><option>Operations</option><option>Reference</option>
+        </select>
+      </div>
+    </div>
+    <div class="m-foot">
+      <button class="btn btn-g" onclick="closeSave()">Cancel</button>
+      <button class="btn btn-p" onclick="saveArtifact()"><i class="ti ti-check"></i>Save artifact</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ════════════════════════════
+   STATE
+════════════════════════════ */
+let view = 'tabular';
+let D = { headers:[], rows:[], types:[], title:'' };
+let fmt = { heatmap:false, bars:false, stripe:false, rownum:false, freeze:false, borders:true };
+let rp = { boldh:true, wrap:false, totals:false };
+let sort = { col:-1, dir:1 };
+let filtered = null;
+let prompt = '';
+let artifacts = [];
+
+/* ════════════════════════════
+   DATASETS
+════════════════════════════ */
+const DS = {
+  gdp:{
+    title:'Abu Dhabi GDP by Sector — 2024–2026',
+    headers:['Sector','Q1 2025','Q2 2025','Q3 2025','Q4 2025','Q1 2026','YoY %','Status'],
+    types:['text','num','num','num','num','num','pct','badge'],
+    rows:[
+      ['Non-oil Manufacturing',62.1,64.3,66.8,68.0,68.4,6.1,'Growing'],
+      ['Tourism & Hospitality',35.4,38.1,42.0,40.2,41.2,11.4,'Expanding'],
+      ['Construction',34.2,35.8,37.1,38.0,38.9,8.2,'On Track'],
+      ['Financial Services',48.9,50.2,51.8,52.0,52.3,3.8,'Stable'],
+      ['Oil & Gas',206.1,210.4,211.8,209.2,212.0,0.9,'Stable'],
+      ['Government Services',28.4,29.1,29.8,30.0,30.4,3.2,'Stable'],
+      ['Retail & Trade',41.8,43.2,45.1,44.6,46.0,9.3,'Growing'],
+      ['Technology & ICT',18.2,19.6,21.4,22.0,23.8,18.9,'Expanding'],
+    ]
+  },
+  labour:{
+    title:'Labour Market — Employment by Sector 2025',
+    headers:['Sector','Employed (000s)','Unemployed (000s)','Rate %','YoY Δ pp','Avg Salary AED','Gender Parity','Status'],
+    types:['text','num','num','pct','num','num','num','badge'],
+    rows:[
+      ['Government',485,12,2.4,1.2,22400,0.68,'Healthy'],
+      ['Finance & Banking',142,8,5.3,-0.4,28600,0.54,'Stable'],
+      ['Construction',892,67,7.0,2.1,8200,0.09,'Watch'],
+      ['Retail & Trade',634,48,7.0,-1.8,10400,0.41,'Stable'],
+      ['Healthcare',198,6,2.9,3.4,18800,0.72,'Healthy'],
+      ['Education',224,4,1.7,0.8,17200,0.78,'Healthy'],
+      ['IT & Technology',96,9,8.6,5.2,25600,0.48,'Alert'],
+      ['Tourism',388,31,7.4,-0.2,9800,0.39,'Stable'],
+    ]
+  },
+  cpi:{
+    title:'CPI Index by Category — Abu Dhabi 2025',
+    headers:['Category','Weight %','Jan 25','Jun 25','Dec 25','YoY %','Contribution','Trend'],
+    types:['text','num','num','num','num','pct','num','badge'],
+    rows:[
+      ['Food & Beverages',14.2,104.2,106.8,109.1,4.7,0.67,'Rising'],
+      ['Housing & Utilities',34.1,101.8,102.4,103.1,1.3,0.44,'Stable'],
+      ['Transport',12.8,98.4,101.2,105.6,7.3,0.93,'Rising'],
+      ['Education',6.4,102.1,102.1,103.4,1.3,0.08,'Stable'],
+      ['Healthcare',4.8,103.6,105.1,106.4,2.7,0.13,'Stable'],
+      ['Clothing',5.2,97.8,99.2,101.8,4.1,0.21,'Moderate'],
+      ['Recreation',3.9,100.4,101.8,103.2,2.8,0.11,'Stable'],
+      ['Communication',2.6,98.2,98.6,99.1,0.9,0.02,'Flat'],
+      ['Restaurants',7.1,106.4,108.9,112.1,5.3,0.38,'Rising'],
+    ]
+  },
+  project:{
+    title:'Bayaan Platform — Project Tracker 2026',
+    headers:['Project','Owner','Priority','Progress %','Budget AED','Spent %','Phase','Status'],
+    types:['text','text','badge','num','num','num','text','badge'],
+    rows:[
+      ['LMO Observatory','Asharaf','High',72,480000,58,'Delivery','In Progress'],
+      ['CPI Refactoring','Linto','Critical',45,320000,41,'Build','In Progress'],
+      ['Bayaan Homepage','Christo','High',88,180000,82,'UAT','Review'],
+      ['EWIO Phase 2','Sharun','Medium',30,560000,24,'Design','Planning'],
+      ['Census Portal','Rajesh','High',65,240000,61,'Delivery','In Progress'],
+      ['DGE Obs Deck','Unni','Critical',20,890000,15,'Planning','Planning'],
+      ['Mobile App v2','Asharaf','Medium',55,360000,48,'Build','In Progress'],
+      ['AI Cue Cards','Linto','Low',90,120000,94,'Done','Complete'],
+    ]
+  }
+};
+
+function detectDS(p){
+  p=p.toLowerCase();
+  if(p.includes('labour')||p.includes('employment')||p.includes('workforce')) return 'labour';
+  if(p.includes('cpi')||p.includes('price')||p.includes('inflation')||p.includes('category')) return 'cpi';
+  if(p.includes('project')||p.includes('tracker')||p.includes('bayaan')||p.includes('delivery')) return 'project';
+  return 'gdp';
+}
+
+/* ════════════════════════════
+   PROMPT
+════════════════════════════ */
+function qp(txt){ document.getElementById('tblInput').value=txt; activateStep(1); }
+
+function submitPrompt(){
+  const val=document.getElementById('tblInput').value.trim();
+  if(!val) return;
+  prompt=val;
+  document.getElementById('tblInput').value='';
+  runGen(val);
+}
+
+function runGen(p){
+  document.getElementById('emptyState').style.display='none';
+  document.getElementById('tblContent').style.display='none';
+  const gw=document.getElementById('genWrap');
+  gw.classList.add('show');
+  document.getElementById('genFill').style.width='0%';
+  const steps=[
+    {id:'gsr1',lbl:'Parsing prompt'},
+    {id:'gsr2',lbl:'Inferring columns & types'},
+    {id:'gsr3',lbl:'Generating row data'},
+    {id:'gsr4',lbl:'Applying formatting'},
+    {id:'gsr5',lbl:'Finalising layout'},
+  ];
+  steps.forEach(s=>{
+    const el=document.getElementById(s.id);
+    el.className='gs-row';
+    el.innerHTML=`<i class="ti ti-circle" style="opacity:.3"></i><span>${s.lbl}</span>`;
+  });
+  let i=0;
+  function tick(){
+    if(i>0){
+      const prev=document.getElementById(steps[i-1].id);
+      prev.className='gs-row done';
+      prev.innerHTML=`<i class="ti ti-check" style="color:var(--ok)"></i><span>${steps[i-1].lbl}</span>`;
+    }
+    if(i<steps.length){
+      const cur=document.getElementById(steps[i].id);
+      cur.className='gs-row run';
+      cur.innerHTML=`<i class="ti ti-loader"></i><span>${steps[i].lbl}</span>`;
+      document.getElementById('genFill').style.width=((i+1)/steps.length*100)+'%';
+      i++;
+      setTimeout(tick,360+Math.random()*160);
+    } else {
+      document.getElementById('genFill').style.width='100%';
+      setTimeout(()=>{
+        gw.classList.remove('show');
+        loadDS(detectDS(p));
+        buildColList();
+        markDone(1, p.length>26?p.substring(0,26)+'…':p);
+        activateStep(2);
+      },280);
+    }
+  }
+  tick();
+}
+
+/* ════════════════════════════
+   LOAD DATA
+════════════════════════════ */
+function loadDS(key){
+  const ds=DS[key];
+  D={headers:[...ds.headers],rows:ds.rows.map(r=>[...r]),types:[...ds.types],title:ds.title};
+  filtered=null; sort={col:-1,dir:1};
+  document.getElementById('tblTitle').textContent=ds.title;
+  document.getElementById('rBadge').textContent='Ready';
+  document.getElementById('rBadge').className='badge-ready';
+  document.getElementById('tblContent').style.display='block';
+  updateCount();
+  const sel=document.getElementById('rHeatCol');
+  sel.innerHTML='<option value="">All numeric</option>';
+  ds.headers.forEach((h,i)=>{
+    if(['num','pct'].includes(ds.types[i])){
+      const o=document.createElement('option');
+      o.value=i; o.textContent=h; sel.appendChild(o);
+    }
+  });
+  render();
+}
+
+function buildColList(){
+  const list=document.getElementById('colList');
+  list.innerHTML='';
+  D.headers.forEach((h,i)=>{
+    const d=document.createElement('div');
+    d.className='col-item';
+    const tl=D.types[i]==='num'?'number':D.types[i]==='pct'?'%':D.types[i];
+    d.innerHTML=`<input type="checkbox" id="cb${i}" checked onchange="render()"><span class="col-name">${h}</span><span class="col-type-tag">${tl}</span>`;
+    list.appendChild(d);
+  });
+}
+
+function applyColumns(){ render(); markDone(2,'Columns configured'); activateStep(3); }
+
+function visCols(){
+  return D.headers.map((_,i)=>{const cb=document.getElementById('cb'+i); return cb?cb.checked:true;});
+}
+
+/* ════════════════════════════
+   RENDER
+════════════════════════════ */
+function render(){
+  if(!D.rows.length) return;
+  const rows=filtered||D.rows;
+  if(view==='tabular') renderTabular(rows);
+  else if(view==='summary') renderSummary(rows);
+  else renderPivot(rows);
+}
+
+/* Helpers */
+function nRange(rows,col){
+  let mn=Infinity,mx=-Infinity;
+  rows.forEach(r=>{const v=parseFloat(r[col]);if(!isNaN(v)){mn=Math.min(mn,v);mx=Math.max(mx,v);}});
+  return{mn,mx};
+}
+function heatCls(v,mn,mx,th){
+  if(mx===mn) return '';
+  if(v<0) return 'hmn';
+  const p=(v-mn)/(mx-mn)*100;
+  if(p>=th+20) return 'hm5';
+  if(p>=th+5)  return 'hm4';
+  if(p>=th)    return 'hm3';
+  if(p>=th-15) return 'hm2';
+  return 'hm1';
+}
+function fmtV(v,type,ci){
+  if(type==='pct') return v.toFixed(1)+'%';
+  const h=(D.headers[ci]||'').toLowerCase();
+  if(h.includes('aed')||h.includes('salary')||h.includes('budget')){
+    if(Math.abs(v)>=1000000) return 'AED '+(v/1e6).toFixed(1)+'M';
+    if(Math.abs(v)>=1000)    return 'AED '+(v/1000).toFixed(0)+'K';
+    return 'AED '+v.toLocaleString();
+  }
+  if(Number.isInteger(v)) return v.toLocaleString();
+  return v.toFixed(1);
+}
+const BADGE_MAP={
+  'Growing':'cb-ok','Expanding':'cb-acc','Stable':'cb-neutral','On Track':'cb-ok',
+  'Healthy':'cb-ok','Watch':'cb-warn','Alert':'cb-err','Exceeded':'cb-acc',
+  'At Risk':'cb-warn','In Progress':'cb-acc','Planning':'cb-purple','Review':'cb-warn',
+  'Complete':'cb-ok','Rising':'cb-err','Moderate':'cb-warn','Flat':'cb-neutral',
+  'High':'cb-warn','Critical':'cb-err','Medium':'cb-ok','Low':'cb-neutral',
+};
+function badge(v){ return `<span class="cb ${BADGE_MAP[v]||'cb-neutral'}">${v}</span>`; }
+function getPV(){const d=document.getElementById('rDensity').value; return d==='compact'?'5px':d==='relaxed'?'13px':'8px';}
+function getFS(){ return document.getElementById('rFontSize').value+'px'; }
+function getTh(){ return parseInt(document.getElementById('rThresh').value); }
+
+/* Sort */
+function colSort(col){
+  sort.col===col? sort.dir*=-1 : (sort.col=col, sort.dir=1);
+  render();
+}
+function getSorted(rows){
+  if(sort.col<0) return [...rows];
+  return [...rows].sort((a,b)=>{
+    let av=a[sort.col],bv=b[sort.col];
+    const fa=parseFloat(av),fb=parseFloat(bv);
+    if(!isNaN(fa)&&!isNaN(fb)){av=fa;bv=fb;}
+    return av>bv?sort.dir:av<bv?-sort.dir:0;
+  });
+}
+
+/* Tabular */
+function renderTabular(rows){
+  const vis=visCols();
+  const sorted=getSorted(rows);
+  const heatCol=document.getElementById('rHeatCol').value;
+  const th=getTh(),fz=getFS(),pv=getPV();
+  const ranges={};
+  D.headers.forEach((_,i)=>{ if(['num','pct'].includes(D.types[i])) ranges[i]=nRange(rows,i); });
+  const totals=D.headers.map((_,i)=>{
+    if(!['num','pct'].includes(D.types[i])) return null;
+    return rows.reduce((s,r)=>s+(parseFloat(r[i])||0),0);
+  });
+
+  /* thead */
+  let ths='';
+  if(fmt.rownum) ths+=`<th class="rn" style="padding:${pv} 8px;font-size:${fz}"><div class="th-row">#</div></th>`;
+  D.headers.forEach((h,i)=>{
+    if(!vis[i]) return;
+    const sc=sort.col===i?(sort.dir===1?'sorted-asc':'sorted-desc'):'';
+    const fw=rp.boldh?'700':'600';
+    ths+=`<th onclick="colSort(${i})" class="${sc}" style="font-size:${fz};padding:${pv} 13px;font-weight:${fw}">
+      <div class="th-row">${h}<span class="ct-badge">${D.types[i]}</span><span class="sort-ind"></span></div></th>`;
+  });
+
+  /* tbody */
+  let trs='';
+  sorted.forEach((row,ri)=>{
+    let cells='';
+    if(fmt.rownum) cells+=`<td class="rn" style="padding:${pv} 8px;font-size:11px">${ri+1}</td>`;
+    row.forEach((cell,ci)=>{
+      if(!vis[ci]) return;
+      const type=D.types[ci];
+      let cls='',inner=cell;
+      let sty=`padding:${pv} 13px;font-size:${fz};`;
+      if(!fmt.borders) sty+='border-right:none;';
+      if(rp.wrap) sty+='white-space:normal;';
+      if(type==='badge'){
+        inner=badge(cell);
+      } else if(['num','pct'].includes(type)){
+        const v=parseFloat(cell);
+        inner=fmtV(v,type,ci);
+        if(fmt.heatmap){
+          const uc=heatCol!==''?parseInt(heatCol):ci;
+          if(heatCol===''||parseInt(heatCol)===ci) cls=heatCls(v,ranges[ci].mn,ranges[ci].mx,th);
+        }
+        if(fmt.bars&&!fmt.heatmap){
+          const r=ranges[ci];
+          const pct=r.mx===r.mn?50:Math.round((v-r.mn)/(r.mx-r.mn)*78+5);
+          inner=`<div class="bc"><div class="bc-bg" style="width:${pct}%"></div><div class="bc-txt">${inner}</div></div>`;
+        }
+        if(type==='pct'&&!fmt.heatmap&&!fmt.bars){ if(v>5) cls='td-ok'; else if(v<0) cls='td-err'; }
+      } else if(type==='text'&&ci===0){
+        inner=`<strong>${cell}</strong>`;
+      }
+      cells+=`<td class="${cls}" style="${sty}">${inner}</td>`;
+    });
+    trs+=`<tr>${cells}</tr>`;
+  });
+
+  /* totals */
+  let tfoot='';
+  if(rp.totals){
+    let tds='';
+    if(fmt.rownum) tds+=`<td class="rn"></td>`;
+    vis.forEach((v,i)=>{
+      if(!v) return;
+      if(i===0){tds+=`<td style="padding:${pv} 13px;font-size:${fz};font-weight:700;color:var(--acc)">Total</td>`;return;}
+      if(totals[i]!==null){
+        const val=D.types[i]==='pct'?totals[i]/rows.length:totals[i];
+        tds+=`<td style="padding:${pv} 13px;font-size:${fz};font-weight:700;background:var(--acc-lt);color:var(--acc-dk)">${fmtV(val,D.types[i],i)}</td>`;
+      } else tds+=`<td style="padding:${pv} 13px"></td>`;
+    });
+    tfoot=`<tfoot class="tf"><tr>${tds}</tr></tfoot>`;
+  }
+
+  const strCls=fmt.stripe?'striped':'';
+  const nbCls=!fmt.borders?'nb':'';
+  const overflow=fmt.freeze?'overflow:auto;max-height:calc(100vh - 210px)':'overflow:auto';
+
+  document.getElementById('tblContent').innerHTML=`
+    <div class="tbl-card ${nbCls}">
+      <div style="${overflow}">
+        <table class="dt ${strCls}">
+          <thead><tr>${ths}</tr></thead>
+          <tbody>${trs}</tbody>
+          ${tfoot}
+        </table>
+      </div>
+    </div>`;
+}
+
+/* Summary */
+function renderSummary(rows){
+  const numC=D.headers.map((h,i)=>({h,i,t:D.types[i]})).filter(c=>['num','pct'].includes(c.t));
+  let cards='';
+  numC.slice(0,6).forEach(col=>{
+    const vals=rows.map(r=>parseFloat(r[col.i])).filter(v=>!isNaN(v));
+    const tot=vals.reduce((a,b)=>a+b,0);
+    const avg=tot/vals.length;
+    const max=Math.max(...vals);
+    const dv=col.t==='pct'?avg.toFixed(1)+'%':fmtV(tot,col.t,col.i);
+    const icn=col.t==='pct'?'ti-percent':'ti-chart-bar';
+    cards+=`<div class="sum-kpi">
+      <div class="sum-lbl"><i class="ti ${icn}"></i>${col.h}</div>
+      <div class="sum-val">${dv}</div>
+      <div class="sum-sub"><span class="up">↑ max ${fmtV(max,col.t,col.i)}</span> &nbsp;·&nbsp; avg ${fmtV(avg,col.t,col.i)}</div>
+    </div>`;
+  });
+  const vis=visCols();
+  let prevRows='';
+  rows.slice(0,5).forEach(row=>{
+    let tds='';
+    row.forEach((cell,ci)=>{
+      if(!vis[ci]) return;
+      const t=D.types[ci];
+      const inn=t==='badge'?badge(cell):(ci===0?`<strong>${cell}</strong>`:cell);
+      tds+=`<td style="padding:6px 12px;font-size:12px;border-bottom:1px solid var(--border)">${inn}</td>`;
+    });
+    prevRows+=`<tr>${tds}</tr>`;
+  });
+  const prevThs=D.headers.map((h,i)=>vis[i]?`<th style="padding:7px 12px;font-size:11px;font-weight:700;background:var(--surface2);color:var(--t2);border-bottom:1px solid var(--border)">${h}</th>`:'').join('');
+  document.getElementById('tblContent').innerHTML=`
+    <div class="sum-grid">${cards}</div>
+    <div class="section-lbl">Data preview — first 5 rows</div>
+    <div class="tbl-card"><table class="dt"><thead><tr>${prevThs}</tr></thead><tbody>${prevRows}</tbody></table></div>`;
+}
+
+/* Pivot */
+function renderPivot(rows){
+  const ti=D.headers.findIndex((_,i)=>D.types[i]==='text');
+  const ni=D.headers.map((_,i)=>i).filter(i=>['num','pct'].includes(D.types[i])).slice(0,4);
+  if(ti<0||ni.length===0){renderTabular(rows);return;}
+  const th=getTh();
+  const rng={};
+  ni.forEach(i=>{rng[i]=nRange(rows,i);});
+  const colT={};
+  ni.forEach(i=>{colT[i]=0;});
+  let grand=0;
+  let ths=`<th style="font-weight:700;padding:9px 13px;font-size:12px;background:var(--surface2)">${D.headers[ti]}</th>`;
+  ni.forEach(i=>ths+=`<th style="text-align:right;padding:9px 13px;font-size:12px">${D.headers[i]}</th>`);
+  ths+=`<th style="text-align:right;padding:9px 13px;font-size:12px">Row Total</th>`;
+  let trs='';
+  rows.forEach(row=>{
+    const lbl=row[ti];
+    let rt=0;
+    let tds=`<td style="font-weight:700;padding:8px 13px;font-size:12.5px">${lbl}</td>`;
+    ni.forEach(i=>{
+      const v=parseFloat(row[i])||0;
+      rt+=v; colT[i]+=v;
+      let cls='';
+      if(fmt.heatmap) cls=heatCls(v,rng[i].mn,rng[i].mx,th);
+      tds+=`<td class="${cls}" style="text-align:right;padding:8px 13px;font-size:12.5px">${fmtV(v,D.types[i],i)}</td>`;
+    });
+    grand+=rt;
+    tds+=`<td style="text-align:right;padding:8px 13px;font-size:12.5px;font-weight:700;background:var(--acc-lt);color:var(--acc-dk)">${fmtV(rt,D.types[ni[0]],ni[0])}</td>`;
+    trs+=`<tr>${tds}</tr>`;
+  });
+  let ftds=`<td style="font-weight:700;padding:8px 13px;font-size:12.5px;color:var(--acc)">Total</td>`;
+  ni.forEach(i=>{
+    const val=D.types[i]==='pct'?colT[i]/rows.length:colT[i];
+    ftds+=`<td style="text-align:right;padding:8px 13px;font-size:12.5px;font-weight:700">${fmtV(val,D.types[i],i)}</td>`;
+  });
+  ftds+=`<td style="text-align:right;padding:8px 13px;font-size:12.5px;font-weight:700;background:var(--acc-lt);color:var(--acc-dk)">${fmtV(grand,D.types[ni[0]],ni[0])}</td>`;
+  document.getElementById('tblContent').innerHTML=`
+    <div class="pivot-card"><div style="overflow-x:auto">
+      <table class="pv"><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody><tfoot><tr>${ftds}</tr></tfoot></table>
+    </div></div>`;
+}
+
+/* ════════════════════════════
+   VIEW / STEP / FMT
+════════════════════════════ */
+function setView(v){
+  view=v;
+  ['tabular','summary','pivot'].forEach(t=>{
+    document.getElementById('vtab-'+t).className='vtab'+(t===v?' on':'');
+    const vo=document.getElementById('vopt-'+t);
+    if(vo) vo.className='vt-opt'+(t===v?' sel':'');
+  });
+  if(D.rows.length) render();
+}
+function setViewStep(v){ setView(v); markDone(3,v+' view'); activateStep(4); }
+
+function toggleFmt(k){
+  fmt[k]=!fmt[k];
+  syncTs('ts-'+k,fmt[k]);
+  const tb=document.getElementById('tbb-'+k);
+  if(tb) tb.className='tbb'+(fmt[k]?' on':'');
+  if(D.rows.length) render();
+}
+function syncTs(id,on){
+  const el=document.getElementById(id);
+  if(el) el.className='tsw'+(on?' on':'');
+}
+function toggleRp(k){
+  rp[k]=!rp[k];
+  const el=document.getElementById('rto-'+k);
+  if(el) el.className='tsw'+(rp[k]?' on':'');
+  if(D.rows.length) render();
+}
+
+function activateStep(n){
+  for(let i=1;i<=5;i++){
+    const c=document.getElementById('sc'+i);
+    const done=c.classList.contains('done');
+    c.className='sc'+(i===n?' active':(done?' done':''));
+  }
+}
+function markDone(n,sub){
+  const c=document.getElementById('sc'+n);
+  c.className='sc done';
+  document.getElementById('sn'+n).innerHTML='<i class="ti ti-check" style="font-size:11px"></i>';
+  if(sub) document.getElementById('ss'+n).textContent=sub.substring(0,28);
+}
+
+/* ════════════════════════════
+   TOOLBAR ACTIONS
+════════════════════════════ */
+function doFilter(){
+  if(!D.rows.length){toast('Build a table first','ti-info-circle');return;}
+  const col=prompt('Filter: enter column name\n'+D.headers.join(', '));
+  if(!col) return;
+  const val=prompt('Value contains:');
+  if(val===null) return;
+  const idx=D.headers.findIndex(h=>h.toLowerCase().includes(col.toLowerCase()));
+  if(idx<0){toast('Column not found','ti-alert-circle');return;}
+  const orig=DS[detectDS(window._prompt||'')].rows;
+  filtered=orig.filter(r=>String(r[idx]).toLowerCase().includes(val.toLowerCase()));
+  updateCount(); render();
+  toast(`Filter: ${filtered.length} matching rows`,'ti-filter');
+}
+function doSort(){
+  if(!D.rows.length){toast('Build a table first','ti-info-circle');return;}
+  const col=prompt('Sort by column:\n'+D.headers.join(', '));
+  if(!col) return;
+  const idx=D.headers.findIndex(h=>h.toLowerCase().includes(col.toLowerCase()));
+  if(idx<0){toast('Column not found','ti-alert-circle');return;}
+  sort={col:idx,dir:1}; render();
+  toast('Sorted by '+D.headers[idx],'ti-arrows-sort');
+}
+function doGroup(){
+  if(!D.rows.length){toast('Build a table first','ti-info-circle');return;}
+  setView('pivot');
+  toast('Switched to Pivot view for grouping','ti-stack-2');
+}
+let cleanseOn=false;
+function doCleanse(){
+  if(!D.rows.length){toast('Build a table first','ti-info-circle');return;}
+  cleanseOn=!cleanseOn;
+  const btn=document.getElementById('tbb-cleanse');
+  btn.className='tbb'+(cleanseOn?' on':'');
+  toast(cleanseOn?'AI Cleanse — 2 nulls imputed, 1 outlier flagged':'AI Cleanse removed',
+    cleanseOn?'ti-shield-check':'ti-shield');
+}
+function searchRows(q){
+  if(!D.rows.length) return;
+  if(!q.trim()){filtered=null;updateCount();render();return;}
+  const ql=q.toLowerCase();
+  filtered=D.rows.filter(r=>r.some(c=>String(c).toLowerCase().includes(ql)));
+  updateCount(); render();
+}
+function updateCount(){
+  const rows=filtered||D.rows;
+  document.getElementById('rowCount').textContent=filtered?`${rows.length} of ${D.rows.length} rows`:`${D.rows.length} rows · ${D.headers.length} cols`;
+}
+
+/* ════════════════════════════
+   SAVE / EXPORT
+════════════════════════════ */
+function openSaveModal(){
+  if(!D.rows.length){toast('Build a table first','ti-info-circle');return;}
+  document.getElementById('sName').value=D.title;
+  document.getElementById('saveModal').classList.add('show');
+}
+function closeSave(){ document.getElementById('saveModal').classList.remove('show'); }
+function saveArtifact(){
+  const name=document.getElementById('sName').value||'Untitled';
+  const tag=document.getElementById('sTag').value;
+  artifacts.push({id:Date.now(),name,tag,rows:D.rows.length,cols:D.headers.length,view});
+  renderShelf(); closeSave();
+  markDone(5,'Saved to Artifacts');
+  toast('Saved: '+name,'ti-device-floppy');
+}
+function renderShelf(){
+  const sl=document.getElementById('shelfList');
+  if(!artifacts.length){sl.innerHTML='<div class="shelf-empty">No saved artifacts yet.</div>';return;}
+  sl.innerHTML=artifacts.map(a=>`
+    <div class="shelf-chip" onclick="toast('Loaded: ${a.name}','ti-table')">
+      <i class="ti ti-table"></i>
+      <div><div class="chip-name">${a.name}</div>
+      <div class="chip-meta">${a.rows}r × ${a.cols}c · ${a.view} · <b>${a.tag}</b></div></div>
+    </div>`).join('');
+}
+function exportCSV(){
+  if(!D.rows.length){toast('Build a table first','ti-info-circle');return;}
+  const rows=filtered||D.rows;
+  let csv=D.headers.join(',')+'\n';
+  rows.forEach(r=>csv+=r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')+'\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download=(D.title||'table')+'.csv'; a.click();
+  toast('CSV exported','ti-download');
+}
+function copyMd(){
+  if(!D.rows.length){toast('Build a table first','ti-info-circle');return;}
+  const rows=filtered||D.rows;
+  let md='| '+D.headers.join(' | ')+' |\n';
+  md+='| '+D.headers.map(()=>'---').join(' | ')+' |\n';
+  rows.forEach(r=>md+='| '+r.join(' | ')+' |\n');
+  navigator.clipboard.writeText(md).then(()=>{
+    document.getElementById('copyLbl').textContent='Copied!';
+    setTimeout(()=>document.getElementById('copyLbl').textContent='Copy as Markdown',2000);
+    toast('Copied as Markdown','ti-copy');
+  });
+}
+function publishDs(){
+  if(!D.rows.length){toast('Build a table first','ti-info-circle');return;}
+  toast('Published as Bayaan dataset','ti-database');
+}
+
+/* ════════════════════════════
+   TOAST
+════════════════════════════ */
+function toast(msg,icon){
+  const c=document.getElementById('toastWrap');
+  const d=document.createElement('div');
+  d.className='toast';
+  d.innerHTML=`<i class="ti ${icon||'ti-check'}"></i>${msg}`;
+  c.appendChild(d);
+  setTimeout(()=>{d.style.cssText='opacity:0;transform:translateY(6px);transition:all .2s';setTimeout(()=>d.remove(),220);},2800);
+}
+</script>
+</body>
+</html>
